@@ -22,10 +22,10 @@
     };
 
 // Invoke this macro in the struct body to make it a node.
-#define LPQ_NODE(TY) LPQ_NODE_PTR(TY) _lpq_ptr;
+#define LPQ_NODE(TY) LPQ_NODE_PTR(TY) _lpq_ptr
 
 #define LPQ_NODE_CONTAINER_OF(TY) TY##_lpq_node_container_of
-#define LPQ_NODE_INSERT_AFER(TY)  TY##_lpq_node_insert_after
+#define LPQ_NODE_INSERT_AFTER(TY) TY##_lpq_node_insert_after
 
 #define LPQ_INIT(TY)         TY##_lpq_init
 #define LPQ_PEEK(TY)         TY##_lpq_peek
@@ -54,7 +54,7 @@
         return (TY*)((uintptr_t)this - offsetof(TY, _lpq_ptr));                \
     }                                                                          \
                                                                                \
-    void LPQ_NODE_INSERT_AFTER(TY)(LQP_NODE_PTR(TY) * prev,                    \
+    void LPQ_NODE_INSERT_AFTER(TY)(LPQ_NODE_PTR(TY) * prev,                    \
                                    LPQ_NODE_PTR(TY) * next) {                  \
         assert(prev);                                                          \
         assert(next);                                                          \
@@ -90,9 +90,9 @@
         assert(this);                                                          \
                                                                                \
         if (this->_lpq_ptr.prev)                                               \
-            this->_lpq_ptr.prev->_lpq_ptr.next = this->_lpq_ptr.next;          \
+            this->_lpq_ptr.prev->next = this->_lpq_ptr.next;                   \
         if (this->_lpq_ptr.next)                                               \
-            this->_lpq_ptr.next->_lpq_ptr.prev = this->_lpq_ptr.prev;          \
+            this->_lpq_ptr.next->prev = this->_lpq_ptr.prev;                   \
     }                                                                          \
                                                                                \
     void LPQ_ENQUEUE(TY)(LPQ(TY) * this, TY * item) {                          \
@@ -110,7 +110,7 @@
             LPQ_NODE_INSERT_AFTER(TY)(this->end.prev, &item->_lpq_ptr);        \
             return;                                                            \
         }                                                                      \
-        TODO("Traverse to find an appropriate insertion point.");              \
+        PANIC("TODO: Traverse to find an appropriate insertion point.");       \
     }                                                                          \
                                                                                \
     TY* LPQ_DEQUEUE(TY)(LPQ(TY) * this) {                                      \
