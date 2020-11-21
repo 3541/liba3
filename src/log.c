@@ -6,10 +6,13 @@
 
 #include <a3/util.h>
 
-static FILE* log_out = NULL;
+static FILE*    log_out   = NULL;
 static LogLevel log_level = ERROR;
 
-void log_init(FILE* out, LogLevel level) { log_out = out; log_level = level; }
+void log_init(FILE* out, LogLevel level) {
+    log_out   = out;
+    log_level = level;
+}
 
 FORMAT_FN(2, 3)
 void log_fmt(LogLevel level, const char* fmt, ...) {
