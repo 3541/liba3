@@ -60,9 +60,12 @@
         assert(next);                                                          \
         assert(!next->next && !next->prev);                                    \
                                                                                \
-        if (prev->next)                                                        \
-            next->next = prev->next;                                           \
+        if (prev->next) {                                                      \
+            next->next       = prev->next;                                     \
+            next->next->prev = next;                                           \
+        }                                                                      \
         prev->next = next;                                                     \
+        next->prev = prev;                                                     \
     }                                                                          \
                                                                                \
     void LPQ_INIT(TY)(LPQ(TY) * this) {                                        \
@@ -74,7 +77,7 @@
                                                                                \
     TY* LPQ_PEEK(TY)(LPQ(TY) * this) {                                         \
         assert(this);                                                          \
-        if (!this->head.next)                                                  \
+        if (!this->head.next || this->head.next == &this->end)                 \
             return NULL;                                                       \
         return LPQ_NODE_CONTAINER_OF(TY)(this->head.next);                     \
     }                                                                          \
@@ -93,6 +96,8 @@
             this->_lpq_ptr.prev->next = this->_lpq_ptr.next;                   \
         if (this->_lpq_ptr.next)                                               \
             this->_lpq_ptr.next->prev = this->_lpq_ptr.prev;                   \
+        this->_lpq_ptr.next = NULL;                                            \
+        this->_lpq_ptr.prev = NULL;                                            \
     }                                                                          \
                                                                                \
     void LPQ_ENQUEUE(TY)(LPQ(TY) * this, TY * item) {                          \
@@ -105,7 +110,7 @@
             return;                                                            \
         }                                                                      \
                                                                                \
-        assert(this->end.prev);                                                \
+        assert(this->end.prev&& this->end.prev != &this->head);                \
         if (C(item, LPQ_NODE_CONTAINER_OF(TY)(this->end.prev)) >= 0) {         \
             LPQ_NODE_INSERT_AFTER(TY)(this->end.prev, &item->_lpq_ptr);        \
             return;                                                            \
