@@ -26,6 +26,7 @@
 
 #define LPQ_NODE_CONTAINER_OF(TY) TY##_lpq_node_container_of
 #define LPQ_NODE_INSERT_AFTER(TY) TY##_lpq_node_insert_after
+#define LPQ_IS_INSERTED(TY)       TY##_lpq_is_inserted
 
 #define LPQ_INIT(TY)         TY##_lpq_init
 #define LPQ_PEEK(TY)         TY##_lpq_peek
@@ -34,15 +35,16 @@
 #define LPQ_ENQUEUE(TY)      TY##_lpq_enqueue
 #define LPQ_DEQUEUE(TY)      TY##_lpq_dequeue
 
-#define LPQ_DECLARE_METHODS(TY)                                                 \
-    INLINE TY* LPQ_NODE_CONTAINER_OF(TY)(LPQ_NODE_PTR(TY)*);                    \
-    void       LPQ_NODE_INSERT_AFTER(TY)(LPQ_NODE_PTR(TY)*, LPQ_NODE_PTR(TY)*); \
-                                                                                \
-    void LPQ_INIT(TY)(LPQ(TY)*);                                                \
-    TY*  LPQ_PEEK(TY)(LPQ(TY)*);                                                \
-    void LPQ_INSERT_AFTER(TY)(TY*, TY*);                                        \
-    void LPQ_REMOVE(TY)(TY*);                                                   \
-    void LPQ_ENQUEUE(TY)(LPQ(TY)*, TY*);                                        \
+#define LPQ_DECLARE_METHODS(TY)                                                  \
+    INLINE TY*  LPQ_NODE_CONTAINER_OF(TY)(LPQ_NODE_PTR(TY)*);                    \
+    void        LPQ_NODE_INSERT_AFTER(TY)(LPQ_NODE_PTR(TY)*, LPQ_NODE_PTR(TY)*); \
+    INLINE bool LPQ_IS_INSERTED(TY)(TY*);                                        \
+                                                                                 \
+    void LPQ_INIT(TY)(LPQ(TY)*);                                                 \
+    TY*  LPQ_PEEK(TY)(LPQ(TY)*);                                                 \
+    void LPQ_INSERT_AFTER(TY)(TY*, TY*);                                         \
+    void LPQ_REMOVE(TY)(TY*);                                                    \
+    void LPQ_ENQUEUE(TY)(LPQ(TY)*, TY*);                                         \
     TY*  LPQ_DEQUEUE(TY)(LPQ(TY)*)
 
 // Generate method implementations. C must be a comparator function which
@@ -66,6 +68,11 @@
         }                                                                      \
         prev->next = next;                                                     \
         next->prev = prev;                                                     \
+    }                                                                          \
+                                                                               \
+    bool LPQ_IS_INSERTED(TY)(TY * this) {                                      \
+        assert(this);                                                          \
+        return this->_lpq_ptr.prev && this->_lpq_ptr.next;                     \
     }                                                                          \
                                                                                \
     void LPQ_INIT(TY)(LPQ(TY) * this) {                                        \
