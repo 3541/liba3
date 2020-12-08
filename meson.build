@@ -49,6 +49,7 @@ headers = include_directories('src/include')
 src = files([
              'src/buffer.c',
              'src/log.c',
+             'src/pool.c',
              'src/str.c'
            ])
 
