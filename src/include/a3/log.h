@@ -2,6 +2,10 @@
 
 #include <stdio.h>
 
+#include <a3/cpp.h>
+
+H_BEGIN
+
 typedef enum LogLevel { TRACE, DEBUG, INFO, WARN, ERROR } LogLevel;
 
 void log_init(FILE*, LogLevel);
@@ -19,3 +23,5 @@ void log_fmt(LogLevel, const char*, ...);
     do {                                                                       \
         ERR_FMT("%s", (msg));                                                  \
     } while (0)
+
+H_END

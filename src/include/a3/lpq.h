@@ -5,12 +5,14 @@
 
 #include <assert.h>
 
+#include <a3/cpp.h>
 #include <a3/util.h>
 
 #define LPQ(TY)          struct TY##Lpq
 #define LPQ_NODE_PTR(TY) struct TY##LpqNodePtr
 
 #define LPQ_IMPL_STRUCTS(TY)                                                   \
+    H_BEGIN                                                                    \
     LPQ_NODE_PTR(TY) {                                                         \
         LPQ_NODE_PTR(TY) * next;                                               \
         LPQ_NODE_PTR(TY) * prev;                                               \
@@ -19,7 +21,8 @@
     LPQ(TY) {                                                                  \
         LPQ_NODE_PTR(TY) head;                                                 \
         LPQ_NODE_PTR(TY) end;                                                  \
-    };
+    };                                                                         \
+    H_END
 
 // Invoke this macro in the struct body to make it a node.
 #define LPQ_NODE(TY) LPQ_NODE_PTR(TY) _lpq_ptr
@@ -36,6 +39,7 @@
 #define LPQ_DEQUEUE(TY)      TY##_lpq_dequeue
 
 #define LPQ_DECLARE_METHODS(TY)                                                  \
+    H_BEGIN                                                                      \
     INLINE TY*  LPQ_NODE_CONTAINER_OF(TY)(LPQ_NODE_PTR(TY)*);                    \
     void        LPQ_NODE_INSERT_AFTER(TY)(LPQ_NODE_PTR(TY)*, LPQ_NODE_PTR(TY)*); \
     INLINE bool LPQ_IS_INSERTED(TY)(TY*);                                        \
@@ -45,12 +49,14 @@
     void LPQ_INSERT_AFTER(TY)(TY*, TY*);                                         \
     void LPQ_REMOVE(TY)(TY*);                                                    \
     void LPQ_ENQUEUE(TY)(LPQ(TY)*, TY*);                                         \
-    TY*  LPQ_DEQUEUE(TY)(LPQ(TY)*)
+    TY*  LPQ_DEQUEUE(TY)(LPQ(TY)*);                                              \
+    H_END
 
 // Generate method implementations. C must be a comparator function which
 // operates on TY* and returns -1, 0, or 1 if lhs is less than, equal to, or
 // greater than rhs, respectively.
 #define LPQ_IMPL_METHODS(TY, C)                                                \
+    H_BEGIN                                                                    \
     TY* LPQ_NODE_CONTAINER_OF(TY)(LPQ_NODE_PTR(TY) * this) {                   \
         assert(this);                                                          \
         return CONTAINER_OF(this, TY, _lpq_ptr);                               \
@@ -133,4 +139,5 @@
         TY* ret = LPQ_NODE_CONTAINER_OF(TY)(this->head.next);                  \
         LPQ_REMOVE(TY)(ret);                                                   \
         return ret;                                                            \
-    }
+    }                                                                          \
+    H_END

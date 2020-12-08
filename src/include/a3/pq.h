@@ -3,17 +3,20 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "util.h"
+#include <a3/cpp.h>
+#include <a3/util.h>
 
 #define PQ(TY) struct TY##Pq
 
 #define PQ_IMPL_STRUCT(TY)                                                     \
+    H_BEGIN                                                                    \
     PQ(TY) {                                                                   \
         TY*    data;                                                           \
         size_t len;                                                            \
         size_t cap;                                                            \
         size_t max_cap;                                                        \
-    };
+    };                                                                         \
+    H_END
 
 #define PQ_INIT(TY)    TY##_pq_init
 #define PQ_PEEK(TY)    TY##_pq_peek
@@ -23,18 +26,23 @@
 #define PQ_HEAPIFY(TY) TY##_pq_heapify
 #define PQ_DEQUEUE(TY) TY##_pq_dequeue
 
+H_BEGIN
 INLINE size_t pq_parent(size_t i) { return i / 2; }
 INLINE size_t pq_left_child(size_t i) { return i * 2; }
 INLINE size_t pq_right_child(size_t i) { return i * 2 + 1; }
+H_END
 
 #define PQ_DECLARE_METHODS(TY)                                                 \
+    H_BEGIN                                                                    \
     void PQ_INIT(TY)(PQ(TY)*, size_t initial_cap, size_t max_cap);             \
     TY*  PQ_PEEK(TY)(PQ(TY)*);                                                 \
     void PQ_ENQUEUE(TY)(PQ(TY)*, TY);                                          \
     void PQ_HEAPIFY(TY)(PQ(TY)*, size_t i);                                    \
-    TY   PQ_DEQUEUE(TY)(PQ(TY)*)
+    TY   PQ_DEQUEUE(TY)(PQ(TY)*);                                              \
+    H_END
 
 #define PQ_IMPL_METHODS(TY, C)                                                 \
+    H_BEGIN                                                                    \
     void PQ_INIT(TY)(PQ(TY) * this, size_t initial_cap, size_t max_cap) {      \
         assert(!this->data);                                                   \
         UNWRAPN(this->data, calloc(initial_cap, sizeof(TY)));                  \
@@ -106,4 +114,5 @@ INLINE size_t pq_right_child(size_t i) { return i * 2 + 1; }
         PQ_HEAPIFY(TY)(this, 1);                                               \
                                                                                \
         return ret;                                                            \
-    }
+    }                                                                          \
+    H_END

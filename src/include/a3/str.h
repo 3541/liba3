@@ -8,7 +8,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <a3/cpp.h>
 #include <a3/util.h>
+
+H_BEGIN
 
 typedef struct String {
     uint8_t* ptr;
@@ -57,3 +60,5 @@ String string_itoa(String dst, size_t);
 bool    string_isascii(CString);
 int     string_cmpi(CString lhs, CString rhs);
 CString string_rchr(CString, uint8_t c);
+
+H_END
