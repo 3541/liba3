@@ -13,6 +13,8 @@ project(
 
 c_compiler = meson.get_compiler('c')
 
+add_project_arguments('-D_XOPEN_SOURCE', language: 'c')
+
 # Extra useful warnings.
 extra_c_warnings = [
   'bad-function-cast',
@@ -45,7 +47,8 @@ endforeach
 headers = include_directories('src/include')
 
 src = files([
-             'src/log.c'
+             'src/log.c',
+             'src/str.c'
            ])
 
 liba3 = library(
