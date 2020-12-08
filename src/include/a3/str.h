@@ -1,8 +1,16 @@
-#pragma once
+/*
+ * STRING -- Fat pointers for strings and byte strings.
+ *
+ * Copyright (c) 2020, Alex O'Brien
+ *
+ * This file is licensed under the BSD 3-clause license. See the LICENSE file in
+ * the project root for details.
+ *
+ * NOTES
+ * - Care should be taken not to assume that these are null-terminated.
+ */
 
-// Fat pointers for strings and byte strings, to avoid null-termination
-// shenanigans. Care should be taken not to assume that these are
-// null-terminated.
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
