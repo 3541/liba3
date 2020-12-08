@@ -79,3 +79,6 @@
 
 #define FORMAT_FN(FMT_INDEX, VARG_INDEX)                                       \
     __attribute__((__format__(__printf__, FMT_INDEX, VARG_INDEX)))
+
+#define CONTAINER_OF(PTR, TY, FIELD)                                           \
+    ((TY*)((uintptr_t)PTR - offsetof(TY, FIELD)))

@@ -53,7 +53,7 @@
 #define LPQ_IMPL_METHODS(TY, C)                                                \
     TY* LPQ_NODE_CONTAINER_OF(TY)(LPQ_NODE_PTR(TY) * this) {                   \
         assert(this);                                                          \
-        return (TY*)((uintptr_t)this - offsetof(TY, _lpq_ptr));                \
+        return CONTAINER_OF(this, TY, _lpq_ptr);                               \
     }                                                                          \
                                                                                \
     void LPQ_NODE_INSERT_AFTER(TY)(LPQ_NODE_PTR(TY) * prev,                    \
