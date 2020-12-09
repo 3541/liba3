@@ -1,7 +1,7 @@
 /*
  * PRIORITY QUEUE -- A type-generic priority queue backed by a binary heap.
  *
- * Copyright (c) 2020, Alex O'Brien
+ * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -36,9 +36,9 @@
 #define PQ_DEQUEUE(TY) TY##_pq_dequeue
 
 H_BEGIN
-INLINE size_t pq_parent(size_t i) { return i / 2; }
-INLINE size_t pq_left_child(size_t i) { return i * 2; }
-INLINE size_t pq_right_child(size_t i) { return i * 2 + 1; }
+inline size_t pq_parent(size_t i) { return i / 2; }
+inline size_t pq_left_child(size_t i) { return i * 2; }
+inline size_t pq_right_child(size_t i) { return i * 2 + 1; }
 H_END
 
 #define PQ_DECLARE_METHODS(TY)                                                 \
