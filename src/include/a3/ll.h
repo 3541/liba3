@@ -46,9 +46,9 @@
 
 #define LL_DECLARE_METHODS(TY)                                                 \
     H_BEGIN                                                                    \
-    INLINE TY*  LL_NODE_CONTAINER_OF(TY)(LL_NODE_PTR(TY)*);                    \
+    inline TY*  LL_NODE_CONTAINER_OF(TY)(LL_NODE_PTR(TY)*);                    \
     void        LL_NODE_INSERT_AFTER(TY)(LL_NODE_PTR(TY)*, LL_NODE_PTR(TY)*);  \
-    INLINE bool LL_IS_INSERTED(TY)(TY*);                                       \
+    inline bool LL_IS_INSERTED(TY)(TY*);                                       \
                                                                                \
     void LL_INIT(TY)(LL(TY)*);                                                 \
     TY*  LL_PEEK(TY)(LL(TY)*);                                                 \
@@ -61,7 +61,7 @@
 // Generate method implementations. C must be a comparator function which
 // operates on TY* and returns -1, 0, or 1 if lhs is less than, equal to, or
 // greater than rhs, respectively.
-#define LL_IMPL_METHODS(TY, C)                                                 \
+#define LL_IMPL_METHODS(TY)                                                    \
     TY* LL_NODE_CONTAINER_OF(TY)(LL_NODE_PTR(TY) * this) {                     \
         assert(this);                                                          \
         return CONTAINER_OF(this, TY, _ll_ptr);                                \
@@ -103,7 +103,6 @@
     void LL_INSERT_AFTER(TY)(TY * prev, TY * next) {                           \
         assert(prev);                                                          \
         assert(next);                                                          \
-        assert(C(prev, next) <= 0);                                            \
         LL_NODE_INSERT_AFTER(TY)(&prev->_ll_ptr, &next->_ll_ptr);              \
     }                                                                          \
                                                                                \
