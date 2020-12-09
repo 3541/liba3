@@ -17,10 +17,28 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/param.h>
 
 #include <a3/str.h>
 #include <a3/util.h>
+
+// To my future self: This is necessary so that a symbol can be generated for
+// this inline function. On debug builds, the inline hint may be ignored,
+// leading to an "undefined reference" error at link time if these declarations
+// are omittted. The corresponding definitions in the header are marked EXPORT
+// so that these symbols appear in the library.
+extern inline bool    buf_initialized(const Buffer*);
+extern inline void    buf_reset(Buffer*);
+extern inline bool    buf_reset_if_empty(Buffer*);
+extern inline size_t  buf_len(const Buffer*);
+extern inline size_t  buf_cap(const Buffer*);
+extern inline size_t  buf_space(Buffer*);
+extern inline bool    buf_compact(Buffer*);
+extern inline bool    buf_ensure_cap(Buffer*, size_t);
+extern inline bool    buf_ensure_max_cap(Buffer*);
+extern inline String  buf_write_ptr(Buffer*);
+extern inline CString buf_read_ptr(const Buffer*);
+extern inline bool    buf_write_str(Buffer*, CString);
+extern inline void    buf_wrote(Buffer*, size_t);
 
 // TODO: This should probably hand out slices of a pre-registered buffer of some
 // kind, to reduce the overhead of malloc and of mapping buffers into kernel
@@ -38,108 +56,6 @@ bool buf_init(Buffer* this, size_t cap, size_t max_cap) {
     return true;
 }
 
-bool buf_initialized(const Buffer* this) {
-    assert(this);
-    assert(this->head <= this->tail);
-
-    return this->data.ptr;
-}
-
-void buf_reset(Buffer* this) {
-    assert(buf_initialized(this));
-
-    this->head = 0;
-    this->tail = 0;
-}
-
-bool buf_reset_if_empty(Buffer* this) {
-    assert(buf_initialized(this));
-
-    if (this->head != this->tail)
-        return false;
-
-    buf_reset(this);
-    return true;
-}
-
-// Length of the contents of the buffer.
-size_t buf_len(const Buffer* this) {
-    assert(buf_initialized(this));
-    return this->tail - this->head;
-}
-
-// Total available capacity for writing.
-size_t buf_cap(const Buffer* this) {
-    assert(buf_initialized(this));
-    return this->data.len - buf_len(this);
-}
-
-// Available space for a single write (i.e., continguous space).
-size_t buf_space(Buffer* this) {
-    assert(buf_initialized(this));
-
-    buf_reset_if_empty(this);
-    return this->data.len - this->tail;
-}
-
-// Compact the contents to the start of the buffer.
-static bool buf_compact(Buffer* this) {
-    assert(buf_initialized(this));
-    assert(this->head != 0);
-
-    return memmove(this->data.ptr, &this->data.ptr[this->head], buf_len(this));
-}
-
-// Attempt to grow the buffer to fit at least min_extra_cap more bytes.
-bool buf_ensure_cap(Buffer* this, size_t min_extra_cap) {
-    assert(buf_initialized(this));
-
-    if (buf_space(this) >= min_extra_cap)
-        return true;
-    // Nope.
-    if (buf_len(this) + min_extra_cap > this->max_cap)
-        return false;
-
-    if (buf_cap(this) >= min_extra_cap)
-        return buf_compact(this);
-
-    size_t new_cap = this->data.len;
-    for (; new_cap < this->data.len + min_extra_cap; new_cap *= 2)
-        ;
-    String new_data = string_realloc(this->data, MIN(new_cap, this->max_cap));
-    TRYB(new_data.ptr);
-    this->data = new_data;
-
-    return true;
-}
-
-// Attempt to grow the buffer to its maximum capacity.
-bool buf_ensure_max_cap(Buffer* this) {
-    assert(buf_initialized(this));
-
-    if (this->data.len >= this->max_cap)
-        return true;
-
-    return buf_ensure_cap(this, this->max_cap - this->data.len);
-}
-
-// Pointer for writing into the buffer.
-String buf_write_ptr(Buffer* this) {
-    assert(this);
-
-    buf_reset_if_empty(this);
-    return (String) { .ptr = this->data.ptr + this->tail,
-                      .len = buf_space(this) };
-}
-
-// Bytes have been written into the buffer.
-void buf_wrote(Buffer* this, size_t len) {
-    assert(buf_initialized(this));
-    assert(this->tail + len <= this->data.len);
-
-    this->tail += len;
-}
-
 bool buf_write_byte(Buffer* this, uint8_t byte) {
     assert(buf_initialized(this));
 
@@ -147,18 +63,6 @@ bool buf_write_byte(Buffer* this, uint8_t byte) {
 
     this->data.ptr[this->tail++] = byte;
 
-    return true;
-}
-
-bool buf_write_str(Buffer* this, CString str) {
-    assert(buf_initialized(this));
-
-    if (str.len + buf_len(this) > this->max_cap)
-        return false;
-    TRYB(buf_ensure_cap(this, str.len));
-
-    string_copy(buf_write_ptr(this), str);
-    buf_wrote(this, str.len);
     return true;
 }
 
@@ -197,13 +101,6 @@ bool buf_write_num(Buffer* this, size_t num) {
     String                      num_str =
         string_itoa((String) { .ptr = _BUF, .len = sizeof(_BUF) }, num);
     return buf_write_str(this, S_CONST(num_str));
-}
-
-// Pointer for reading from the buffer.
-CString buf_read_ptr(const Buffer* this) {
-    assert(buf_initialized(this));
-    return (CString) { .ptr = this->data.ptr + this->head,
-                       .len = buf_len(this) };
 }
 
 // Bytes have been consumed from the buffer.

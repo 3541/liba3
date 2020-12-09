@@ -55,11 +55,11 @@ ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
 ALWAYS_INLINE const uint8_t* S_END(CString s) { return s.ptr + s.len; }
 
 EXPORT String string_alloc(size_t len);
-String        string_realloc(String, size_t new_len);
+EXPORT String string_realloc(String, size_t new_len);
 EXPORT String string_clone(CString);
 EXPORT void   string_free(String*);
 
-void        string_copy(String dst, CString src);
+EXPORT void string_copy(String dst, CString src);
 EXPORT void string_concat(String dst, size_t count, ...);
 
 void   string_reverse(String);
