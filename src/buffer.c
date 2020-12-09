@@ -201,15 +201,9 @@ bool buf_write_num(Buffer* this, size_t num) {
 
 // Pointer for reading from the buffer.
 CString buf_read_ptr(const Buffer* this) {
-    return S_CONST(buf_read_ptr_mut((Buffer*)this));
-}
-
-// Mutable pointer for reading from the buffer.
-String buf_read_ptr_mut(Buffer* this) {
     assert(buf_initialized(this));
-
-    return (String) { .ptr = this->data.ptr + this->head,
-                      .len = buf_len(this) };
+    return (CString) { .ptr = this->data.ptr + this->head,
+                       .len = buf_len(this) };
 }
 
 // Bytes have been consumed from the buffer.

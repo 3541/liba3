@@ -57,6 +57,7 @@ liba3 = library(
   'a3',
   src,
   include_directories: headers,
+  gnu_symbol_visibility: 'hidden',
   install: true,
   build_by_default: true
 )

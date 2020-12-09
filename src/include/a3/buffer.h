@@ -28,33 +28,31 @@ typedef struct Buffer {
     size_t max_cap;
 } Buffer;
 
-bool buf_init(Buffer*, size_t cap, size_t max_cap);
-bool buf_initialized(const Buffer*);
-void buf_reset(Buffer*);
-bool buf_reset_if_empty(Buffer*);
+EXPORT bool buf_init(Buffer*, size_t cap, size_t max_cap);
+EXPORT bool buf_initialized(const Buffer*);
+EXPORT void buf_reset(Buffer*);
+EXPORT bool buf_reset_if_empty(Buffer*);
 
-size_t buf_len(const Buffer*);
-size_t buf_cap(const Buffer*);
-size_t buf_space(Buffer*);
+EXPORT size_t buf_len(const Buffer*);
+EXPORT size_t buf_cap(const Buffer*);
+EXPORT size_t buf_space(Buffer*);
 
-bool buf_ensure_cap(Buffer*, size_t extra_cap);
-bool buf_ensure_max_cap(Buffer*);
+EXPORT bool buf_ensure_cap(Buffer*, size_t extra_cap);
+EXPORT bool buf_ensure_max_cap(Buffer*);
 
-String buf_write_ptr(Buffer*);
-String buf_write_ptr_string(Buffer*);
-void   buf_wrote(Buffer*, size_t);
-bool   buf_write_byte(Buffer*, uint8_t);
-bool   buf_write_str(Buffer*, CString);
-bool   buf_write_line(Buffer*, CString);
-bool   buf_write_vfmt(Buffer*, const char* fmt, va_list);
-bool   buf_write_fmt(Buffer*, const char* fmt, ...);
-bool   buf_write_num(Buffer*, size_t);
+EXPORT String buf_write_ptr(Buffer*);
+EXPORT void   buf_wrote(Buffer*, size_t);
+EXPORT bool   buf_write_byte(Buffer*, uint8_t);
+EXPORT bool   buf_write_str(Buffer*, CString);
+EXPORT bool   buf_write_line(Buffer*, CString);
+EXPORT bool   buf_write_vfmt(Buffer*, const char* fmt, va_list);
+EXPORT bool   buf_write_fmt(Buffer*, const char* fmt, ...);
+EXPORT bool   buf_write_num(Buffer*, size_t);
 
-CString buf_read_ptr(const Buffer*);
-String  buf_read_ptr_mut(Buffer*);
-void    buf_read(Buffer*, size_t);
-String  buf_memmem(Buffer*, CString needle);
-bool    buf_consume(Buffer*, CString needle);
+EXPORT CString buf_read_ptr(const Buffer*);
+EXPORT void    buf_read(Buffer*, size_t);
+EXPORT String  buf_memmem(Buffer*, CString needle);
+EXPORT bool    buf_consume(Buffer*, CString needle);
 
 // A hack for pseudo-optional arguments.
 typedef struct _buf_token_next_args {
@@ -63,7 +61,7 @@ typedef struct _buf_token_next_args {
     bool    preserve_end;
 } _buf_token_next_args;
 
-String buf_token_next_impl(_buf_token_next_args);
+EXPORT String buf_token_next_impl(_buf_token_next_args);
 
 #define buf_token_next(BUF, DELIM, ...)                                        \
     buf_token_next_impl((_buf_token_next_args) {                               \
@@ -71,4 +69,4 @@ String buf_token_next_impl(_buf_token_next_args);
 #define buf_token_next_copy(BUF, DELIM, ...)                                   \
     string_clone(S_CONST(buf_token_next((BUF), (DELIM), __VA_ARGS__)))
 
-void buf_free(Buffer*);
+EXPORT void buf_free(Buffer*);

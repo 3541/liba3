@@ -12,16 +12,17 @@
 #include <stdio.h>
 
 #include <a3/cpp.h>
+#include <a3/decl.h>
 
 H_BEGIN
 
 typedef enum LogLevel { TRACE, DEBUG, INFO, WARN, ERROR } LogLevel;
 
-void log_init(FILE*, LogLevel);
-void log_msg(LogLevel, const char*);
-void log_error(int error, const char* msg);
+EXPORT void log_init(FILE*, LogLevel);
+EXPORT void log_msg(LogLevel, const char*);
+EXPORT void log_error(int error, const char* msg);
 
-void log_fmt(LogLevel, const char*, ...);
+EXPORT void log_fmt(LogLevel, const char*, ...);
 
 #define ERR_FMT(fmt, ...)                                                      \
     do {                                                                       \

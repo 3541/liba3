@@ -11,10 +11,12 @@
 
 #include <stddef.h>
 
+#include <a3/decl.h>
+
 struct Pool;
 typedef struct Pool Pool;
 
-Pool* pool_new(size_t block_size, size_t blocks);
-void* pool_alloc_block(Pool*);
-void  pool_free_block(Pool*, void*);
-void  pool_free(Pool*);
+EXPORT Pool* pool_new(size_t block_size, size_t blocks);
+EXPORT void* pool_alloc_block(Pool*);
+EXPORT void  pool_free_block(Pool*, void*);
+EXPORT void  pool_free(Pool*);
