@@ -1,3 +1,6 @@
 [submodule "boilerplate"]
 	path = boilerplate
 	url = git@github.com:3541/boilerplate.git
+[submodule "third_party/SipHash"]
+	path = third_party/SipHash
+	url = git@github.com:veorq/SipHash.git
