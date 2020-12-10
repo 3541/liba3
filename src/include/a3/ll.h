@@ -19,6 +19,7 @@
 
 #define LL_IMPL_STRUCTS(TY)                                                    \
     H_BEGIN                                                                    \
+                                                                               \
     LL_NODE_PTR(TY) {                                                          \
         LL_NODE_PTR(TY) * next;                                                \
         LL_NODE_PTR(TY) * prev;                                                \
@@ -28,6 +29,7 @@
         LL_NODE_PTR(TY) head;                                                  \
         LL_NODE_PTR(TY) end;                                                   \
     };                                                                         \
+                                                                               \
     H_END
 
 // Invoke this macro in the struct body to make it a node.
@@ -46,6 +48,7 @@
 
 #define LL_DECLARE_METHODS(TY)                                                 \
     H_BEGIN                                                                    \
+                                                                               \
     inline TY*  LL_NODE_CONTAINER_OF(TY)(LL_NODE_PTR(TY)*);                    \
     void        LL_NODE_INSERT_AFTER(TY)(LL_NODE_PTR(TY)*, LL_NODE_PTR(TY)*);  \
     inline bool LL_IS_INSERTED(TY)(TY*);                                       \
@@ -56,6 +59,7 @@
     void LL_REMOVE(TY)(TY*);                                                   \
     void LL_ENQUEUE(TY)(LL(TY)*, TY*);                                         \
     TY*  LL_DEQUEUE(TY)(LL(TY)*);                                              \
+                                                                               \
     H_END
 
 // Generate method implementations. C must be a comparator function which
