@@ -17,7 +17,7 @@
 #define LL(TY)          struct TY##LL
 #define LL_NODE_PTR(TY) struct TY##LLNodePtr
 
-#define LL_IMPL_STRUCTS(TY)                                                    \
+#define LL_DEFINE_STRUCTS(TY)                                                  \
     H_BEGIN                                                                    \
                                                                                \
     LL_NODE_PTR(TY) {                                                          \
@@ -65,7 +65,7 @@
 // Generate method implementations. C must be a comparator function which
 // operates on TY* and returns -1, 0, or 1 if lhs is less than, equal to, or
 // greater than rhs, respectively.
-#define LL_IMPL_METHODS(TY)                                                    \
+#define LL_DEFINE_METHODS(TY)                                                  \
     TY* LL_NODE_CONTAINER_OF(TY)(LL_NODE_PTR(TY) * this) {                     \
         assert(this);                                                          \
         return CONTAINER_OF(this, TY, _ll_ptr);                                \
