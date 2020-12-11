@@ -62,9 +62,7 @@
                                                                                \
     H_END
 
-// Generate method implementations. C must be a comparator function which
-// operates on TY* and returns -1, 0, or 1 if lhs is less than, equal to, or
-// greater than rhs, respectively.
+// Generate method implementations.
 #define LL_IMPL_METHODS(TY)                                                    \
     TY* LL_NODE_CONTAINER_OF(TY)(LL_NODE_PTR(TY) * this) {                     \
         assert(this);                                                          \
