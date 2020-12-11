@@ -1,3 +1,6 @@
 [submodule "boilerplate"]
 	path = boilerplate
 	url = git@github.com:3541/boilerplate.git
+[submodule "extern/highwayhash/highwayhash"]
+	path = extern/highwayhash/highwayhash
+	url = ../../google/highwayhash.git
