@@ -112,6 +112,24 @@ void buf_read(Buffer* this, size_t len) {
     buf_reset_if_empty(this);
 }
 
+#ifdef _MSC_VER
+// Windows doesn't have memmem.
+static void* memmem(const void* haystack, size_t haystacklen,
+                    const void* needle, size_t needlelen) {
+    if (!haystack || !haystacklen || !needle || !needlelen)
+        return NULL;
+
+    for (const uint8_t* sp = haystack; sp + needlelen < haystack + haystacklen;
+         sp++) {
+        if (memcmp(sp, needle, needlelen) == 0)
+            return sp;
+    }
+
+    return NULL;
+}
+
+#endif
+
 String buf_memmem(Buffer* this, CString needle) {
     assert(buf_initialized(this));
     assert(needle.ptr);
