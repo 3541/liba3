@@ -53,6 +53,7 @@ ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
     return (String) { .ptr = s.ptr + offset, .len = s.len - offset };
 }
 ALWAYS_INLINE const uint8_t* S_END(CString s) { return s.ptr + s.len; }
+ALWAYS_INLINE const char* S_AS_C_STR(CString s) { return (const char*)s.ptr; }
 
 EXPORT String string_alloc(size_t len);
 EXPORT String string_realloc(String*, size_t new_len);
