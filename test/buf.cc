@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <a3/buffer.h>
+
 #include <a3/str.h>
 
 class BufferTest : public ::testing::Test {
