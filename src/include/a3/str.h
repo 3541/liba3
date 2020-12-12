@@ -32,9 +32,9 @@ typedef struct CString {
 } CString;
 
 #define CS(S)                                                                  \
-    (CString) { .ptr = (uint8_t*)S, .len = (sizeof(S) - 1) }
-#define CS_NULL (CString) { .ptr = NULL, .len = 0 };
-#define S_NULL  (String) { .ptr = NULL, .len = 0 };
+    ((CString) { .ptr = (uint8_t*)S, .len = (sizeof(S) - 1) })
+#define CS_NULL ((CString) { .ptr = NULL, .len = 0 })
+#define S_NULL  ((String) { .ptr = NULL, .len = 0 })
 ALWAYS_INLINE String CS_MUT(CString s) {
     return (String) { .ptr = (uint8_t*)s.ptr, .len = s.len };
 }
