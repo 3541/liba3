@@ -85,6 +85,7 @@ void   string_reverse(String);
 String string_itoa(String dst, size_t);
 
 EXPORT bool    string_isascii(CString);
+EXPORT int     string_cmp(CString lhs, CString rhs);
 EXPORT int     string_cmpi(CString lhs, CString rhs);
 EXPORT CString string_rchr(CString, uint8_t c);
 

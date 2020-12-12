@@ -93,6 +93,13 @@ bool string_isascii(CString str) {
     return true;
 }
 
+int string_cmp(CString s1, CString s2) {
+    assert(s1.ptr && s2.ptr);
+    if (s1.len != s2.len)
+        return -1;
+    return strncmp((char*)s1.ptr, (char*)s2.ptr, s1.len);
+}
+
 int string_cmpi(CString s1, CString s2) {
     assert(s1.ptr && s2.ptr);
     if (s1.len != s2.len)
