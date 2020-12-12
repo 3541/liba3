@@ -73,7 +73,11 @@ else()
   set(GTEST_LIB gtest_main)
 endif()
 
-add_executable(a3_test test/log.cc test/str.cc)
+add_executable(a3_test
+  test/buf.cc
+  test/log.cc
+  test/str.cc
+)
 target_compile_features(a3_test PRIVATE cxx_std_20)
 set_target_properties(a3_test PROPERTIES CXX_EXTENSIONS OFF)
 target_add_extra_warnings(a3_test)
