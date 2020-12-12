@@ -26,7 +26,7 @@ EXPORT void log_fmt(LogLevel, const char*, ...);
 
 #define ERR_FMT(fmt, ...)                                                      \
     do {                                                                       \
-        log_fmt(ERROR, "%s (%d): " fmt "\n", __FILE__, __LINE__, __VA_ARGS__); \
+        log_fmt(ERROR, "%s (%d): " fmt, __FILE__, __LINE__, __VA_ARGS__); \
     } while (0)
 
 #define ERR(msg)                                                               \
