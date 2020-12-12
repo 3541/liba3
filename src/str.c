@@ -19,8 +19,11 @@ String string_alloc(size_t len) {
     return (String) { .ptr = calloc(len, sizeof(char)), .len = len };
 }
 
-String string_realloc(String this, size_t new_len) {
-    return (String) { .ptr = realloc(this.ptr, new_len), .len = new_len };
+String string_realloc(String* this, size_t new_len) {
+    String ret = { .ptr = realloc(this->ptr, new_len), .len = new_len };
+    this->ptr = NULL;
+    this->len = 0;
+    return ret;
 }
 
 String string_clone(CString other) {

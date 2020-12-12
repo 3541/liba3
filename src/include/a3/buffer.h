@@ -126,7 +126,7 @@ EXPORT inline bool buf_ensure_cap(Buffer* this, size_t min_extra_cap) {
     size_t new_cap = this->data.len;
     for (; new_cap < this->data.len + min_extra_cap; new_cap *= 2)
         ;
-    String new_data = string_realloc(this->data, MIN(new_cap, this->max_cap));
+    String new_data = string_realloc(&this->data, MIN(new_cap, this->max_cap));
     TRYB(new_data.ptr);
     this->data = new_data;
 

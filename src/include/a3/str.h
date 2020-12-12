@@ -55,7 +55,7 @@ ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
 ALWAYS_INLINE const uint8_t* S_END(CString s) { return s.ptr + s.len; }
 
 EXPORT String string_alloc(size_t len);
-EXPORT String string_realloc(String, size_t new_len);
+EXPORT String string_realloc(String*, size_t new_len);
 EXPORT String string_clone(CString);
 EXPORT void   string_free(String*);
 
