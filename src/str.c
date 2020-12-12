@@ -21,8 +21,8 @@ String string_alloc(size_t len) {
 
 String string_realloc(String* this, size_t new_len) {
     String ret = { .ptr = realloc(this->ptr, new_len), .len = new_len };
-    this->ptr = NULL;
-    this->len = 0;
+    this->ptr  = NULL;
+    this->len  = 0;
     return ret;
 }
 
@@ -43,7 +43,7 @@ void string_free(String* this) {
 }
 
 void string_copy(String dst, CString src) {
-    if (!dst.ptr || !src.ptr)
+    if (!dst.ptr || !src.ptr || dst.ptr == src.ptr)
         return;
     memcpy(dst.ptr, src.ptr, MIN(dst.len, src.len));
 }
