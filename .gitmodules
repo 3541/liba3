@@ -4,3 +4,6 @@
 [submodule "extern/highwayhash/highwayhash"]
 	path = extern/highwayhash/highwayhash
 	url = ../../google/highwayhash.git
+[submodule "extern/googletest"]
+	path = extern/googletest
+	url = ../../google/googletest.git

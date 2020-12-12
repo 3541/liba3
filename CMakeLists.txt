@@ -15,6 +15,8 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "Debug" "Release" "RelWithDebInfo")
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 include(CheckIPOSupported)
 check_ipo_supported(RESULT lto_support)
 
@@ -47,7 +49,7 @@ if (lto_support)
     )
 endif()
 
-add_subdirectory(extern/highwayhash)
+add_subdirectory(extern/highwayhash EXCLUDE_FROM_ALL)
 
 add_library(a3hash INTERFACE)
 target_include_directories(a3hash INTERFACE src/include)
@@ -57,7 +59,14 @@ target_link_libraries(a3hash INTERFACE highwayhash)
 include(CTest)
 find_package(GTest)
 
+if (GTest_FOUND)
+  set(GTEST_LIB GTest::gtest_main)
+else()
+  add_subdirectory(extern/googletest EXCLUDE_FROM_ALL)
+  set(GTEST_LIB gtest_main)
+endif()
+
 add_executable(a3_test test/log.cc)
 target_add_extra_warnings(a3_test)
-target_link_libraries(a3_test PRIVATE a3 GTest::gtest_main)
+target_link_libraries(a3_test PRIVATE a3 ${GTEST_LIB})
 gtest_discover_tests(a3_test)
