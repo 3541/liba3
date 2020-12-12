@@ -27,11 +27,12 @@ TEST(String, alloc) {
 
 TEST(String, realloc) {
     String orig = string_clone(CS("str123"));
-    ASSERT_STREQ(S_AS_C_STR(S_CONST(orig)), "str123");
+    ASSERT_EQ(string_cmp(S_CONST(orig), CS("str123")), 0);
 
     String next = string_realloc(&orig, orig.len + 2);
     EXPECT_FALSE(orig.ptr);
     EXPECT_EQ(orig.len, 0);
+    next.ptr[next.len - 2] = '\0';
     EXPECT_STREQ(S_AS_C_STR(S_CONST(next)), "str123");
     EXPECT_EQ(next.len, 8);
 
@@ -47,7 +48,7 @@ TEST(String, clone) {
     s = string_clone(CS("test string"));
     EXPECT_TRUE(s.ptr);
     EXPECT_EQ(s.len, sizeof("test string") - 1);
-    EXPECT_STREQ(S_AS_C_STR(S_CONST(s)), "test string");
+    EXPECT_EQ(string_cmp(S_CONST(s), CS("test string")), 0);
 
     string_free(&s);
 }
@@ -58,7 +59,7 @@ TEST(String, copy) {
 
     // Copy from/to null Strings does nothing.
     string_copy(s2, CS_NULL);
-    EXPECT_STREQ(S_AS_C_STR(S_CONST(s2)), "Longer test string.");
+    EXPECT_EQ(string_cmp(S_CONST(s2), CS("Longer test string.")), 0);
     string_copy(CS_MUT(CS_NULL), S_CONST(s2)); // This would segfault otherwise.
 
     string_copy(s2, s1);
@@ -100,8 +101,11 @@ TEST(String, isascii) {
 }
 
 TEST(String, compare) {
+    EXPECT_EQ(string_cmp(CS("same"), CS("same")), 0);
     EXPECT_EQ(string_cmpi(CS("same"), CS("same")), 0);
+    EXPECT_NE(string_cmp(CS("cAsE"), CS("CaSe")), 0);
     EXPECT_EQ(string_cmpi(CS("cAsE"), CS("CaSe")), 0);
+    EXPECT_NE(string_cmp(CS("s1"), CS("s2")), 0);
     EXPECT_NE(string_cmpi(CS("s1"), CS("s2")), 0);
 }
 
