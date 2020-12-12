@@ -15,7 +15,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "log.h"
+#include <a3/log.h>
+
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
 
 // Abort with a message.
 #define PANIC_FMT(fmt, ...)                                                    \
