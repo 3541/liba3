@@ -8,6 +8,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            c_compiler: gcc-9
+            cxx_compiler: g++-9
 
     steps:
     - uses: actions/checkout@v2
@@ -20,6 +24,9 @@ jobs:
     - name: Configure
       working-directory: ${{runner.workspace}}/build
       shell: bash
+      env:
+        CC: ${{ matrix.c_compiler }}
+        CXX: ${{ matrix.cxx_compiler }}
       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
