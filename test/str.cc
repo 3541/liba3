@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#ifndef _MSC_VER
 #include <a3/str.h>
 
 TEST(String, construct) {
@@ -114,5 +113,3 @@ TEST(String, rchr) {
     EXPECT_EQ(ans.ptr, got.ptr);
     EXPECT_EQ(ans.len, got.len);
 }
-
-#endif // _MSC_VER

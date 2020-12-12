@@ -119,7 +119,7 @@ TEST_F(BufferTest, grow) {
     ASSERT_EQ(buf.data.len, BUF_INITIAL_CAP);
 
     for (uint16_t i = 0; i < 256; i++) {
-        ASSERT_TRUE(buf_write_byte(&buf, i));
+        ASSERT_TRUE(buf_write_byte(&buf, (uint8_t)i));
     }
 
     EXPECT_NE(buf.data.len, BUF_INITIAL_CAP);
