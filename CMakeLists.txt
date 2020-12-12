@@ -20,7 +20,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(CheckIPOSupported)
 check_ipo_supported(RESULT lto_support)
 
-add_compile_options(-Wall -Wextra -pedantic)
+if (MSVC)
+  add_compile_options(/W4)
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+else()
+  add_compile_options(-Wall -Wextra -pedantic)
+endif()
 
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
@@ -35,8 +40,10 @@ target_include_directories(a3 PUBLIC src/include)
 
 include(AddWarnings)
 target_add_extra_warnings(a3)
-target_add_warning(a3 "no-pointer-arith" FALSE)
-target_add_warnings(a3 "no-cast-qual;no-override-init" TRUE)
+if (NOT MSVC)
+  target_add_warning(a3 "no-pointer-arith" FALSE)
+  target_add_warnings(a3 "no-cast-qual;no-override-init" TRUE)
+endif()
 set_target_properties(a3 PROPERTIES
   C_STANDARD 11
   C_EXTENSIONS OFF
