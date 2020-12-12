@@ -146,7 +146,7 @@ String buf_memmem(Buffer* this, CString needle) {
 // care should be taken not to write into the buffer as long as the returned
 // pointer is needed.
 String buf_token_next_impl(_buf_token_next_args args) {
-    struct Buffer* this  = args.this;
+    struct Buffer* this  = args.buf;
     CString delim        = args.delim;
     bool    preserve_end = args.preserve_end;
     assert(buf_initialized(this));

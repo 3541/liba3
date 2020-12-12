@@ -15,7 +15,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <a3/cpp.h>
 #include <a3/str.h>
+
+H_BEGIN
 
 // A growable buffer.
 // tail: Index at which to write.
@@ -43,7 +46,7 @@ EXPORT bool   buf_consume(Buffer*, CString needle);
 
 // A hack for pseudo-optional arguments.
 typedef struct _buf_token_next_args {
-    Buffer* this;
+    Buffer* buf;
     CString delim;
     bool    preserve_end;
 } _buf_token_next_args;
@@ -52,129 +55,131 @@ EXPORT String buf_token_next_impl(_buf_token_next_args);
 
 #define buf_token_next(BUF, DELIM, ...)                                        \
     buf_token_next_impl((_buf_token_next_args) {                               \
-        .this = (BUF), .delim = (DELIM), .preserve_end = false, __VA_ARGS__ })
+        .buf = (BUF), .delim = (DELIM), .preserve_end = false, __VA_ARGS__ })
 #define buf_token_next_copy(BUF, DELIM, ...)                                   \
     string_clone(S_CONST(buf_token_next((BUF), (DELIM), __VA_ARGS__)))
 
 EXPORT void buf_free(Buffer*);
 
-EXPORT inline bool buf_initialized(const Buffer* this) {
-    assert(this);
-    assert(this->head <= this->tail);
+EXPORT inline bool buf_initialized(const Buffer* buf) {
+    assert(buf);
+    assert(buf->head <= buf->tail);
 
-    return this->data.ptr;
+    return buf->data.ptr;
 }
 
-EXPORT inline void buf_reset(Buffer* this) {
-    assert(buf_initialized(this));
+EXPORT inline void buf_reset(Buffer* buf) {
+    assert(buf_initialized(buf));
 
-    this->head = 0;
-    this->tail = 0;
+    buf->head = 0;
+    buf->tail = 0;
 }
 
-EXPORT inline bool buf_reset_if_empty(Buffer* this) {
-    assert(buf_initialized(this));
+EXPORT inline bool buf_reset_if_empty(Buffer* buf) {
+    assert(buf_initialized(buf));
 
-    if (this->head != this->tail)
+    if (buf->head != buf->tail)
         return false;
 
-    buf_reset(this);
+    buf_reset(buf);
     return true;
 }
 
 // Length of the contents of the buffer.
-EXPORT inline size_t buf_len(const Buffer* this) {
-    assert(buf_initialized(this));
-    return this->tail - this->head;
+EXPORT inline size_t buf_len(const Buffer* buf) {
+    assert(buf_initialized(buf));
+    return buf->tail - buf->head;
 }
 
 // Total available capacity for writing.
-EXPORT inline size_t buf_cap(const Buffer* this) {
-    assert(buf_initialized(this));
-    return this->data.len - buf_len(this);
+EXPORT inline size_t buf_cap(const Buffer* buf) {
+    assert(buf_initialized(buf));
+    return buf->data.len - buf_len(buf);
 }
 
 // Available space for a single write (i.e., continguous space).
-EXPORT inline size_t buf_space(Buffer* this) {
-    assert(buf_initialized(this));
+EXPORT inline size_t buf_space(Buffer* buf) {
+    assert(buf_initialized(buf));
 
-    buf_reset_if_empty(this);
-    return this->data.len - this->tail;
+    buf_reset_if_empty(buf);
+    return buf->data.len - buf->tail;
 }
 
 // Compact the contents to the start of the buffer.
-EXPORT inline bool buf_compact(Buffer* this) {
-    assert(buf_initialized(this));
-    assert(this->head != 0);
+EXPORT inline bool buf_compact(Buffer* buf) {
+    assert(buf_initialized(buf));
+    assert(buf->head != 0);
 
     return memmove(this->data.ptr, &this->data.ptr[this->head], buf_len(this));
 }
 
 // Attempt to grow the buffer to fit at least min_extra_cap more bytes.
-EXPORT inline bool buf_ensure_cap(Buffer* this, size_t min_extra_cap) {
-    assert(buf_initialized(this));
+EXPORT inline bool buf_ensure_cap(Buffer* buf, size_t min_extra_cap) {
+    assert(buf_initialized(buf));
 
-    if (buf_space(this) >= min_extra_cap)
+    if (buf_space(buf) >= min_extra_cap)
         return true;
     // Nope.
-    if (buf_len(this) + min_extra_cap > this->max_cap)
+    if (buf_len(buf) + min_extra_cap > buf->max_cap)
         return false;
 
-    if (buf_cap(this) >= min_extra_cap)
-        return buf_compact(this);
+    if (buf_cap(buf) >= min_extra_cap)
+        return buf_compact(buf);
 
-    size_t new_cap = this->data.len;
-    for (; new_cap < this->data.len + min_extra_cap; new_cap *= 2)
+    size_t new_cap = buf->data.len;
+    for (; new_cap < buf->data.len + min_extra_cap; new_cap *= 2)
         ;
-    String new_data = string_realloc(&this->data, MIN(new_cap, this->max_cap));
+    String new_data = string_realloc(&buf->data, MIN(new_cap, buf->max_cap));
     TRYB(new_data.ptr);
-    this->data = new_data;
+    buf->data = new_data;
 
     return true;
 }
 
 // Attempt to grow the buffer to its maximum capacity.
-EXPORT inline bool buf_ensure_max_cap(Buffer* this) {
-    assert(buf_initialized(this));
+EXPORT inline bool buf_ensure_max_cap(Buffer* buf) {
+    assert(buf_initialized(buf));
 
-    if (this->data.len >= this->max_cap)
+    if (buf->data.len >= buf->max_cap)
         return true;
 
-    return buf_ensure_cap(this, this->max_cap - this->data.len);
+    return buf_ensure_cap(buf, buf->max_cap - buf->data.len);
 }
 
 // Pointer for writing into the buffer.
-EXPORT inline String buf_write_ptr(Buffer* this) {
-    assert(this);
+EXPORT inline String buf_write_ptr(Buffer* buf) {
+    assert(buf);
 
-    buf_reset_if_empty(this);
-    return (String) { .ptr = this->data.ptr + this->tail,
-                      .len = buf_space(this) };
+    buf_reset_if_empty(buf);
+    return (String) { .ptr = buf->data.ptr + buf->tail,
+                      .len = buf_space(buf) };
 }
 
 // Pointer for reading from the buffer.
-EXPORT inline CString buf_read_ptr(const Buffer* this) {
-    assert(buf_initialized(this));
-    return (CString) { .ptr = this->data.ptr + this->head,
-                       .len = buf_len(this) };
+EXPORT inline CString buf_read_ptr(const Buffer* buf) {
+    assert(buf_initialized(buf));
+    return (CString) { .ptr = buf->data.ptr + buf->head,
+                       .len = buf_len(buf) };
 }
 
 // Bytes have been written into the buffer.
-EXPORT inline void buf_wrote(Buffer* this, size_t len) {
-    assert(buf_initialized(this));
-    assert(this->tail + len <= this->data.len);
+EXPORT inline void buf_wrote(Buffer* buf, size_t len) {
+    assert(buf_initialized(buf));
+    assert(buf->tail + len <= buf->data.len);
 
-    this->tail += len;
+    buf->tail += len;
 }
 
-EXPORT inline bool buf_write_str(Buffer* this, CString str) {
-    assert(buf_initialized(this));
+EXPORT inline bool buf_write_str(Buffer* buf, CString str) {
+    assert(buf_initialized(buf));
 
-    if (str.len + buf_len(this) > this->max_cap)
+    if (str.len + buf_len(buf) > buf->max_cap)
         return false;
-    TRYB(buf_ensure_cap(this, str.len));
+    TRYB(buf_ensure_cap(buf, str.len));
 
-    string_copy(buf_write_ptr(this), str);
-    buf_wrote(this, str.len);
+    string_copy(buf_write_ptr(buf), str);
+    buf_wrote(buf, str.len);
     return true;
 }
+
+H_END
