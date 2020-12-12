@@ -23,7 +23,6 @@ add_compile_options(-Wall -Wextra -pedantic)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-
 add_library(a3
   src/buffer.c
   src/log.c
