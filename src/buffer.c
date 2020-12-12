@@ -112,7 +112,7 @@ void buf_read(Buffer* this, size_t len) {
     buf_reset_if_empty(this);
 }
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 // Windows doesn't have memmem.
 static void* memmem(const void* haystack, size_t haystacklen,
                     const void* needle, size_t needlelen) {
