@@ -38,7 +38,8 @@ Pool* pool_new(size_t block_size, size_t blocks) {
 
     uintptr_t base = (uintptr_t)ret->data;
     for (size_t i = 0; i < blocks - 1; i++) {
-        *(uintptr_t*)((void*)ret->data + block_size * i) = (i + 1) * block_size + base;
+        *(uintptr_t*)((void*)ret->data + block_size * i) =
+            (i + 1) * block_size + base;
     }
     return ret;
 }

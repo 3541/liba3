@@ -61,14 +61,14 @@ uint64_t HighwayHash64(const uint8_t* data, size_t size, const uint64_t key[4]);
     static void HT_INSERT_AT(K, V)(HT(K, V) * table, uint64_t hash, K key,     \
                                    V value) {                                  \
         assert(table);                                                         \
-        for (size_t i = hash % table->cap;; i = (i + 1) % table->cap) { \
-            HT_ENTRY(K, V)* current_entry = &table->entries[i]; \
-            if (!current_entry.hash) { \
-                current_entry.key = key; \
-                current_entry.value = value; \
-                current_entry.hash = hash; \
-            } \
-        } \
+        for (size_t i = hash % table->cap;; i = (i + 1) % table->cap) {        \
+            HT_ENTRY(K, V)* current_entry = &table->entries[i];                \
+            if (!current_entry.hash) {                                         \
+                current_entry.key   = key;                                     \
+                current_entry.value = value;                                   \
+                current_entry.hash  = hash;                                    \
+            }                                                                  \
+        }                                                                      \
     }
 
 // Define methods with HighwayHash as the hash function. Helpers have the
