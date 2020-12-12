@@ -154,15 +154,21 @@ EXPORT inline String buf_write_ptr(Buffer* buf) {
     assert(buf);
 
     buf_reset_if_empty(buf);
-    return (String) { .ptr = buf->data.ptr + buf->tail,
-                      .len = buf_space(buf) };
+#ifdef __cplusplus
+    return { buf->data.ptr + buf->tail, buf_space(buf) };
+#else
+    return (String) { .ptr = buf->data.ptr + buf->tail, .len = buf_space(buf) };
+#endif
 }
 
 // Pointer for reading from the buffer.
 EXPORT inline CString buf_read_ptr(const Buffer* buf) {
     assert(buf_initialized(buf));
-    return (CString) { .ptr = buf->data.ptr + buf->head,
-                       .len = buf_len(buf) };
+#ifdef __cplusplus
+    return { buf->data.ptr + buf->head, buf_len(buf) };
+#else
+    return (CString) { .ptr = buf->data.ptr + buf->head, .len = buf_len(buf) };
+#endif
 }
 
 // Bytes have been written into the buffer.

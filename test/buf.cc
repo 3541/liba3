@@ -127,7 +127,7 @@ TEST_F(BufferTest, grow) {
 
     bool failed = false;
     for (uint16_t i = 0; i < BUF_MAX_CAP; i++) {
-        if ((failed = !buf_write_byte(&buf, i)))
+        if ((failed = !buf_write_byte(&buf, (uint8_t)i)))
             break;
     }
     EXPECT_TRUE(failed);
