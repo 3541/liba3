@@ -31,6 +31,12 @@
 
 #define UNREACHABLE() PANIC("UNREACHABLE")
 
+#ifdef _MSC_VER
+// Disable warning for "assignment within conditional expression. Why is this
+// even a warning?
+#pragma warning(disable: 4706)
+#endif
+
 // "unwrap" a return value which is falsy on error, and assign to T on success.
 // This is useful for fatal errors (e.g., allocation failures).
 #define UNWRAPN(T, X)                                                          \
