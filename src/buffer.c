@@ -119,15 +119,14 @@ static void* memmem(const void* haystack, size_t haystacklen,
     if (!haystack || !haystacklen || !needle || !needlelen)
         return NULL;
 
-    for (const uint8_t* sp = haystack; sp + needlelen < haystack + haystacklen;
-         sp++) {
+    for (const uint8_t* sp = haystack;
+         sp + needlelen < (const uint8_t*)haystack + haystacklen; sp++) {
         if (memcmp(sp, needle, needlelen) == 0)
-            return sp;
+            return (void*)sp;
     }
 
     return NULL;
 }
-
 #endif
 
 String buf_memmem(Buffer* this, CString needle) {
