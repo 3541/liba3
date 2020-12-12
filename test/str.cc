@@ -106,7 +106,7 @@ TEST(String, compare) {
     EXPECT_NE(string_cmpi(CS("s1"), CS("s2")), 0);
 }
 
-TEST(String, rrchr) {
+TEST(String, rchr) {
     CString t   = CS("12345654321");
     CString ans = { .ptr = &t.ptr[7], .len = 4 };
 
