@@ -8,12 +8,17 @@
  */
 
 #include <a3/str.h>
+#include <a3/util.h>
 
 #include <assert.h>
 #include <stdarg.h>
 #include <string.h>
+
+#ifndef _MSC_VER
 #include <strings.h>
-#include <sys/param.h>
+#else
+#define strncasecmp _strnicmp
+#endif
 
 String string_alloc(size_t len) {
     return (String) { .ptr = calloc(len, sizeof(char)), .len = len };
