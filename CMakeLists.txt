@@ -57,7 +57,7 @@ target_link_libraries(a3hash INTERFACE highwayhash)
 include(CTest)
 find_package(GTest)
 
-add_executable(a3_test test/test.cc)
+add_executable(a3_test test/log.cc)
 target_add_extra_warnings(a3_test)
 target_link_libraries(a3_test PRIVATE a3 GTest::gtest_main)
 gtest_discover_tests(a3_test)
