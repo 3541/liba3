@@ -110,7 +110,10 @@ EXPORT inline bool buf_compact(Buffer* buf) {
     assert(buf_initialized(buf));
     assert(buf->head != 0);
 
-    return memmove(this->data.ptr, &this->data.ptr[this->head], buf_len(this));
+    TRYB(memmove(buf->data.ptr, &buf->data.ptr[buf->head], buf_len(buf)));
+    buf->tail -= buf->head;
+    buf->head = 0;
+    return true;
 }
 
 // Attempt to grow the buffer to fit at least min_extra_cap more bytes.
