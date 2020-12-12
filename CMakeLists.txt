@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.9...3.17)
 project(
   liba3
   VERSION 0.1.0
-  LANGUAGES C
+  LANGUAGES C CXX
 )
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/boilerplate/cmake" ${CMAKE_MODULE_PATH})
@@ -52,3 +52,12 @@ add_subdirectory(extern/highwayhash)
 add_library(a3hash INTERFACE)
 target_include_directories(a3hash INTERFACE src/include)
 target_link_libraries(a3hash INTERFACE highwayhash)
+
+# Testing
+include(CTest)
+find_package(GTest)
+
+add_executable(a3_test test/test.cc)
+target_add_extra_warnings(a3_test)
+target_link_libraries(a3_test PRIVATE a3 GTest::gtest_main)
+gtest_discover_tests(a3_test)
