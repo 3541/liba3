@@ -76,6 +76,7 @@ endif()
 add_executable(a3_test
   test/buf.cc
   test/log.cc
+  test/pool.cc
   test/str.cc
 )
 target_compile_features(a3_test PRIVATE cxx_std_20)
