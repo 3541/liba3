@@ -10,6 +10,7 @@
 #include <a3/pool.h>
 
 #include <assert.h>
+#include <string.h>
 
 #include <a3/util.h>
 
@@ -51,6 +52,7 @@ void* pool_alloc_block(Pool* pool) {
     PoolSlot* slot = pool->free;
 
     pool->free = slot->next;
+    memset(slot, 0, pool->block_size);
 
     return (void*)slot;
 }
