@@ -75,6 +75,7 @@ endif()
 
 add_executable(a3_test
   test/buf.cc
+  test/ll.cc
   test/log.cc
   test/pool.cc
   test/str.cc
