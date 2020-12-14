@@ -35,6 +35,17 @@ add_library(a3
   src/log.c
   src/pool.c
   src/str.c
+
+  src/include/a3/buffer.h
+  src/include/a3/cpp.h
+  src/include/a3/decl.h
+  src/include/a3/ht.h
+  src/include/a3/ll.h
+  src/include/a3/log.h
+  src/include/a3/pool.h
+  src/include/a3/pq.h
+  src/include/a3/str.h
+  src/include/a3/util.h
 )
 target_include_directories(a3 PUBLIC src/include)
 
