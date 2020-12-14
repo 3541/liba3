@@ -32,10 +32,10 @@ protected:
         pool_free_block(pool, static_cast<void*>(block));
     }
 
-    void* pool_start() const { return static_cast<void*>(pool); }
+    void* pool_start() const { return *reinterpret_cast<void**>(pool); }
 
     void* pool_end() const {
-        return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(pool) +
+        return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(pool_start()) +
                                        POOL_SIZE * sizeof(TestObject));
     }
 };
