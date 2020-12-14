@@ -42,7 +42,8 @@ include(AddWarnings)
 target_add_extra_warnings(a3)
 if (NOT MSVC)
   target_add_warning(a3 "no-pointer-arith" FALSE)
-  target_add_warnings(a3 "no-cast-qual;no-override-init" TRUE)
+  target_add_warning(a3 "no-cast-qual" TRUE)
+  target_add_warning_c(a3 "no-override_init" TRUE)
 endif()
 set_target_properties(a3 PROPERTIES
   C_STANDARD 11
