@@ -78,7 +78,7 @@ void string_reverse(String str) {
 String string_itoa(String dst, size_t v) {
     size_t i = 0;
     for (; i < dst.len && v; i++, v /= 10)
-        dst.ptr[i] = "0123456789"[v % 10];
+        dst.ptr[i] = (uint8_t)"0123456789"[v % 10];
     String ret = { .ptr = dst.ptr, .len = i };
     string_reverse(ret);
     return ret;
