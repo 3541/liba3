@@ -41,6 +41,7 @@
 
 #define LL_INIT(TY)         TY##_ll_init
 #define LL_PEEK(TY)         TY##_ll_peek
+#define LL_NEXT(TY)         TY##_ll_next
 #define LL_INSERT_AFTER(TY) TY##_ll_insert_after
 #define LL_REMOVE(TY)       TY##_ll_remove
 #define LL_ENQUEUE(TY)      TY##_ll_enqueue
@@ -55,6 +56,7 @@
                                                                                \
     void LL_INIT(TY)(LL(TY)*);                                                 \
     TY*  LL_PEEK(TY)(LL(TY)*);                                                 \
+    TY*  LL_NEXT(TY)(LL(TY)*, TY*);                                            \
     void LL_INSERT_AFTER(TY)(TY*, TY*);                                        \
     void LL_REMOVE(TY)(TY*);                                                   \
     void LL_ENQUEUE(TY)(LL(TY)*, TY*);                                         \
@@ -102,6 +104,14 @@
         if (!list->head.next || list->head.next == &list->end)                 \
             return NULL;                                                       \
         return LL_NODE_CONTAINER_OF(TY)(list->head.next);                      \
+    }                                                                          \
+                                                                               \
+    TY* LL_NEXT(TY)(LL(TY) * list, TY * node) {                                \
+        assert(list);                                                          \
+        assert(node);                                                          \
+        if (!node->_ll_ptr.next || node->_ll_ptr.next == &list->end)           \
+            return NULL;                                                       \
+        return LL_NODE_CONTAINER_OF(TY)(node->_ll_ptr.next);                   \
     }                                                                          \
                                                                                \
     void LL_INSERT_AFTER(TY)(TY * prev, TY * next) {                           \

@@ -52,4 +52,20 @@ TEST_F(LLTest, many_insertions) {
     for (size_t i = 0; i < 128; i++) {
         LL_ENQUEUE(TestStruct)(&list, new TestStruct { i });
     }
+
+    auto* mid_node = LL_NODE_CONTAINER_OF(TestStruct)(list.end.prev);
+
+    for (size_t i = 129; i < 513; i++) {
+        LL_ENQUEUE(TestStruct)(&list, new TestStruct { i });
+    }
+
+    LL_INSERT_AFTER(TestStruct)(mid_node, new TestStruct { 128 });
+
+    auto* node = LL_PEEK(TestStruct)(&list);
+    size_t i = 0;
+    while (node) {
+        EXPECT_EQ(node->data, i);
+        node = LL_NEXT(TestStruct)(&list, node);
+        i++;
+    }
 }
