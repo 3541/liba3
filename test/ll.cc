@@ -68,4 +68,6 @@ TEST_F(LLTest, many_insertions) {
         node = LL_NEXT(TestStruct)(&list, node);
         i++;
     }
+
+    EXPECT_EQ(i, 513ULL);
 }
