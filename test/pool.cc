@@ -54,15 +54,15 @@ TEST_F(PoolTest, alloc) {
     EXPECT_LE(pool_start(), block_ptr);
     EXPECT_LT(block_ptr, pool_end());
 
-    EXPECT_EQ(block->f1, 0);
-    EXPECT_EQ(block->f2, 0);
+    EXPECT_EQ(block->f1, 0ULL);
+    EXPECT_EQ(block->f2, 0ULL);
     EXPECT_STREQ(block->f3, "");
 
     block->f1 = 123;
     block->f2 = 456;
     strcpy(block->f3, "string");
-    EXPECT_EQ(block->f1, 123);
-    EXPECT_EQ(block->f2, 456);
+    EXPECT_EQ(block->f1, 123ULL);
+    EXPECT_EQ(block->f2, 456ULL);
     EXPECT_STREQ(block->f3, "string");
 }
 

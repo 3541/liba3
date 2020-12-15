@@ -19,16 +19,16 @@ protected:
 TEST_F(BufferTest, init) { ASSERT_TRUE(buf_initialized(&buf)); }
 
 TEST_F(BufferTest, cursor) {
-    ASSERT_EQ(buf.head, 0);
-    ASSERT_EQ(buf.tail, 0);
+    ASSERT_EQ(buf.head, 0ULL);
+    ASSERT_EQ(buf.tail, 0ULL);
 
     buf_write_byte(&buf, 'b');
-    EXPECT_EQ(buf.head, 0);
-    EXPECT_EQ(buf.tail, 1);
+    EXPECT_EQ(buf.head, 0ULL);
+    EXPECT_EQ(buf.tail, 1ULL);
 
     buf_read(&buf, 1);
-    EXPECT_EQ(buf.head, 0);
-    EXPECT_EQ(buf.tail, 0);
+    EXPECT_EQ(buf.head, 0ULL);
+    EXPECT_EQ(buf.tail, 0ULL);
 }
 
 TEST_F(BufferTest, write_byte) {
@@ -53,26 +53,26 @@ TEST_F(BufferTest, write_num) {
 
 TEST_F(BufferTest, reset) {
     buf_write_line(&buf, CS("A line"));
-    ASSERT_NE(buf.tail, 0);
+    ASSERT_NE(buf.tail, 0ULL);
 
     buf_reset_if_empty(&buf);
-    EXPECT_NE(buf.tail, 0);
+    EXPECT_NE(buf.tail, 0ULL);
 
     buf_read(&buf, sizeof("A line\n") - 1);
     buf_reset_if_empty(&buf);
-    EXPECT_EQ(buf.tail, 0);
+    EXPECT_EQ(buf.tail, 0ULL);
 }
 
 TEST_F(BufferTest, compact) {
     buf_write_str(&buf, CS("some string"));
-    ASSERT_EQ(buf.head, 0);
+    ASSERT_EQ(buf.head, 0ULL);
 
     buf_read(&buf, 2);
-    EXPECT_NE(buf.head, 0);
+    EXPECT_NE(buf.head, 0ULL);
     size_t tail = buf.tail;
 
     buf_compact(&buf);
-    EXPECT_EQ(buf.head, 0);
+    EXPECT_EQ(buf.head, 0ULL);
     EXPECT_NE(buf.tail, tail);
 }
 
@@ -94,12 +94,12 @@ TEST_F(BufferTest, tokenization) {
     String s = buf_token_next_impl({ &buf, CS(" "), false });
     EXPECT_TRUE(s.ptr);
     EXPECT_STREQ(S_AS_C_STR(S_CONST(s)), "A");
-    EXPECT_EQ(buf.head, 2);
+    EXPECT_EQ(buf.head, 2ULL);
     EXPECT_EQ(s.ptr[s.len], '\0');
 
     s = buf_token_next_impl({ &buf, CS(" "), true });
     EXPECT_TRUE(s.ptr);
-    EXPECT_EQ(buf.head, 8);
+    EXPECT_EQ(buf.head, 8ULL);
     EXPECT_EQ(s.ptr[s.len], ' ');
 
     String scmp = string_alloc(s.len + 1);

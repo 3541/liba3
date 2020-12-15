@@ -33,7 +33,7 @@ TEST_F(LLTest, enqueue_dequeue) {
     LL_ENQUEUE(TestStruct)(&list, t);
 
     auto p = LL_PEEK(TestStruct)(&list);
-    EXPECT_EQ(p->data, 1234);
+    EXPECT_EQ(p->data, 1234ULL);
     EXPECT_EQ(p->_ll_ptr.prev, &list.head);
     EXPECT_EQ(p->_ll_ptr.next, &list.end);
     EXPECT_EQ(list.head.next, &p->_ll_ptr);
