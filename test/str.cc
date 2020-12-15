@@ -5,11 +5,11 @@
 TEST(String, construct) {
     CString lit = CS("test");
     EXPECT_STREQ(S_AS_C_STR(lit), "test");
-    EXPECT_EQ(lit.len, 4);
+    EXPECT_EQ(lit.len, 4ULL);
 
     CString s = CS_OF("test");
     EXPECT_STREQ(S_AS_C_STR(s), "test");
-    EXPECT_EQ(s.len, 4);
+    EXPECT_EQ(s.len, 4ULL);
 
     EXPECT_FALSE(S_AS_C_STR(CS_NULL));
 }
@@ -17,12 +17,12 @@ TEST(String, construct) {
 TEST(String, alloc) {
     String s = string_alloc(4);
     EXPECT_TRUE(s.ptr);
-    EXPECT_EQ(s.len, 4);
+    EXPECT_EQ(s.len, 4ULL);
 
     // string_free should clear pointer and length.
     string_free(&s);
     EXPECT_FALSE(s.ptr);
-    EXPECT_EQ(s.len, 0);
+    EXPECT_EQ(s.len, 0ULL);
 }
 
 TEST(String, realloc) {
@@ -31,10 +31,10 @@ TEST(String, realloc) {
 
     String next = string_realloc(&orig, orig.len + 2);
     EXPECT_FALSE(orig.ptr);
-    EXPECT_EQ(orig.len, 0);
+    EXPECT_EQ(orig.len, 0ULL);
     next.ptr[next.len - 2] = '\0';
     EXPECT_STREQ(S_AS_C_STR(S_CONST(next)), "str123");
-    EXPECT_EQ(next.len, 8);
+    EXPECT_EQ(next.len, 8ULL);
 
     string_free(&next);
 }
@@ -43,7 +43,7 @@ TEST(String, clone) {
     // Should return null if given a null string.
     String s = string_clone(CS_NULL);
     EXPECT_FALSE(s.ptr);
-    EXPECT_EQ(s.len, 0);
+    EXPECT_EQ(s.len, 0ULL);
 
     s = string_clone(CS("test string"));
     EXPECT_TRUE(s.ptr);
