@@ -56,6 +56,25 @@ bool buf_init(Buffer* this, size_t cap, size_t max_cap) {
     return true;
 }
 
+Buffer* buf_new(size_t cap, size_t max_cap) {
+    Buffer* ret = calloc(1, sizeof(Buffer));
+    buf_init(ret, cap, max_cap);
+    return ret;
+}
+
+void buf_destroy(Buffer* buf) {
+    assert(buf_initialized(buf));
+
+    string_free(&buf->data);
+    memset(buf, 0, sizeof(Buffer));
+}
+
+void buf_free(Buffer* buf) {
+    assert(buf_initialized(buf));
+    buf_destroy(buf);
+    free(buf);
+}
+
 bool buf_write_byte(Buffer* this, uint8_t byte) {
     assert(buf_initialized(this));
 
@@ -194,11 +213,4 @@ bool buf_consume(Buffer* this, CString needle) {
 
     buf_read(this, needle.len);
     return true;
-}
-
-void buf_free(Buffer* this) {
-    assert(buf_initialized(this));
-
-    string_free(&this->data);
-    memset(this, 0, sizeof(Buffer));
 }

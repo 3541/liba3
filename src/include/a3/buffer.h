@@ -33,6 +33,9 @@ typedef struct Buffer {
 } Buffer;
 
 EXPORT bool buf_init(Buffer*, size_t cap, size_t max_cap);
+EXPORT Buffer* buf_new(size_t cap, size_t max_cap);
+EXPORT void    buf_destroy(Buffer*);
+EXPORT void    buf_free(Buffer*);
 
 EXPORT bool buf_write_byte(Buffer*, uint8_t);
 EXPORT bool buf_write_line(Buffer*, CString);
@@ -58,8 +61,6 @@ EXPORT String buf_token_next_impl(_buf_token_next_args);
         .buf = (BUF), .delim = (DELIM), .preserve_end = false, __VA_ARGS__ })
 #define buf_token_next_copy(BUF, DELIM, ...)                                   \
     string_clone(S_CONST(buf_token_next((BUF), (DELIM), __VA_ARGS__)))
-
-EXPORT void buf_free(Buffer*);
 
 EXPORT inline bool buf_initialized(const Buffer* buf) {
     assert(buf);

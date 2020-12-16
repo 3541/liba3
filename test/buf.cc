@@ -13,7 +13,7 @@ protected:
 
     void SetUp() override { buf_init(&buf, BUF_INITIAL_CAP, BUF_MAX_CAP); }
 
-    void TearDown() override { buf_free(&buf); }
+    void TearDown() override { buf_destroy(&buf); }
 };
 
 TEST_F(BufferTest, init) { ASSERT_TRUE(buf_initialized(&buf)); }

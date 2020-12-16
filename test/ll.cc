@@ -18,9 +18,7 @@ class LLTest : public ::testing::Test {
 protected:
     LL(TestStruct) list {};
 
-    void SetUp() override {
-        LL_INIT(TestStruct)(&list);
-    }
+    void SetUp() override { LL_INIT(TestStruct)(&list); }
 };
 
 TEST_F(LLTest, init) {
@@ -61,8 +59,8 @@ TEST_F(LLTest, many_insertions) {
 
     LL_INSERT_AFTER(TestStruct)(mid_node, new TestStruct { 128 });
 
-    auto* node = LL_PEEK(TestStruct)(&list);
-    size_t i = 0;
+    auto*  node = LL_PEEK(TestStruct)(&list);
+    size_t i    = 0;
     while (node) {
         EXPECT_EQ(node->data, i);
         node = LL_NEXT(TestStruct)(&list, node);

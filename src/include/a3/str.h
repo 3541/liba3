@@ -75,7 +75,7 @@ ALWAYS_INLINE const char* S_AS_C_STR(CString s) { return (const char*)s.ptr; }
 
 ALWAYS_INLINE uint8_t* S_PTR(String s) { return s.ptr; }
 ALWAYS_INLINE const uint8_t* CS_PTR(CString s) { return s.ptr; }
-ALWAYS_INLINE size_t S_LEN(CString s) { return s.len; }
+ALWAYS_INLINE size_t         S_LEN(CString s) { return s.len; }
 
 EXPORT String string_alloc(size_t len);
 EXPORT String string_realloc(String*, size_t new_len);

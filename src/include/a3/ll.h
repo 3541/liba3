@@ -40,6 +40,9 @@
 #define LL_IS_INSERTED(TY)       TY##_ll_is_inserted
 
 #define LL_INIT(TY)         TY##_ll_init
+#define LL_NEW(TY)          TY##_ll_new
+#define LL_DESTROY(TY)      TY##_ll_destroy
+#define LL_FREE(TY)         TY##_ll_free
 #define LL_PEEK(TY)         TY##_ll_peek
 #define LL_NEXT(TY)         TY##_ll_next
 #define LL_INSERT_AFTER(TY) TY##_ll_insert_after
@@ -55,6 +58,9 @@
     inline bool LL_IS_INSERTED(TY)(TY*);                                       \
                                                                                \
     void LL_INIT(TY)(LL(TY)*);                                                 \
+    LL(TY) * LL_NEW(TY)(void);                                                 \
+    void LL_DESTROY(TY)(LL(TY)*);                                              \
+    void LL_FREE(TY)(LL(TY)*);                                                 \
     TY*  LL_PEEK(TY)(LL(TY)*);                                                 \
     TY*  LL_NEXT(TY)(LL(TY)*, TY*);                                            \
     void LL_INSERT_AFTER(TY)(TY*, TY*);                                        \
@@ -97,6 +103,24 @@
         memset(list, 0, sizeof(LL(TY)));                                       \
         list->head.next = &list->end;                                          \
         list->end.prev  = &list->head;                                         \
+    }                                                                          \
+                                                                               \
+    LL(TY) * LL_NEW(TY)() {                                                    \
+        LL(TY)* ret = (LL(TY)*)calloc(1, sizeof(LL(TY)));                      \
+        UNWRAPND(ret);                                                         \
+        LL_INIT(TY)(ret);                                                      \
+        return ret;                                                            \
+    }                                                                          \
+                                                                               \
+    void LL_DESTROY(TY)(LL(TY) * list) {                                       \
+        assert(list);                                                          \
+        memset(list, 0, sizeof(LL(TY)));                                       \
+    }                                                                          \
+                                                                               \
+    void LL_FREE(TY)(LL(TY) * list) {                                          \
+        assert(list);                                                          \
+        LL_DESTROY(TY)(list);                                                  \
+        free(list);                                                            \
     }                                                                          \
                                                                                \
     TY* LL_PEEK(TY)(LL(TY) * list) {                                           \
