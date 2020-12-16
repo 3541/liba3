@@ -47,7 +47,7 @@ ALWAYS_INLINE String  S_OF(char* str) {
 ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
     return { s.ptr + offset, s.len - offset };
 }
-#else
+#else // __cplusplus
 #define CS(S)   ((CString) { .ptr = (uint8_t*)S, .len = (sizeof(S) - 1) })
 #define CS_NULL ((CString) { .ptr = NULL, .len = 0 })
 #define S_NULL  ((String) { .ptr = NULL, .len = 0 })
@@ -65,13 +65,17 @@ ALWAYS_INLINE String S_OF(char* str) {
 ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
     return (String) { .ptr = s.ptr + offset, .len = s.len - offset };
 }
-#endif // __cplusplus
+#endif // !__cplusplus
 
 ALWAYS_INLINE CString CS_OF(const char* str) {
     return S_CONST(S_OF((char*)str));
 }
 ALWAYS_INLINE const uint8_t* S_END(CString s) { return s.ptr + s.len; }
 ALWAYS_INLINE const char* S_AS_C_STR(CString s) { return (const char*)s.ptr; }
+
+ALWAYS_INLINE uint8_t* S_PTR(String s) { return s.ptr; }
+ALWAYS_INLINE const uint8_t* CS_PTR(CString s) { return s.ptr; }
+ALWAYS_INLINE size_t S_LEN(CString s) { return s.len; }
 
 EXPORT String string_alloc(size_t len);
 EXPORT String string_realloc(String*, size_t new_len);
