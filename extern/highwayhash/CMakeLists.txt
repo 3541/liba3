@@ -15,3 +15,6 @@ add_custom_command(
 
 add_library(highwayhash EXCLUDE_FROM_ALL ${HH_SRC_DIR}/c/highwayhash.c ${HH_HEADER})
 target_include_directories(highwayhash PUBLIC ${HH_INST_DIR}/include)
+set_target_properties(highwayhash PROPERTIES
+  C_VISIBILITY_PRESET default
+)
