@@ -14,7 +14,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <sys/random.h>
 
 #include <a3/cpp.h>
 
@@ -180,10 +179,14 @@ H_END
                                                                                  \
     void HT_INIT(K, V)(HT(K, V) * table) {                                       \
         assert(table);                                                           \
-        table->size   = 0;                                                       \
-        table->cap    = HT_INITIAL_CAP;                                          \
-        ssize_t bytes = getrandom(table->hash_key, HT_HASH_KEY_SIZE, 0);         \
-        assert(bytes == HT_HASH_KEY_SIZE);                                       \
+        table->size = 0;                                                         \
+        table->cap  = HT_INITIAL_CAP;                                            \
+        srand((unsigned int)time(NULL));                                         \
+        uint8_t* key_bytes = (uint8_t*)&table->hash_key[0];                      \
+        for (size_t i = 0; i < HT_HASH_KEY_SIZE * sizeof(table->hash_key[0]);    \
+             i++) {                                                              \
+            key_bytes[i] = (uint8_t)rand();                                      \
+        }                                                                        \
         table->entries =                                                         \
             (HT_ENTRY(K, V)*)calloc(table->cap, sizeof(HT_ENTRY(K, V)));         \
         UNWRAPND(table->entries);                                                \
@@ -210,7 +213,7 @@ H_END
     void HT_INSERT(K, V)(HT(K, V) * table, K key, V value) {                     \
         assert(table);                                                           \
                                                                                  \
-        if (table->size >= table->cap)                                           \
+        if (table->size * 100 >= table->cap * HT_LOAD_FACTOR)                    \
             HT_GROW(K, V)(table);                                                \
                                                                                  \
         table->size++;                                                           \
