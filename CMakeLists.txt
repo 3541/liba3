@@ -87,6 +87,7 @@ endif()
 
 add_executable(a3_test
   test/buf.cc
+  test/ht.cc
   test/ll.cc
   test/log.cc
   test/pool.cc
@@ -98,5 +99,6 @@ target_add_extra_warnings(a3_test)
 if (NOT MSVC)
   target_add_warnings(a3_test "no-c99-extensions;no-pedantic" FALSE)
 endif()
+target_link_libraries(a3_test PRIVATE a3hash)
 target_link_libraries(a3_test PRIVATE a3 ${GTEST_LIB})
 gtest_discover_tests(a3_test)
