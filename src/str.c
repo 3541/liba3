@@ -11,6 +11,7 @@
 #include <a3/util.h>
 
 #include <assert.h>
+#include <math.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -75,13 +76,22 @@ void string_reverse(String str) {
     }
 }
 
-String string_itoa(String dst, size_t v) {
+String string_itoa_into(String dst, size_t v) {
     size_t i = 0;
-    for (; i < dst.len && v; i++, v /= 10)
+    do {
         dst.ptr[i] = (uint8_t) "0123456789"[v % 10];
+        v /= 10;
+        i++;
+    } while (i <= dst.len && v);
     String ret = { .ptr = dst.ptr, .len = i };
     string_reverse(ret);
     return ret;
+}
+
+String string_itoa(size_t v) {
+    double digits = v > 1? ceil(log10((double)v)) : 1.0;
+    String dst    = string_alloc((size_t)digits);
+    return string_itoa_into(dst, v);
 }
 
 bool string_isascii(CString str) {
