@@ -74,6 +74,8 @@ H_END
 
 #define HT_INSERT(K, V) K##V##_ht_insert
 #define HT_FIND(K, V)   K##V##_ht_find
+#define HT_DELETE(K, V) K##V##_ht_delete
+#define HT_SIZE(K, V)   K##V##_ht_size
 
 #define HT_DECLARE_METHODS(K, V)                                               \
     H_BEGIN                                                                    \
@@ -84,6 +86,12 @@ H_END
                                                                                \
     void HT_INSERT(K, V)(HT(K, V)*, K, V);                                     \
     V*   HT_FIND(K, V)(HT(K, V)*, K);                                          \
+    bool HT_DELETE(K, V)(HT(K, V)*, K);                                        \
+                                                                               \
+    inline size_t HT_SIZE(K, V)(HT(K, V) * table) {                            \
+        assert(table);                                                         \
+        return table->size;                                                    \
+    }                                                                          \
     H_END
 
 // Define methods with a custom hash function. H has the signature:
@@ -222,10 +230,20 @@ H_END
                                                                                  \
     V* HT_FIND(K, V)(HT(K, V) * table, K key) {                                  \
         assert(table);                                                           \
+                                                                                 \
         HT_ENTRY(K, V)* entry = HT_FIND_ENTRY(K, V)(table, key);                 \
-        if (!entry)                                                              \
-            return NULL;                                                         \
+        TRYB_MAP(entry, NULL);                                                   \
         return &entry->value;                                                    \
+    }                                                                            \
+                                                                                 \
+    bool HT_DELETE(K, V)(HT(K, V) * table, K key) {                              \
+        assert(table);                                                           \
+                                                                                 \
+        HT_ENTRY(K, V)* entry = HT_FIND_ENTRY(K, V)(table, key);                 \
+        TRYB(entry);                                                             \
+        entry->hash |= HT_TOMBSTONE;                                             \
+        table->size--;                                                           \
+        return true;                                                             \
     }
 
 // Define methods with HighwayHash as the hash function. Helpers have the
