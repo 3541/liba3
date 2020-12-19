@@ -110,7 +110,7 @@ TEST_F(BufferTest, tokenization) {
 
 #ifndef _MSC_VER // MSVC doesn't support compound literals.
     s = buf_token_next_copy(&buf, CS(" "));
-    EXPECT_STREQ(S_AS_C_STR(S_CONST(s)), "with");
+    EXPECT_EQ(string_cmp(S_CONST(s), CS("with")), 0);
     string_free(&s);
 #endif
 }
