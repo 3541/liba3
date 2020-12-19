@@ -10,6 +10,8 @@
 #include <a3/pool.h>
 
 #include <assert.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <a3/util.h>

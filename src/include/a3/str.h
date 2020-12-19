@@ -12,12 +12,13 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
 #include <a3/cpp.h>
-#include <a3/util.h>
+#include <a3/platform.h>
 
 H_BEGIN
 

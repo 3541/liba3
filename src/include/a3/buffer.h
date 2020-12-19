@@ -14,9 +14,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <a3/cpp.h>
+#include <a3/platform.h>
 #include <a3/str.h>
+#include <a3/util.h>
 
 H_BEGIN
 

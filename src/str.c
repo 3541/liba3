@@ -10,15 +10,16 @@
 #include <a3/str.h>
 
 #include <assert.h>
+#include <ctype.h>
 #include <math.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 
 #ifndef _MSC_VER
 #include <strings.h>
 #endif
 
-#include <a3/platform_private.h>
 #include <a3/util.h>
 
 String string_alloc(size_t len) {

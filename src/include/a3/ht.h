@@ -16,6 +16,7 @@
 #include <stdint.h>
 
 #include <a3/cpp.h>
+#include <a3/util.h>
 
 // From highwayhash.h. Forward-declared since the library header causes unused
 // function warnings.

@@ -16,7 +16,6 @@
 
 H_BEGIN
 
-struct Pool;
 typedef struct Pool Pool;
 
 EXPORT Pool* pool_new(size_t block_size, size_t blocks);
