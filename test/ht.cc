@@ -63,7 +63,7 @@ TEST_F(HTTest, grow) {
     all_present();
 
     while (keys.size()) {
-        auto key = keys.begin() + random() % (ssize_t)keys.size();
+        auto key = keys.begin() + rand() % (ssize_t)keys.size();
         HT_DELETE(CString, CString)(&table, *key);
         String tmp = CS_MUT(*key);
         string_free(&tmp);
