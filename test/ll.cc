@@ -59,13 +59,14 @@ TEST_F(LLTest, many_insertions) {
 
     LL_INSERT_AFTER(TestStruct)(mid_node, new TestStruct { 128 });
 
-    auto*  node = LL_PEEK(TestStruct)(&list);
-    size_t i    = 0;
-    while (node) {
+    size_t i = 0;
+    for (auto* node = LL_PEEK(TestStruct)(&list); node;
+         node       = LL_NEXT(TestStruct)(&list, node), i++)
         EXPECT_EQ(node->data, i);
-        node = LL_NEXT(TestStruct)(&list, node);
-        i++;
-    }
 
     EXPECT_EQ(i, 513ULL);
+
+    for (auto* node = LL_DEQUEUE(TestStruct)(&list); node;
+         node       = LL_DEQUEUE(TestStruct)(&list))
+        delete node;
 }
