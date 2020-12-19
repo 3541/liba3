@@ -14,7 +14,7 @@ nontrivial C project.
 
 ## Features
 - Simple and lightweight — approx. 1 kLOC. Less, without `a3_hash`.
-- Type-generic data structures — (ab)uses preprocessor macros to ape C++ templates.
+- Type-generic data structures — (ab)uses preprocessor macros to imitate C++ templates.
 
 ## Usage
 CMake or Meson projects should easily be able to hook into the build system. The CMake file provides a library target `a3`. The hash table also requires linking against `a3_hash`, which pulls in [HighwayHash](https://github.com/google/highwayhash) as a dependency.
