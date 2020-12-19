@@ -26,15 +26,15 @@ H_END
 #include <a3/cpp.h>
 
 #ifndef HT_INITIAL_CAP
-#define HT_INITIAL_CAP 257
+#define HT_INITIAL_CAP 257ULL
 #endif
 
 #ifndef HT_LOAD_FACTOR
-#define HT_LOAD_FACTOR 90
+#define HT_LOAD_FACTOR 90ULL
 #endif
 
 #ifndef HT_HASH_KEY_SIZE
-#define HT_HASH_KEY_SIZE 4
+#define HT_HASH_KEY_SIZE 4ULL
 #endif
 
 #define HT_TOMBSTONE (1ULL << 63)

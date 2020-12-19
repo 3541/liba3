@@ -23,22 +23,22 @@ protected:
 };
 
 TEST_F(HTTest, init) {
-    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 0);
+    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 0ULL);
     EXPECT_EQ(table.cap, HT_INITIAL_CAP);
     EXPECT_TRUE(table.entries);
 }
 
 TEST_F(HTTest, insert_and_delete) {
-    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 0);
+    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 0ULL);
 
     HT_INSERT(CString, CString)(&table, CS("A key"), CS("A value"));
-    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 1);
+    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 1ULL);
     EXPECT_EQ(string_cmp(*HT_FIND(CString, CString)(&table, CS("A key")),
                          CS("A value")),
               0);
 
     EXPECT_TRUE(HT_DELETE(CString, CString)(&table, CS("A key")));
-    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 0);
+    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 0ULL);
     EXPECT_FALSE(HT_FIND(CString, CString)(&table, CS("A key")));
 }
 
@@ -49,7 +49,7 @@ TEST_F(HTTest, grow) {
         for (auto& key : keys) {
             auto* value = HT_FIND(CString, CString)(&table, key);
             EXPECT_TRUE(value);
-            EXPECT_EQ(string_cmp(key, *value), 0);
+            EXPECT_EQ(string_cmp(key, *value), 0ULL);
         }
     };
 
@@ -73,5 +73,5 @@ TEST_F(HTTest, grow) {
         all_present();
     }
 
-    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 0);
+    EXPECT_EQ(HT_SIZE(CString, CString)(&table), 0ULL);
 }
