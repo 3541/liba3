@@ -31,6 +31,7 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 include(PlatformChecks)
+include(IWYU)
 add_library(a3
   src/buffer.c
   src/log.c
@@ -71,6 +72,7 @@ if (lto_support)
     INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE
   )
 endif()
+target_add_iwyu(a3)
 
 add_subdirectory(extern/highwayhash EXCLUDE_FROM_ALL)
 
@@ -108,6 +110,8 @@ target_add_extra_warnings(a3_test)
 if (NOT MSVC)
   target_add_warnings(a3_test "no-c99-extensions;no-pedantic" FALSE)
 endif()
+target_add_iwyu(a3_test)
+
 target_link_libraries(a3_test PRIVATE a3hash)
 target_link_libraries(a3_test PRIVATE a3 ${GTEST_LIB})
 gtest_discover_tests(a3_test)
