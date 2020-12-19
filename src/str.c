@@ -89,7 +89,7 @@ String string_itoa_into(String dst, size_t v) {
 }
 
 String string_itoa(size_t v) {
-    double digits = v > 1? ceil(log10((double)v)) : 1.0;
+    double digits = v > 0? floor(log10((double)v)) + 1.0: 1.0;
     String dst    = string_alloc((size_t)digits);
     return string_itoa_into(dst, v);
 }
