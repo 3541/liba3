@@ -14,6 +14,7 @@
 // Types
 #ifndef a3_HAVE_ssize_t
 #ifdef _MSC_VER
+#include <basetsd.h>
 typedef SSIZE_T A3_SSIZE_T;
 #else
 #warning "ssize_t not found and no known alternative."
