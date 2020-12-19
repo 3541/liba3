@@ -30,6 +30,7 @@ endif()
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
+include(PlatformChecks)
 add_library(a3
   src/buffer.c
   src/log.c
@@ -49,15 +50,15 @@ add_library(a3
   src/include/a3/util.h
 )
 target_include_directories(a3 PUBLIC src/include)
+target_link_math(a3)
 
 include(AddWarnings)
-include(PlatformChecks)
 target_add_extra_warnings(a3)
 target_platform_checks(a3)
 if (NOT MSVC)
   target_add_warning(a3 "no-pointer-arith" FALSE)
   target_add_warning(a3 "no-cast-qual" TRUE)
-  target_add_warning_c(a3 "no-override_init" TRUE)
+  target_add_warning_c(a3 "no-override-init" TRUE)
 endif()
 set_target_properties(a3 PROPERTIES
   C_STANDARD 11
