@@ -38,10 +38,11 @@ add_library(a3
 
   src/include/a3/buffer.h
   src/include/a3/cpp.h
-  src/include/a3/decl.h
   src/include/a3/ht.h
   src/include/a3/ll.h
   src/include/a3/log.h
+  src/include/a3/platform.h
+  src/include/a3/platform_private.h
   src/include/a3/pool.h
   src/include/a3/pq.h
   src/include/a3/str.h
@@ -50,7 +51,9 @@ add_library(a3
 target_include_directories(a3 PUBLIC src/include)
 
 include(AddWarnings)
+include(PlatformChecks)
 target_add_extra_warnings(a3)
+target_platform_checks(a3)
 if (NOT MSVC)
   target_add_warning(a3 "no-pointer-arith" FALSE)
   target_add_warning(a3 "no-cast-qual" TRUE)

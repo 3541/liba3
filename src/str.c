@@ -8,7 +8,6 @@
  */
 
 #include <a3/str.h>
-#include <a3/util.h>
 
 #include <assert.h>
 #include <math.h>
@@ -17,9 +16,10 @@
 
 #ifndef _MSC_VER
 #include <strings.h>
-#else
-#define strncasecmp _strnicmp
 #endif
+
+#include <a3/platform_private.h>
+#include <a3/util.h>
 
 String string_alloc(size_t len) {
     return (String) { .ptr = calloc(len, sizeof(char)), .len = len };
@@ -89,7 +89,7 @@ String string_itoa_into(String dst, size_t v) {
 }
 
 String string_itoa(size_t v) {
-    double digits = v > 0? floor(log10((double)v)) + 1.0: 1.0;
+    double digits = v > 0 ? floor(log10((double)v)) + 1.0 : 1.0;
     String dst    = string_alloc((size_t)digits);
     return string_itoa_into(dst, v);
 }

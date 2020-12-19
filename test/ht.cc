@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <a3/ht.h>
+#include <a3/platform_private.h>
 #include <a3/str.h>
 
 using std::vector;

@@ -175,8 +175,9 @@ H_END
         for (size_t i = hash % table->cap, probe_count = 0;;                     \
              i = (i + 1) % table->cap, probe_count++) {                          \
             HT_ENTRY(K, V)* current_entry = &table->entries[i];                  \
-            if (!current_entry->hash || HT_PROBE_COUNT(K, V)(                    \
-                    table, i, current_entry->hash) < probe_count)                \
+            if (!current_entry->hash ||                                          \
+                HT_PROBE_COUNT(K, V)(table, i, current_entry->hash) <            \
+                    probe_count)                                                 \
                 return NULL;                                                     \
             if (hash == current_entry->hash &&                                   \
                 C(key, current_entry->key) == 0)                                 \
