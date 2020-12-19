@@ -69,7 +69,7 @@ if (lto_support)
   set_target_properties(a3 PROPERTIES
     INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
     INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE
-    )
+  )
 endif()
 
 add_subdirectory(extern/highwayhash EXCLUDE_FROM_ALL)
