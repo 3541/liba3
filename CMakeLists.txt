@@ -85,6 +85,7 @@ else()
   set(GTEST_LIB gtest_main)
 endif()
 
+include(AddFlags)
 add_executable(a3_test
   test/buf.cc
   test/ht.cc
@@ -94,7 +95,11 @@ add_executable(a3_test
   test/str.cc
 )
 target_compile_features(a3_test PRIVATE cxx_std_20)
-set_target_properties(a3_test PROPERTIES CXX_EXTENSIONS OFF)
+set_target_properties(a3_test PROPERTIES
+  CXX_EXTENSIONS OFF
+  C_EXTENSIONS OFF
+)
+target_add_flags(a3_test "fsanitize=address;fsanitize=undefined" TRUE FALSE)
 target_add_extra_warnings(a3_test)
 if (NOT MSVC)
   target_add_warnings(a3_test "no-c99-extensions;no-pedantic" FALSE)
