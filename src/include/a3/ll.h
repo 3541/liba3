@@ -170,7 +170,7 @@
                                                                                \
     TY* LL_DEQUEUE(TY)(LL(TY) * list) {                                        \
         assert(list);                                                          \
-        if (!list->head.next)                                                  \
+        if (!list->head.next || list->head.next == &list->end)                 \
             return NULL;                                                       \
                                                                                \
         TY* ret = LL_NODE_CONTAINER_OF(TY)(list->head.next);                   \
