@@ -105,7 +105,8 @@ set_target_properties(a3_test PROPERTIES
   CXX_EXTENSIONS OFF
   C_EXTENSIONS OFF
 )
-target_add_flags(a3_test "fsanitize=address;fsanitize=undefined" TRUE FALSE)
+include(Sanitize)
+target_add_sanitizers(a3_test TRUE)
 target_add_extra_warnings(a3_test)
 if (NOT MSVC)
   target_add_warnings(a3_test "no-c99-extensions;no-pedantic" FALSE)
