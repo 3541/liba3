@@ -94,7 +94,9 @@
     TY* SLL_POP(TY)(SLL(TY) * list) {                                          \
         assert(list);                                                          \
         TY* ret = list->head;                                                  \
-        if (ret)                                                               \
-            list->head = ret->_sll_next;                                       \
+        if (ret) {                                                             \
+            list->head     = ret->_sll_next;                                   \
+            ret->_sll_next = NULL;                                             \
+        }                                                                      \
         return ret;                                                            \
     }
