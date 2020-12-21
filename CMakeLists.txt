@@ -88,6 +88,7 @@ find_package(GTest)
 if (GTest_FOUND)
   set(GTEST_LIB GTest::gtest_main)
 else()
+  set(INSTALL_GTEST FALSE CACHE BOOL "Don't install GTest.")
   add_subdirectory(extern/googletest EXCLUDE_FROM_ALL)
   set(GTEST_LIB gtest_main)
 
