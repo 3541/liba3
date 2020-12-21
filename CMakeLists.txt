@@ -90,6 +90,10 @@ if (GTest_FOUND)
 else()
   add_subdirectory(extern/googletest EXCLUDE_FROM_ALL)
   set(GTEST_LIB gtest_main)
+
+  if (WIN32 AND NOT MSVC)
+    target_add_warning(gtest "no-language-extension-token" FALSE)
+  endif()
 endif()
 
 include(AddFlags)
