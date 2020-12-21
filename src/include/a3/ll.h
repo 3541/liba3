@@ -30,7 +30,7 @@
         LL_NODE_PTR(TY) end;                                                   \
     };                                                                         \
                                                                                \
-    H_END
+    H_END;
 
 // Invoke this macro in the struct body to make it a node.
 #define LL_NODE(TY) LL_NODE_PTR(TY) _ll_ptr
@@ -39,10 +39,11 @@
 #define LL_NODE_INSERT_AFTER(TY) TY##_ll_node_insert_after
 #define LL_IS_INSERTED(TY)       TY##_ll_is_inserted
 
-#define LL_INIT(TY)         TY##_ll_init
-#define LL_NEW(TY)          TY##_ll_new
-#define LL_DESTROY(TY)      TY##_ll_destroy
-#define LL_FREE(TY)         TY##_ll_free
+#define LL_INIT(TY)    TY##_ll_init
+#define LL_NEW(TY)     TY##_ll_new
+#define LL_DESTROY(TY) TY##_ll_destroy
+#define LL_FREE(TY)    TY##_ll_free
+
 #define LL_PEEK(TY)         TY##_ll_peek
 #define LL_NEXT(TY)         TY##_ll_next
 #define LL_INSERT_AFTER(TY) TY##_ll_insert_after
@@ -68,7 +69,7 @@
     void LL_ENQUEUE(TY)(LL(TY)*, TY*);                                         \
     TY*  LL_DEQUEUE(TY)(LL(TY)*);                                              \
                                                                                \
-    H_END
+    H_END;
 
 // Generate method implementations. C must be a comparator function which
 // operates on TY* and returns -1, 0, or 1 if lhs is less than, equal to, or

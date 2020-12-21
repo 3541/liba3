@@ -2,23 +2,23 @@
 
 #include <a3/ll.h>
 
-LL_DEFINE_STRUCTS(TestStruct);
+LL_DEFINE_STRUCTS(LLNode);
 
-struct TestStruct {
+struct LLNode {
     size_t data;
-    LL_NODE(TestStruct) {};
+    LL_NODE(LLNode) {};
 
-    explicit TestStruct(size_t d) : data { d } {}
+    explicit LLNode(size_t d) : data { d } {}
 };
 
-LL_DECLARE_METHODS(TestStruct);
-LL_DEFINE_METHODS(TestStruct);
+LL_DECLARE_METHODS(LLNode);
+LL_DEFINE_METHODS(LLNode);
 
 class LLTest : public ::testing::Test {
 protected:
-    LL(TestStruct) list {};
+    LL(LLNode) list {};
 
-    void SetUp() override { LL_INIT(TestStruct)(&list); }
+    void SetUp() override { LL_INIT(LLNode)(&list); }
 };
 
 TEST_F(LLTest, init) {
@@ -27,10 +27,10 @@ TEST_F(LLTest, init) {
 }
 
 TEST_F(LLTest, enqueue_dequeue) {
-    auto t = new TestStruct { 1234 };
-    LL_ENQUEUE(TestStruct)(&list, t);
+    auto* t = new LLNode { 1234 };
+    LL_ENQUEUE(LLNode)(&list, t);
 
-    auto p = LL_PEEK(TestStruct)(&list);
+    auto* p = LL_PEEK(LLNode)(&list);
     EXPECT_EQ(p->data, 1234ULL);
     EXPECT_EQ(p->_ll_ptr.prev, &list.head);
     EXPECT_EQ(p->_ll_ptr.next, &list.end);
@@ -38,7 +38,7 @@ TEST_F(LLTest, enqueue_dequeue) {
     EXPECT_EQ(list.end.prev, &p->_ll_ptr);
     EXPECT_EQ(p, t);
 
-    p = LL_DEQUEUE(TestStruct)(&list);
+    p = LL_DEQUEUE(LLNode)(&list);
     EXPECT_EQ(p, t);
     EXPECT_EQ(list.head.next, &list.end);
     EXPECT_EQ(&list.head, list.end.prev);
@@ -47,26 +47,24 @@ TEST_F(LLTest, enqueue_dequeue) {
 }
 
 TEST_F(LLTest, many_insertions) {
-    for (size_t i = 0; i < 128; i++) {
-        LL_ENQUEUE(TestStruct)(&list, new TestStruct { i });
-    }
+    for (size_t i = 0; i < 128; i++)
+        LL_ENQUEUE(LLNode)(&list, new LLNode { i });
 
-    auto* mid_node = LL_NODE_CONTAINER_OF(TestStruct)(list.end.prev);
+    auto* mid_node = LL_NODE_CONTAINER_OF(LLNode)(list.end.prev);
 
-    for (size_t i = 129; i < 513; i++) {
-        LL_ENQUEUE(TestStruct)(&list, new TestStruct { i });
-    }
+    for (size_t i = 129; i < 513; i++)
+        LL_ENQUEUE(LLNode)(&list, new LLNode { i });
 
-    LL_INSERT_AFTER(TestStruct)(mid_node, new TestStruct { 128 });
+    LL_INSERT_AFTER(LLNode)(mid_node, new LLNode { 128 });
 
     size_t i = 0;
-    for (auto* node = LL_PEEK(TestStruct)(&list); node;
-         node       = LL_NEXT(TestStruct)(&list, node), i++)
+    for (auto* node = LL_PEEK(LLNode)(&list); node;
+         node       = LL_NEXT(LLNode)(&list, node), i++)
         EXPECT_EQ(node->data, i);
 
     EXPECT_EQ(i, 513ULL);
 
-    for (auto* node = LL_DEQUEUE(TestStruct)(&list); node;
-         node       = LL_DEQUEUE(TestStruct)(&list))
+    for (auto* node = LL_DEQUEUE(LLNode)(&list); node;
+         node       = LL_DEQUEUE(LLNode)(&list))
         delete node;
 }

@@ -47,6 +47,7 @@ add_library(a3
   src/include/a3/platform_private.h
   src/include/a3/pool.h
   src/include/a3/pq.h
+  src/include/a3/sll.h
   src/include/a3/str.h
   src/include/a3/util.h
 )
@@ -98,6 +99,7 @@ add_executable(a3_test
   test/ll.cc
   test/log.cc
   test/pool.cc
+  test/sll.cc
   test/str.cc
 )
 target_compile_features(a3_test PRIVATE cxx_std_20)
