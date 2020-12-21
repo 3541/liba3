@@ -28,7 +28,7 @@ TEST_F(SLLTest, push_pop) {
     SLL_PUSH(SLLNode)(&list, t);
 
     auto* p = SLL_PEEK(SLLNode)(&list);
-    EXPECT_EQ(p->data, 1234);
+    EXPECT_EQ(p->data, 1234ULL);
     EXPECT_FALSE(p->_sll_next);
     EXPECT_EQ(list.head, p);
     EXPECT_EQ(p, t);
