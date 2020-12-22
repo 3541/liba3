@@ -19,7 +19,10 @@
 #define SLL_DEFINE_STRUCTS(TY)                                                 \
     H_BEGIN                                                                    \
                                                                                \
-    SLL(TY) { TY* head; };                                                     \
+    SLL(TY) {                                                                  \
+        TY* head;                                                              \
+        TY* end;                                                               \
+    };                                                                         \
                                                                                \
     H_END
 
@@ -31,10 +34,13 @@
 #define SLL_DESTROY(TY) TY##_sll_destroy
 #define SLL_FREE(TY)    TY##_sll_free
 
-#define SLL_PEEK(TY) TY##_sll_peek
-#define SLL_NEXT(TY) TY##_sll_next
-#define SLL_PUSH(TY) TY##_sll_push
-#define SLL_POP(TY)  TY##_sll_pop
+#define SLL_PEEK(TY)    TY##_sll_peek
+#define SLL_NEXT(TY)    TY##_sll_next
+#define SLL_REMOVE(TY)  TY##_sll_remove
+#define SLL_PUSH(TY)    TY##_sll_push
+#define SLL_POP(TY)     TY##_sll_pop
+#define SLL_ENQUEUE(TY) TY##_sll_enqueue
+#define SLL_DEQUEUE(TY) TY##_sll_dequeue
 
 #define SLL_DECLARE_METHODS(TY)                                                \
     H_BEGIN                                                                    \
@@ -48,6 +54,8 @@
     TY*  SLL_NEXT(TY)(TY*);                                                    \
     void SLL_PUSH(TY)(SLL(TY)*, TY*);                                          \
     TY*  SLL_POP(TY)(SLL(TY)*);                                                \
+    void SLL_ENQUEUE(TY)(SLL(TY)*, TY*);                                       \
+    TY*  SLL_DEQUEUE(TY)(SLL(TY)*);                                            \
                                                                                \
     H_END;
 
@@ -55,6 +63,7 @@
     void SLL_INIT(TY)(SLL(TY) * list) {                                        \
         assert(list);                                                          \
         list->head = NULL;                                                     \
+        list->end  = NULL;                                                     \
     }                                                                          \
                                                                                \
     SLL(TY) * SLL_NEW(TY)() {                                                  \
@@ -66,6 +75,7 @@
     void SLL_DESTROY(TY)(SLL(TY) * list) {                                     \
         assert(list);                                                          \
         list->head = NULL;                                                     \
+        list->end  = NULL;                                                     \
     }                                                                          \
                                                                                \
     void SLL_FREE(TY)(SLL(TY) * list) {                                        \
@@ -89,6 +99,8 @@
         assert(!item->_sll_next);                                              \
         item->_sll_next = list->head;                                          \
         list->head      = item;                                                \
+        if (!list->end)                                                        \
+            list->end = item;                                                  \
     }                                                                          \
                                                                                \
     TY* SLL_POP(TY)(SLL(TY) * list) {                                          \
@@ -97,6 +109,21 @@
         if (ret) {                                                             \
             list->head     = ret->_sll_next;                                   \
             ret->_sll_next = NULL;                                             \
+            if (ret == list->end)                                              \
+                list->end = NULL;                                              \
         }                                                                      \
         return ret;                                                            \
-    }
+    }                                                                          \
+                                                                               \
+    void SLL_ENQUEUE(TY)(SLL(TY) * list, TY * item) {                          \
+        assert(list);                                                          \
+        assert(item);                                                          \
+        assert(!item->_sll_next);                                              \
+        if (list->end)                                                         \
+            list->end->_sll_next = item;                                       \
+        if (!list->head)                                                       \
+            list->head = item;                                                 \
+        list->end = item;                                                      \
+    }                                                                          \
+                                                                               \
+    TY* SLL_DEQUEUE(TY)(SLL(TY) * list) { return SLL_POP(TY)(list); }

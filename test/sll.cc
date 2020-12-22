@@ -54,4 +54,18 @@ TEST_F(SLLTest, many_insertions) {
     for (auto* node = SLL_POP(SLLNode)(&list); node;
          node       = SLL_POP(SLLNode)(&list))
         delete node;
+
+    for (i = 1; i <= 128; i++)
+        SLL_ENQUEUE(SLLNode)(&list, new SLLNode { i });
+
+    i = 1;
+    for (auto* node = SLL_PEEK(SLLNode)(&list); node;
+         node       = SLL_NEXT(SLLNode)(node), i++)
+        EXPECT_EQ(node->data, i);
+
+    EXPECT_EQ(i, 129ULL);
+
+    for (auto* node = SLL_POP(SLLNode)(&list); node;
+         node       = SLL_POP(SLLNode)(&list))
+        delete node;
 }
