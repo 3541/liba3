@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include <a3/cpp.h>
+#include <a3/util.h>
 
 #define SLL(TY) struct TY##SLL
 //#define SLL_NODE_PTR(TY) struct TY##SLLNodePtr
@@ -52,6 +53,7 @@
                                                                                \
     TY*  SLL_PEEK(TY)(SLL(TY)*);                                               \
     TY*  SLL_NEXT(TY)(TY*);                                                    \
+    void SLL_REMOVE(TY)(SLL(TY)*, TY*);                                        \
     void SLL_PUSH(TY)(SLL(TY)*, TY*);                                          \
     TY*  SLL_POP(TY)(SLL(TY)*);                                                \
     void SLL_ENQUEUE(TY)(SLL(TY)*, TY*);                                       \
@@ -88,9 +90,22 @@
         return list->head;                                                     \
     }                                                                          \
                                                                                \
-    TY* SLL_NEXT(TY)(TY * node) {                                              \
-        assert(node);                                                          \
-        return node->_sll_next;                                                \
+    TY* SLL_NEXT(TY)(TY * item) {                                              \
+        assert(item);                                                          \
+        return item->_sll_next;                                                \
+    }                                                                          \
+                                                                               \
+    void SLL_REMOVE(TY)(SLL(TY) * list, TY * item) {                           \
+        assert(list);                                                          \
+        assert(item);                                                          \
+        TY** it = &list->head;                                                 \
+        while (*it && *it != item)                                             \
+            it = &(*it)->_sll_next;                                            \
+        UNWRAPND(*it);                                                         \
+        if (*it == list->end)                                                  \
+            list->end = NULL;                                                  \
+        *it             = item->_sll_next;                                     \
+        item->_sll_next = NULL;                                                \
     }                                                                          \
                                                                                \
     void SLL_PUSH(TY)(SLL(TY) * list, TY * item) {                             \
