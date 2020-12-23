@@ -42,13 +42,12 @@ typedef ssize_t A3_SSIZE_T;
 #ifdef _MSC_VER
 #define ALLOW_UNUSED
 #define ALWAYS_INLINE __forceinline
-#else
-#if !defined(__GNUC__) && !defined(__clang__)
-#warning                                                                       \
-    "Unknown compiler variant for attributes. Defaulting to GCC/Clang-style."
-#endif
+#elif defined(__GNUC__) || defined(__clang__)
 #define ALLOW_UNUSED  __attribute__((unused))
 #define ALWAYS_INLINE inline __attribute__((always_inline))
+#else // !_MSC_VER && (__GNUC__ || __clang__)
+#define ALLOW_UNUSED
+#define ALWAYS_INLINE
 #endif
 
 #ifdef a3_HAVE__Thread_local
@@ -56,7 +55,9 @@ typedef ssize_t A3_SSIZE_T;
 #else
 #ifdef _MSC_VER
 #define THREAD_LOCAL __declspec(thread)
-#else
+#else // !Thread_local && _MSC_VER
 #warning "Missing _Thread_local with no known alternative."
-#endif
+// This should trigger a compile error if used.
+#define THREAD_LOCAL void
+#endif // !Thread_local && !_MSC_VER
 #endif
