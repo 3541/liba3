@@ -30,10 +30,18 @@ typedef ssize_t A3_SSIZE_T;
 #endif
 
 // Attributes
+#ifdef _WIN32
+// Note: Yes, this works on mingw GCC.
+#define EXPORT __declspec(dllexport)
+#elif defined(__GNUC__) || defined(__clang__)
+#define EXPORT        __attribute__((__visibility__("default")))
+#else // !_WIN32 && (__GNUC__ || __clang__)
+#define EXPORT
+#endif // !_WIN32 && !__GNUC__ && !__clang__
+
 #ifdef _MSC_VER
 #define ALLOW_UNUSED
 #define ALWAYS_INLINE __forceinline
-#define EXPORT        __declspec(dllexport)
 #else
 #if !defined(__GNUC__) && !defined(__clang__)
 #warning                                                                       \
@@ -41,7 +49,6 @@ typedef ssize_t A3_SSIZE_T;
 #endif
 #define ALLOW_UNUSED  __attribute__((unused))
 #define ALWAYS_INLINE inline __attribute__((always_inline))
-#define EXPORT        __attribute__((__visibility__("default")))
 #endif
 
 #ifdef a3_HAVE__Thread_local
