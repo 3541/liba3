@@ -98,6 +98,7 @@ else()
 endif()
 
 include(AddFlags)
+include(SetCXX20)
 add_executable(a3_test
   test/buf.cc
   test/ht.cc
@@ -107,7 +108,7 @@ add_executable(a3_test
   test/sll.cc
   test/str.cc
 )
-target_compile_features(a3_test PRIVATE cxx_std_20)
+target_set_cxx_std_20(a3_test)
 set_target_properties(a3_test PROPERTIES
   CXX_EXTENSIONS OFF
   C_EXTENSIONS OFF
