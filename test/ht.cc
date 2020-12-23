@@ -45,7 +45,7 @@ TEST_F(HTTest, insert_and_delete) {
 TEST_F(HTTest, grow) {
     vector<CString> keys;
 
-    auto all_present = [&]() {
+    auto all_present = [this, &keys]() {
         for (auto& key : keys) {
             auto* value = HT_FIND(CString, CString)(&table, key);
             EXPECT_TRUE(value);
