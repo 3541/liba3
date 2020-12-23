@@ -34,7 +34,7 @@ typedef ssize_t A3_SSIZE_T;
 // Note: Yes, this works on mingw GCC.
 #define EXPORT __declspec(dllexport)
 #elif defined(__GNUC__) || defined(__clang__)
-#define EXPORT        __attribute__((__visibility__("default")))
+#define EXPORT __attribute__((__visibility__("default")))
 #else // !_WIN32 && (__GNUC__ || __clang__)
 #define EXPORT
 #endif // !_WIN32 && !__GNUC__ && !__clang__
