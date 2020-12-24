@@ -15,7 +15,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "log.h"
+#include <a3/log.h>
+
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 // Abort with a message.
 #define PANIC_FMT(fmt, ...)                                                    \
@@ -27,6 +30,12 @@
 #define PANIC(msg) PANIC_FMT("%s", (msg))
 
 #define UNREACHABLE() PANIC("UNREACHABLE")
+
+#ifdef _MSC_VER
+// Disable warning for "assignment within conditional expression. Why is this
+// even a warning?
+#pragma warning(disable : 4706)
+#endif
 
 // "unwrap" a return value which is falsy on error, and assign to T on success.
 // This is useful for fatal errors (e.g., allocation failures).
@@ -82,8 +91,12 @@
         return F ? T : E;                                                      \
     } while (0);
 
+#if defined(__GNUC__) || defined(__clang__)
 #define FORMAT_FN(FMT_INDEX, VARG_INDEX)                                       \
     __attribute__((__format__(__printf__, FMT_INDEX, VARG_INDEX)))
+#else
+#define FORMAT_FN(FMT_INDEX, VARG_INDEX)
+#endif
 
 #define CONTAINER_OF(PTR, TY, FIELD)                                           \
     ((TY*)((uintptr_t)PTR - offsetof(TY, FIELD)))

@@ -16,8 +16,10 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include <a3/platform.h>
 #include <a3/str.h>
 #include <a3/util.h>
 
@@ -54,6 +56,25 @@ bool buf_init(Buffer* this, size_t cap, size_t max_cap) {
     this->max_cap = max_cap;
 
     return true;
+}
+
+Buffer* buf_new(size_t cap, size_t max_cap) {
+    Buffer* ret = calloc(1, sizeof(Buffer));
+    buf_init(ret, cap, max_cap);
+    return ret;
+}
+
+void buf_destroy(Buffer* buf) {
+    assert(buf_initialized(buf));
+
+    string_free(&buf->data);
+    memset(buf, 0, sizeof(Buffer));
+}
+
+void buf_free(Buffer* buf) {
+    assert(buf_initialized(buf));
+    buf_destroy(buf);
+    free(buf);
 }
 
 bool buf_write_byte(Buffer* this, uint8_t byte) {
@@ -99,7 +120,7 @@ bool buf_write_fmt(Buffer* this, const char* fmt, ...) {
 bool buf_write_num(Buffer* this, size_t num) {
     static THREAD_LOCAL uint8_t _BUF[20] = { '\0' };
     String                      num_str =
-        string_itoa((String) { .ptr = _BUF, .len = sizeof(_BUF) }, num);
+        string_itoa_into((String) { .ptr = _BUF, .len = sizeof(_BUF) }, num);
     return buf_write_str(this, S_CONST(num_str));
 }
 
@@ -111,6 +132,23 @@ void buf_read(Buffer* this, size_t len) {
     this->head += len;
     buf_reset_if_empty(this);
 }
+
+#ifdef _WIN32
+// Windows doesn't have memmem.
+static void* memmem(const void* haystack, size_t haystacklen,
+                    const void* needle, size_t needlelen) {
+    if (!haystack || !haystacklen || !needle || !needlelen)
+        return NULL;
+
+    for (const uint8_t* sp = haystack;
+         sp + needlelen < (const uint8_t*)haystack + haystacklen; sp++) {
+        if (memcmp(sp, needle, needlelen) == 0)
+            return (void*)sp;
+    }
+
+    return NULL;
+}
+#endif
 
 String buf_memmem(Buffer* this, CString needle) {
     assert(buf_initialized(this));
@@ -129,7 +167,7 @@ String buf_memmem(Buffer* this, CString needle) {
 // care should be taken not to write into the buffer as long as the returned
 // pointer is needed.
 String buf_token_next_impl(_buf_token_next_args args) {
-    struct Buffer* this  = args.this;
+    struct Buffer* this  = args.buf;
     CString delim        = args.delim;
     bool    preserve_end = args.preserve_end;
     assert(buf_initialized(this));
@@ -177,11 +215,4 @@ bool buf_consume(Buffer* this, CString needle) {
 
     buf_read(this, needle.len);
     return true;
-}
-
-void buf_free(Buffer* this) {
-    assert(buf_initialized(this));
-
-    string_free(&this->data);
-    memset(this, 0, sizeof(Buffer));
 }

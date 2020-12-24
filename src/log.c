@@ -38,5 +38,5 @@ void log_fmt(LogLevel level, const char* fmt, ...) {
 void log_msg(LogLevel level, const char* msg) { log_fmt(level, "%s", msg); }
 
 void log_error(int error, const char* msg) {
-    log_fmt(ERROR, "Error: %s (%s).", strerror(error), msg);
+    log_fmt(ERROR, "Error: %s (%s).", msg, strerror(error));
 }

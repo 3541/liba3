@@ -10,17 +10,27 @@
 #include <a3/str.h>
 
 #include <assert.h>
+#include <ctype.h>
+#include <math.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
+
+#ifndef _MSC_VER
 #include <strings.h>
-#include <sys/param.h>
+#endif
+
+#include <a3/util.h>
 
 String string_alloc(size_t len) {
     return (String) { .ptr = calloc(len, sizeof(char)), .len = len };
 }
 
-String string_realloc(String this, size_t new_len) {
-    return (String) { .ptr = realloc(this.ptr, new_len), .len = new_len };
+String string_realloc(String* this, size_t new_len) {
+    String ret = { .ptr = realloc(this->ptr, new_len), .len = new_len };
+    this->ptr  = NULL;
+    this->len  = 0;
+    return ret;
 }
 
 String string_clone(CString other) {
@@ -40,7 +50,7 @@ void string_free(String* this) {
 }
 
 void string_copy(String dst, CString src) {
-    if (!dst.ptr || !src.ptr)
+    if (!dst.ptr || !src.ptr || dst.ptr == src.ptr)
         return;
     memcpy(dst.ptr, src.ptr, MIN(dst.len, src.len));
 }
@@ -67,13 +77,22 @@ void string_reverse(String str) {
     }
 }
 
-String string_itoa(String dst, size_t v) {
+String string_itoa_into(String dst, size_t v) {
     size_t i = 0;
-    for (; i < dst.len && v; i++, v /= 10)
-        dst.ptr[i] = "0123456789"[v % 10];
+    do {
+        dst.ptr[i] = (uint8_t) "0123456789"[v % 10];
+        v /= 10;
+        i++;
+    } while (i <= dst.len && v);
     String ret = { .ptr = dst.ptr, .len = i };
     string_reverse(ret);
     return ret;
+}
+
+String string_itoa(size_t v) {
+    double digits = v > 0 ? floor(log10((double)v)) + 1.0 : 1.0;
+    String dst    = string_alloc((size_t)digits);
+    return string_itoa_into(dst, v);
 }
 
 bool string_isascii(CString str) {
@@ -83,6 +102,13 @@ bool string_isascii(CString str) {
         if (!isascii(str.ptr[i]))
             return false;
     return true;
+}
+
+int string_cmp(CString s1, CString s2) {
+    assert(s1.ptr && s2.ptr);
+    if (s1.len != s2.len)
+        return -1;
+    return strncmp((char*)s1.ptr, (char*)s2.ptr, s1.len);
 }
 
 int string_cmpi(CString s1, CString s2) {

@@ -10,6 +10,9 @@
 #include <a3/pool.h>
 
 #include <assert.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <a3/util.h>
 
@@ -38,7 +41,7 @@ Pool* pool_new(size_t block_size, size_t blocks) {
 
     uintptr_t base = (uintptr_t)ret->data;
     for (size_t i = 0; i < blocks - 1; i++) {
-        *(uintptr_t*)((void*)ret->data + block_size * i) = (i + 1) * block_size + base;
+        *(uintptr_t*)(base + block_size * i) = (i + 1) * block_size + base;
     }
     return ret;
 }
@@ -51,6 +54,7 @@ void* pool_alloc_block(Pool* pool) {
     PoolSlot* slot = pool->free;
 
     pool->free = slot->next;
+    memset(slot, 0, pool->block_size);
 
     return (void*)slot;
 }

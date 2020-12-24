@@ -2,3 +2,31 @@
 
 My personal C library. All the little things I keep rewriting for every
 nontrivial C project.
+
+## Provides
+- Growable buffer.
+- Hash table (open addressing, Robin Hood).
+- Intrusive doubly-linked list.
+- Priority queue (binary heap).
+- Logging (to arbitrary `FILE*` outputs).
+- Pool allocator.
+- Safer strings.
+
+## Features
+- Simple and lightweight — approx. 1 kLOC. Less, without `a3_hash`.
+- Type-generic data structures — (ab)uses preprocessor macros to imitate C++ templates.
+
+## Usage
+CMake or Meson projects should easily be able to hook into the build system. The CMake file provides a library target `a3`. The hash table also requires linking against `a3_hash`, which pulls in [HighwayHash](https://github.com/google/highwayhash) as a dependency.
+
+Tests can be run either through the `test` target or with CTest.
+
+## Notes
+Most objects (buffer, hash table, linked list, etc...) provide the following functions to do with their lifecycle:
+
+- `void X_init(X*, [...])` initializes a new object.
+- `X* X_new([...])` allocates and initializes (by calling `X_init`) a new object.
+- `void X_destroy(X*)` deinitializes an object and frees its owned memory.
+- `void X_free(X*)` deinitializes (by calling `X_destroy`) and frees an object.
+
+This vaguely mirrors the C++ object lifecycle, where `X_new` and `X_free` mimic `new` and `delete`, and `X_init` and `X_destroy` are the constructor and destructor.
