@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 
 #include <a3/log.h>
+#include <a3/str.h>
 
 class LogTest : public ::testing::Test {
     static constexpr size_t READ_BUF_SIZE = 512;
@@ -48,6 +49,11 @@ TEST_F(LogTest, filter) {
 TEST_F(LogTest, format) {
     log_fmt(DEBUG, "%d, %0.1f, %s", 123, 1.2, "string");
     ASSERT_EQ(read_written(), "123, 1.2, string\n");
+}
+
+TEST_F(LogTest, format_string) {
+    log_fmt(DEBUG, "Some formatting: " S_F, S_FA(CS("test string")));
+    ASSERT_EQ(read_written(), "Some formatting: test string\n");
 }
 
 TEST_F(LogTest, error) {
