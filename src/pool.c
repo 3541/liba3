@@ -53,6 +53,7 @@ Pool* pool_new(size_t block_size, size_t blocks, size_t align) {
 #else
     UNWRAPN(ret->data, _aligned_malloc(ret->cap, align));
 #endif
+    memset(ret->data, 0, ret->cap);
     ret->free = ret->data;
 
     uintptr_t base = (uintptr_t)ret->data;
