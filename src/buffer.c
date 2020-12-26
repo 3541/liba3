@@ -9,6 +9,7 @@
 
 // For memmem.
 #define _GNU_SOURCE
+#define _DARWIN_C_SOURCE __DARWIN_C_FULL
 
 #include <a3/buffer.h>
 
