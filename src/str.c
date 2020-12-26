@@ -23,11 +23,12 @@
 #include <a3/util.h>
 
 String string_alloc(size_t len) {
-    return (String) { .ptr = calloc(len, sizeof(char)), .len = len };
+    return (String) { .ptr = calloc(len + 1, sizeof(char)), .len = len };
 }
 
 String string_realloc(String* this, size_t new_len) {
-    String ret = { .ptr = realloc(this->ptr, new_len), .len = new_len };
+    String ret = { .ptr = realloc(this->ptr, new_len + 1), .len = new_len };
+    ret.ptr[new_len] = '\0';
     this->ptr  = NULL;
     this->len  = 0;
     return ret;
