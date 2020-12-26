@@ -10,6 +10,7 @@
 #include <a3/pool.h>
 
 #include <assert.h>
+#include <stdalign.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,19 +25,34 @@ struct Pool {
     void*     data;
     PoolSlot* free;
     size_t    block_size;
-    size_t    capacity; // In bytes.
+    size_t    cap; // In bytes.
 };
 
-Pool* pool_new(size_t block_size, size_t blocks) {
+static inline size_t align_down(size_t v, size_t align) {
+    return v & ~(align - 1);
+}
+
+static inline size_t align_up(size_t v, size_t align) {
+    return align_down(v + align - 1, align);
+}
+
+Pool* pool_new(size_t block_size, size_t blocks, size_t align) {
     if (block_size < sizeof(PoolSlot))
         PANIC_FMT("Block size %zu is too small for a pool slot (%zu).",
                   block_size, sizeof(PoolSlot));
 
+    align      = MAX(align, alignof(PoolSlot));
+    block_size = align_up(block_size, align);
+
     Pool* ret;
     UNWRAPN(ret, calloc(1, sizeof(Pool)));
     ret->block_size = block_size;
-    ret->capacity   = blocks * block_size;
-    UNWRAPN(ret->data, calloc(blocks, block_size));
+    ret->cap        = blocks * block_size;
+#ifndef _WIN32
+    UNWRAPSD(posix_memalign(&ret->data, align, ret->cap));
+#else
+    UNWRAPN(ret->data, _aligned_malloc(ret->cap, align));
+#endif
     ret->free = ret->data;
 
     uintptr_t base = (uintptr_t)ret->data;
@@ -71,6 +87,11 @@ void pool_free_block(Pool* pool, void* block) {
 void pool_free(Pool* pool) {
     assert(pool);
 
+#ifndef _WIN32
     free(pool->data);
+#else
+    // _aligned_alloced memory cannot be freed with free.
+    _aligned_free(pool->data);
+#endif
     free(pool);
 }

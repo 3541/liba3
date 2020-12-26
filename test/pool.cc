@@ -20,7 +20,7 @@ class PoolTest : public ::testing::Test {
 protected:
     Pool* pool { nullptr };
 
-    void SetUp() override { pool = pool_new(sizeof(TestObject), POOL_SIZE); }
+    void SetUp() override { pool = POOL_OF(TestObject, POOL_SIZE); }
 
     void TearDown() override { pool_free(pool); }
 

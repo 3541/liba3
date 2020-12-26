@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <stdalign.h>
 #include <stddef.h>
 
 #include <a3/cpp.h>
@@ -18,9 +19,11 @@ H_BEGIN
 
 typedef struct Pool Pool;
 
-EXPORT Pool* pool_new(size_t block_size, size_t blocks);
+EXPORT Pool* pool_new(size_t block_size, size_t blocks, size_t align);
 EXPORT void* pool_alloc_block(Pool*);
 EXPORT void  pool_free_block(Pool*, void*);
 EXPORT void  pool_free(Pool*);
+
+#define POOL_OF(TY, COUNT) pool_new(sizeof(TY), (COUNT), alignof(TY))
 
 H_END
