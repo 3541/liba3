@@ -9,8 +9,13 @@
 
 #pragma once
 
-#include <stdalign.h>
 #include <stddef.h>
+
+#ifndef _WIN32
+#include <stdalign.h>
+#else
+#define alignof __alignof
+#endif
 
 #include <a3/cpp.h>
 #include <a3/platform.h>

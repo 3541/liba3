@@ -10,10 +10,15 @@
 #include <a3/pool.h>
 
 #include <assert.h>
-#include <stdalign.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifndef _WIN32
+#include <stdalign.h>
+#else
+#define alignof __alignof
+#endif
 
 #include <a3/util.h>
 
