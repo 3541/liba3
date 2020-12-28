@@ -24,10 +24,8 @@ H_BEGIN
 uint64_t HighwayHash64(const uint8_t* data, size_t size, const uint64_t key[4]);
 H_END
 
-#include <a3/cpp.h>
-
 #ifndef HT_INITIAL_CAP
-#define HT_INITIAL_CAP 257ULL
+#define HT_INITIAL_CAP 31ULL
 #endif
 
 #ifndef HT_LOAD_FACTOR
@@ -55,6 +53,7 @@ H_END
     HT(K, V) {                                                                 \
         size_t   size;                                                         \
         size_t   cap;                                                          \
+        bool     can_grow;                                                     \
         uint64_t hash_key[HT_HASH_KEY_SIZE];                                   \
         HT_ENTRY(K, V) * entries;                                              \
     };                                                                         \
@@ -65,6 +64,7 @@ H_END
 #define HT_DEFAULT_HASH(K, V) K##V##_ht_default_hash
 #define HT_PROBE_COUNT(K, V)  K##V##_ht_probe_count
 #define HT_INSERT_AT(K, V)    K##V##_ht_insert_at
+#define HT_RESIZE(K, V)       K##V##_ht_resize
 #define HT_GROW(K, V)         K##V##_ht_grow
 #define HT_FIND_ENTRY(K, V)   K##V##_ht_find_entry
 
@@ -80,12 +80,15 @@ H_END
 
 #define HT_DECLARE_METHODS(K, V)                                               \
     H_BEGIN                                                                    \
-    void HT_INIT(K, V)(HT(K, V)*);                                             \
-    HT(K, V) * HT_NEW(K, V)(void);                                             \
+    void HT_INIT(K, V)(HT(K, V)*, bool can_grow);                              \
+    HT(K, V) * HT_NEW(K, V)(bool can_grow);                                    \
     void HT_DESTROY(K, V)(HT(K, V)*);                                          \
     void HT_FREE(K, V)(HT(K, V)*);                                             \
                                                                                \
-    void HT_INSERT(K, V)(HT(K, V)*, K, V);                                     \
+    void HT_RESIZE(K, V)(HT(K, V)*, size_t);                                   \
+                                                                               \
+    bool HT_INSERT(K, V)(HT(K, V)*, K, V);                                     \
+    HT_ENTRY(K, V) * HT_FIND_ENTRY(K, V)(HT(K, V)*, K);                        \
     V*   HT_FIND(K, V)(HT(K, V)*, K);                                          \
     bool HT_DELETE(K, V)(HT(K, V)*, K);                                        \
                                                                                \
@@ -148,12 +151,13 @@ H_END
         }                                                                        \
     }                                                                            \
                                                                                  \
-    static void HT_GROW(K, V)(HT(K, V) * table) {                                \
+    void HT_RESIZE(K, V)(HT(K, V) * table, size_t new_cap) {                     \
         assert(table);                                                           \
+        assert(new_cap > table->cap);                                            \
                                                                                  \
         HT_ENTRY(K, V)* prev_entries = table->entries;                           \
         size_t prev_cap              = table->cap;                               \
-        table->cap *= 2;                                                         \
+        table->cap = new_cap;                                                    \
         table->entries =                                                         \
             (HT_ENTRY(K, V)*)(calloc(table->cap, sizeof(HT_ENTRY(K, V))));       \
                                                                                  \
@@ -169,7 +173,15 @@ H_END
         free(prev_entries);                                                      \
     }                                                                            \
                                                                                  \
-    static HT_ENTRY(K, V) * HT_FIND_ENTRY(K, V)(HT(K, V) * table, K key) {       \
+    static bool HT_GROW(K, V)(HT(K, V) * table) {                                \
+        assert(table);                                                           \
+        if (!table->can_grow)                                                    \
+            return false;                                                        \
+        HT_RESIZE(K, V)(table, table->cap * 2);                                  \
+        return true;                                                             \
+    }                                                                            \
+                                                                                 \
+    HT_ENTRY(K, V) * HT_FIND_ENTRY(K, V)(HT(K, V) * table, K key) {              \
         assert(table);                                                           \
                                                                                  \
         uint64_t hash = HT_HASH(K, V)(table, key);                               \
@@ -186,10 +198,11 @@ H_END
         }                                                                        \
     }                                                                            \
                                                                                  \
-    void HT_INIT(K, V)(HT(K, V) * table) {                                       \
+    void HT_INIT(K, V)(HT(K, V) * table, bool can_grow) {                        \
         assert(table);                                                           \
-        table->size = 0;                                                         \
-        table->cap  = HT_INITIAL_CAP;                                            \
+        table->can_grow = can_grow;                                              \
+        table->size     = 0;                                                     \
+        table->cap      = HT_INITIAL_CAP;                                        \
         srand((unsigned int)time(NULL));                                         \
         uint8_t* key_bytes = (uint8_t*)&table->hash_key[0];                      \
         for (size_t i = 0; i < HT_HASH_KEY_SIZE * sizeof(table->hash_key[0]);    \
@@ -201,9 +214,9 @@ H_END
         UNWRAPND(table->entries);                                                \
     }                                                                            \
                                                                                  \
-    HT(K, V) * HT_NEW(K, V)() {                                                  \
+    HT(K, V) * HT_NEW(K, V)(bool can_grow) {                                     \
         HT(K, V)* ret = (HT(K, V)*)calloc(1, sizeof(HT(K, V)));                  \
-        HT_INIT(K, V)(ret);                                                      \
+        HT_INIT(K, V)(ret, can_grow);                                            \
         return ret;                                                              \
     }                                                                            \
                                                                                  \
@@ -219,14 +232,16 @@ H_END
         free(table);                                                             \
     }                                                                            \
                                                                                  \
-    void HT_INSERT(K, V)(HT(K, V) * table, K key, V value) {                     \
+    bool HT_INSERT(K, V)(HT(K, V) * table, K key, V value) {                     \
         assert(table);                                                           \
                                                                                  \
         if (table->size * 100 >= table->cap * HT_LOAD_FACTOR)                    \
-            HT_GROW(K, V)(table);                                                \
+            if (!HT_GROW(K, V)(table) && table->size >= table->cap)              \
+                return false; \
                                                                                  \
         table->size++;                                                           \
         HT_INSERT_AT(K, V)(table, HT_HASH(K, V)(table, key), key, value);        \
+        return true;                                                             \
     }                                                                            \
                                                                                  \
     V* HT_FIND(K, V)(HT(K, V) * table, K key) {                                  \

@@ -105,6 +105,7 @@ include(SetCXX20)
 
 add_executable(a3_test
   test/buf.cc
+  test/cache.cc
   test/ht.cc
   test/ll.cc
   test/log.cc

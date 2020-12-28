@@ -17,7 +17,7 @@ class HTTest : public ::testing::Test {
 protected:
     HT(CString, CString) table {};
 
-    void SetUp() override { HT_INIT(CString, CString)(&table); }
+    void SetUp() override { HT_INIT(CString, CString)(&table, true); }
 
     void TearDown() override { HT_DESTROY(CString, CString)(&table); }
 };
