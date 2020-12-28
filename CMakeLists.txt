@@ -98,7 +98,11 @@ else()
 endif()
 
 include(AddFlags)
+include(DisableExceptions)
+include(DisableRTTI)
+include(Sanitize)
 include(SetCXX20)
+
 add_executable(a3_test
   test/buf.cc
   test/ht.cc
@@ -108,12 +112,13 @@ add_executable(a3_test
   test/sll.cc
   test/str.cc
 )
+target_disable_exceptions(a3_test)
+target_disable_rtti(a3_test)
 target_set_cxx_std_20(a3_test)
 set_target_properties(a3_test PROPERTIES
   CXX_EXTENSIONS OFF
   C_EXTENSIONS OFF
 )
-include(Sanitize)
 target_add_sanitizers(a3_test TRUE)
 target_add_extra_warnings(a3_test)
 if (NOT MSVC)
