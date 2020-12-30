@@ -76,7 +76,7 @@ ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
 #endif // !__cplusplus
 
 #define S_F "%.*s"
-#define S_FA(S) (S).len, (S).ptr
+#define S_FA(S) ((int)(S).len), ((S).ptr)
 
 ALWAYS_INLINE CString CS_OF(const char* str) {
     return S_CONST(S_OF((char*)str));
