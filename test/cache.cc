@@ -49,7 +49,6 @@ TEST_F(CacheTest, eviction) {
     vector<String> strings;
 
     for (size_t i = 0; i < CACHE_CAPACITY * 3; i++) {
-        fprintf(stderr, "%zu\n", i);
         auto s = string_itoa(i);
         strings.push_back(s);
         auto sc = S_CONST(s);

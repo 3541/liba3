@@ -48,7 +48,7 @@ TEST_F(HTTest, grow) {
     auto all_present = [this, &keys]() {
         for (auto& key : keys) {
             auto* value = HT_FIND(CString, CString)(&table, key);
-            EXPECT_TRUE(value);
+            ASSERT_TRUE(value);
             EXPECT_EQ(string_cmp(key, *value), 0ULL);
         }
     };
@@ -106,12 +106,9 @@ TEST_F(HTTest, fixed_size) {
             ASSERT_TRUE(HT_DELETE(CString, CString)(&table, S_CONST(key)));
 
         EXPECT_EQ(table.size, 0ULL);
-        for (size_t i = 0; i < table.cap; i++)
-            EXPECT_TRUE(table.entries[i].hash & HT_TOMBSTONE);
     };
 
-    for (size_t i = 0; i < 10; i++) {
-        fprintf(stderr, "Iteration: %zu.\n", i);
+    for (size_t i = 1; i <= 10; i++) {
         assert(fill_table());
         clear_table();
     }
