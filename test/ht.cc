@@ -79,7 +79,8 @@ TEST_F(HTTest, grow) {
 
 // This test is deliberately meant to provoke the issue discovered in 4f33b27.
 TEST_F(HTTest, fixed_size) {
-    constexpr size_t TEST_CAP = HT_INITIAL_CAP;
+    constexpr size_t TEST_CAP = 512;
+    HT_RESIZE(CString, CString)(&table, TEST_CAP);
 
     vector<String> keys;
 
@@ -108,8 +109,8 @@ TEST_F(HTTest, fixed_size) {
         EXPECT_EQ(table.size, 0ULL);
     };
 
-    for (size_t i = 1; i <= 10; i++) {
-        assert(fill_table());
+    for (size_t i = 1; i <= 50; i++) {
+        ASSERT_TRUE(fill_table());
         clear_table();
     }
 
