@@ -36,8 +36,6 @@ H_END
 #define HT_HASH_KEY_SIZE 4ULL
 #endif
 
-#define HT_TOMBSTONE (1ULL << 63)
-
 #define HT(K, V)       struct K##V##HT
 #define HT_ENTRY(K, V) struct K##V##HTEntry
 
@@ -66,6 +64,7 @@ H_END
 #define HT_INSERT_AT(K, V)    K##V##_ht_insert_at
 #define HT_RESIZE(K, V)       K##V##_ht_resize
 #define HT_GROW(K, V)         K##V##_ht_grow
+#define HT_FIND_INDEX(K, V)   K##V##_ht_find_index
 #define HT_FIND_ENTRY(K, V)   K##V##_ht_find_entry
 
 #define HT_INIT(K, V)    K##V##_ht_init
@@ -73,10 +72,11 @@ H_END
 #define HT_DESTROY(K, V) K##V##_ht_destroy
 #define HT_FREE(K, V)    K##V##_ht_free
 
-#define HT_INSERT(K, V) K##V##_ht_insert
-#define HT_FIND(K, V)   K##V##_ht_find
-#define HT_DELETE(K, V) K##V##_ht_delete
-#define HT_SIZE(K, V)   K##V##_ht_size
+#define HT_INSERT(K, V)       K##V##_ht_insert
+#define HT_FIND(K, V)         K##V##_ht_find
+#define HT_DELETE_INDEX(K, V) K##V##_ht_delete_index
+#define HT_DELETE(K, V)       K##V##_ht_delete
+#define HT_SIZE(K, V)         K##V##_ht_size
 
 #define HT_DECLARE_METHODS(K, V)                                               \
     H_BEGIN                                                                    \
@@ -87,9 +87,11 @@ H_END
                                                                                \
     void HT_RESIZE(K, V)(HT(K, V)*, size_t);                                   \
                                                                                \
-    bool HT_INSERT(K, V)(HT(K, V)*, K, V);                                     \
+    bool       HT_INSERT(K, V)(HT(K, V)*, K, V);                               \
+    A3_SSIZE_T HT_FIND_INDEX(K, V)(HT(K, V)*, K);                              \
     HT_ENTRY(K, V) * HT_FIND_ENTRY(K, V)(HT(K, V)*, K);                        \
     V*   HT_FIND(K, V)(HT(K, V)*, K);                                          \
+    bool HT_DELETE_INDEX(K, V)(HT(K, V)*, size_t);                             \
     bool HT_DELETE(K, V)(HT(K, V)*, K);                                        \
                                                                                \
     inline size_t HT_SIZE(K, V)(HT(K, V) * table) {                            \
@@ -105,21 +107,20 @@ H_END
 #define HT_DEFINE_METHODS_HASHER(K, V, H, C)                                     \
     static uint64_t HT_HASH(K, V)(HT(K, V) * table, K key) {                     \
         assert(table);                                                           \
-        uint64_t ret = H(table, key) & ~HT_TOMBSTONE;                            \
+        uint64_t ret = H(table, key);                                            \
         return ret ? ret : 1;                                                    \
     }                                                                            \
                                                                                  \
     static size_t HT_PROBE_COUNT(K, V)(HT(K, V) * table, size_t index,           \
                                        uint64_t hash) {                          \
         assert(table);                                                           \
-        hash &= ~HT_TOMBSTONE;                                                   \
         return (index + table->cap - hash % table->cap) % table->cap;            \
     }                                                                            \
                                                                                  \
     static void HT_INSERT_AT(K, V)(HT(K, V) * table, uint64_t hash, K key,       \
                                    V value) {                                    \
         assert(table);                                                           \
-        assert(!(hash & HT_TOMBSTONE));                                          \
+                                                                                 \
         for (size_t i = hash % table->cap, probe_count = 0;;                     \
              i = (i + 1) % table->cap, probe_count++) {                          \
             HT_ENTRY(K, V)* current_entry = &table->entries[i];                  \
@@ -134,13 +135,6 @@ H_END
                                                                                  \
             if (HT_PROBE_COUNT(K, V)(table, i, current_entry->hash) <            \
                 probe_count) {                                                   \
-                if (current_entry->hash & HT_TOMBSTONE) {                        \
-                    current_entry->key   = key;                                  \
-                    current_entry->value = value;                                \
-                    current_entry->hash  = hash;                                 \
-                    return;                                                      \
-                }                                                                \
-                                                                                 \
                 HT_ENTRY(K, V) old_entry = *current_entry;                       \
                 current_entry->key       = key;                                  \
                 current_entry->value     = value;                                \
@@ -165,7 +159,7 @@ H_END
                                                                                  \
         for (size_t i = 0; i < prev_cap; i++) {                                  \
             HT_ENTRY(K, V)* current_entry = &prev_entries[i];                    \
-            if (!current_entry->hash || current_entry->hash & HT_TOMBSTONE)      \
+            if (!current_entry->hash)                                            \
                 continue;                                                        \
             HT_INSERT_AT(K, V)                                                   \
             (table, current_entry->hash, current_entry->key,                     \
@@ -183,7 +177,7 @@ H_END
         return true;                                                             \
     }                                                                            \
                                                                                  \
-    HT_ENTRY(K, V) * HT_FIND_ENTRY(K, V)(HT(K, V) * table, K key) {              \
+    A3_SSIZE_T HT_FIND_INDEX(K, V)(HT(K, V) * table, K key) {                    \
         assert(table);                                                           \
                                                                                  \
         uint64_t hash = HT_HASH(K, V)(table, key);                               \
@@ -193,11 +187,19 @@ H_END
             if (!current_entry->hash ||                                          \
                 HT_PROBE_COUNT(K, V)(table, i, current_entry->hash) <            \
                     probe_count)                                                 \
-                return NULL;                                                     \
+                return -1;                                                       \
             if (hash == current_entry->hash &&                                   \
                 C(key, current_entry->key) == 0)                                 \
-                return current_entry;                                            \
+                return (A3_SSIZE_T)i;                                            \
         }                                                                        \
+    }                                                                            \
+                                                                                 \
+    HT_ENTRY(K, V) * HT_FIND_ENTRY(K, V)(HT(K, V) * table, K key) {              \
+        assert(table);                                                           \
+        A3_SSIZE_T i = HT_FIND_INDEX(K, V)(table, key);                          \
+        if (i < 0)                                                               \
+            return NULL;                                                         \
+        return &table->entries[i];                                               \
     }                                                                            \
                                                                                  \
     void HT_INIT(K, V)(HT(K, V) * table, bool can_grow) {                        \
@@ -254,14 +256,37 @@ H_END
         return &entry->value;                                                    \
     }                                                                            \
                                                                                  \
+    bool HT_DELETE_INDEX(K, V)(HT(K, V) * table, size_t index) {                 \
+        assert(table);                                                           \
+                                                                                 \
+        HT_ENTRY(K, V)* entry = &table->entries[index];                          \
+        TRYB(entry);                                                             \
+        entry->hash = 0;                                                         \
+        table->size--;                                                           \
+                                                                                 \
+        /* Shift the following sequence of entries back. */                      \
+        size_t i                   = ((size_t)index + 1) % table->cap;           \
+        HT_ENTRY(K, V)* next_entry = &table->entries[i];                         \
+        while (next_entry->hash &&                                               \
+               HT_PROBE_COUNT(K, V)(table, i, next_entry->hash)) {               \
+            entry->hash = 0;                                                     \
+            *entry      = *next_entry;                                           \
+            i           = (i + 1) % table->cap;                                  \
+            entry       = next_entry;                                            \
+            next_entry  = &table->entries[i];                                    \
+        }                                                                        \
+        entry->hash = 0;                                                         \
+                                                                                 \
+        return true;                                                             \
+    }                                                                            \
+                                                                                 \
     bool HT_DELETE(K, V)(HT(K, V) * table, K key) {                              \
         assert(table);                                                           \
                                                                                  \
-        HT_ENTRY(K, V)* entry = HT_FIND_ENTRY(K, V)(table, key);                 \
-        TRYB(entry);                                                             \
-        entry->hash |= HT_TOMBSTONE;                                             \
-        table->size--;                                                           \
-        return true;                                                             \
+        A3_SSIZE_T index = HT_FIND_INDEX(K, V)(table, key);                      \
+        if (index < 0)                                                           \
+            return false;                                                        \
+        return HT_DELETE_INDEX(K, V)(table, (size_t)index);                      \
     }
 
 // Define methods with HighwayHash as the hash function. Helpers have the
