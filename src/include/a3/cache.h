@@ -143,12 +143,7 @@
                                                                                \
         if (cache->eviction_index == start && !found)                          \
             PANIC("Unable to evict an entry. This shouldn't be possible.");    \
-        HT_ENTRY(K, V)* to_evict =                                             \
-            &cache->table.entries[cache->eviction_index];                      \
-        cache->eviction_index =                                                \
-            (cache->eviction_index + 1) % cache->table.cap;                    \
-        to_evict->hash |= HT_TOMBSTONE;                                        \
-        cache->table.size--;                                                   \
+        HT_DELETE_INDEX(K, V)(&cache->table, cache->eviction_index);           \
     }                                                                          \
                                                                                \
     void CACHE_INSERT(K, V)(CACHE(K, V) * cache, K key, V value) {             \
