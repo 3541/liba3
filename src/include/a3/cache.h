@@ -105,7 +105,7 @@
         size_t  bit   = 1ULL << (index % CACHE_ENTRIES_PER_BLOCK);             \
         if ((*block | bit) == CACHE_BLOCK_FULL)                                \
             *block = 0ULL;                                                     \
-        *block |= 1ULL << (index % CACHE_ENTRIES_PER_BLOCK);                   \
+        *block |= bit;                                                         \
     }                                                                          \
                                                                                \
     static bool CACHE_ACCESSED(K, V)(CACHE(K, V) * cache, size_t index) {      \
@@ -131,21 +131,22 @@
         assert(cache);                                                         \
                                                                                \
         size_t start = cache->eviction_index;                                  \
+        bool   found = false;                                                  \
         do {                                                                   \
-            HT_ENTRY(K, V)* current_entry =                                    \
-                &cache->table.entries[cache->eviction_index];                  \
-            if (!current_entry->hash || current_entry->hash & HT_TOMBSTONE)    \
-                return; /* An empty space -- no need to evict. */              \
-            if (CACHE_ACCESSED(K, V)(cache, cache->eviction_index))            \
+            if (!CACHE_ACCESSED(K, V)(cache, cache->eviction_index)) {         \
+                found = true;                                                  \
                 break; /* Non-recent entry. Evict it. */                       \
+            }                                                                  \
             cache->eviction_index =                                            \
                 (cache->eviction_index + 1) % cache->table.cap;                \
         } while (cache->eviction_index != start);                              \
                                                                                \
-        if (cache->eviction_index == start)                                    \
+        if (cache->eviction_index == start && !found)                          \
             PANIC("Unable to evict an entry. This shouldn't be possible.");    \
         HT_ENTRY(K, V)* to_evict =                                             \
             &cache->table.entries[cache->eviction_index];                      \
+        cache->eviction_index =                                                \
+            (cache->eviction_index + 1) % cache->table.cap;                    \
         to_evict->hash |= HT_TOMBSTONE;                                        \
         cache->table.size--;                                                   \
     }                                                                          \
@@ -153,11 +154,11 @@
     void CACHE_INSERT(K, V)(CACHE(K, V) * cache, K key, V value) {             \
         assert(cache);                                                         \
                                                                                \
-        if (cache->table.size >= cache->table.cap)                             \
+        if (!HT_INSERT(K, V)(&cache->table, key, value)) {                     \
             CACHE_EVICT(K, V)(cache);                                          \
-        assert(cache->table.size < cache->table.cap);                          \
-                                                                               \
-        HT_INSERT(K, V)(&cache->table, key, value);                            \
+            if (!HT_INSERT(K, V)(&cache->table, key, value))                   \
+                PANIC("Unable to insert after eviction.");                     \
+        }                                                                      \
         CACHE_FIND(K, V)(cache, key);                                          \
     }
 

@@ -112,12 +112,14 @@ H_END
     static size_t HT_PROBE_COUNT(K, V)(HT(K, V) * table, size_t index,           \
                                        uint64_t hash) {                          \
         assert(table);                                                           \
+        hash &= ~HT_TOMBSTONE;                                                   \
         return (index + table->cap - hash % table->cap) % table->cap;            \
     }                                                                            \
                                                                                  \
     static void HT_INSERT_AT(K, V)(HT(K, V) * table, uint64_t hash, K key,       \
                                    V value) {                                    \
         assert(table);                                                           \
+        assert(!(hash & HT_TOMBSTONE));                                          \
         for (size_t i = hash % table->cap, probe_count = 0;;                     \
              i = (i + 1) % table->cap, probe_count++) {                          \
             HT_ENTRY(K, V)* current_entry = &table->entries[i];                  \
@@ -157,7 +159,7 @@ H_END
                                                                                  \
         HT_ENTRY(K, V)* prev_entries = table->entries;                           \
         size_t prev_cap              = table->cap;                               \
-        table->cap = new_cap;                                                    \
+        table->cap                   = new_cap;                                  \
         table->entries =                                                         \
             (HT_ENTRY(K, V)*)(calloc(table->cap, sizeof(HT_ENTRY(K, V))));       \
                                                                                  \
@@ -236,8 +238,7 @@ H_END
         assert(table);                                                           \
                                                                                  \
         if (table->size * 100 >= table->cap * HT_LOAD_FACTOR)                    \
-            if (!HT_GROW(K, V)(table) && table->size >= table->cap)              \
-                return false; \
+            TRYB(HT_GROW(K, V)(table));                                          \
                                                                                  \
         table->size++;                                                           \
         HT_INSERT_AT(K, V)(table, HT_HASH(K, V)(table, key), key, value);        \
