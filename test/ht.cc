@@ -56,6 +56,7 @@ TEST_F(HTTest, grow) {
     for (size_t i = 0; i < HT_INITIAL_CAP * 4; i++) {
         CString s = S_CONST(string_itoa(i));
         HT_INSERT(CString, CString)(&table, s, s);
+        EXPECT_TRUE(HT_FIND(CString, CString)(&table, s));
         keys.push_back(s);
     }
 
@@ -74,4 +75,47 @@ TEST_F(HTTest, grow) {
     }
 
     EXPECT_EQ(HT_SIZE(CString, CString)(&table), 0ULL);
+}
+
+// This test is deliberately meant to provoke the issue discovered in 4f33b27.
+TEST_F(HTTest, fixed_size) {
+    constexpr size_t TEST_CAP = HT_INITIAL_CAP;
+
+    vector<String> keys;
+
+    table.can_grow = false;
+
+    // Generate keys.
+    for (size_t i = 0; i < TEST_CAP; i++)
+        keys.push_back(string_itoa(i));
+
+    // Fill every slot.
+    auto fill_table = [this, &keys]() -> bool {
+        for (auto& key : keys) {
+            auto key_const = S_CONST(key);
+            HT_INSERT(CString, CString)(&table, key_const, key_const);
+            TRYB(HT_FIND(CString, CString)(&table, key_const));
+        }
+
+        return true;
+    };
+
+    // Clear the whole table. Every slot should now be a tombstone.
+    auto clear_table = [this, &keys]() {
+        for (auto& key : keys)
+            ASSERT_TRUE(HT_DELETE(CString, CString)(&table, S_CONST(key)));
+
+        EXPECT_EQ(table.size, 0ULL);
+        for (size_t i = 0; i < table.cap; i++)
+            EXPECT_TRUE(table.entries[i].hash & HT_TOMBSTONE);
+    };
+
+    for (size_t i = 0; i < 10; i++) {
+        fprintf(stderr, "Iteration: %zu.\n", i);
+        assert(fill_table());
+        clear_table();
+    }
+
+    for (auto& key : keys)
+        string_free(&key);
 }

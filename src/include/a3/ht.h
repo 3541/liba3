@@ -238,7 +238,8 @@ H_END
         assert(table);                                                           \
                                                                                  \
         if (table->size * 100 >= table->cap * HT_LOAD_FACTOR)                    \
-            TRYB(HT_GROW(K, V)(table));                                          \
+            if (!HT_GROW(K, V)(table) && table->size >= table->cap)              \
+                return false;                                                    \
                                                                                  \
         table->size++;                                                           \
         HT_INSERT_AT(K, V)(table, HT_HASH(K, V)(table, key), key, value);        \
