@@ -68,6 +68,8 @@ void string_concat(String str, size_t count, ...) {
         string_copy(S_OFFSET(str, offset), arg);
         offset += arg.len;
     }
+
+    va_end(args);
 }
 
 void string_reverse(String str) {
