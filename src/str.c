@@ -23,7 +23,7 @@
 #include <a3/util.h>
 
 String string_alloc(size_t len) {
-    return (String) { .ptr = calloc(len + 1, sizeof(char)), .len = len };
+    return (String) { .ptr = calloc(len + 1, sizeof(uint8_t)), .len = len };
 }
 
 String string_realloc(String* this, size_t new_len) {
