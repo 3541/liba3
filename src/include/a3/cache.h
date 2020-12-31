@@ -131,7 +131,8 @@
         size_t start = cache->eviction_index;                                  \
         bool   found = false;                                                  \
         do {                                                                   \
-            if (!CACHE_ACCESSED(K, V)(cache, cache->eviction_index)) {         \
+            if (!CACHE_ACCESSED(K, V)(cache, cache->eviction_index) &&         \
+                cache->table.entries[cache->eviction_index].hash) {            \
                 found = true;                                                  \
                 break; /* Non-recent entry. Evict it. */                       \
             }                                                                  \
@@ -142,6 +143,10 @@
         if (cache->eviction_index == start && !found)                          \
             PANIC("Unable to evict an entry. This shouldn't be possible.");    \
         HT_DELETE_INDEX(K, V)(&cache->table, cache->eviction_index);           \
+        /* The access map needs to be thrown away at this point, since         \
+         * deletion likely caused elements to shift. */                        \
+        memset(cache->accessed, 0,                                             \
+               cache->table.cap / CACHE_ENTRIES_PER_BLOCK * sizeof(size_t));   \
     }                                                                          \
                                                                                \
     void CACHE_INSERT(K, V)(CACHE(K, V) * cache, K key, V value) {             \
