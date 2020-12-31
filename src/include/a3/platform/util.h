@@ -16,6 +16,9 @@
     UNWRAPND(!memset_s((S), sizeof(*(S)), 0, sizeof(*(S))))
 #elif defined(a3_HAVE_explicit_bzero)
 #define A3_STRUCT_ZERO(S) explicit_bzero((S), sizeof(*(S)))
+#elif defined(a3_HAVE_SecureZeroMemory)
+#include <Windows.h>
+#define A3_STRUCT_ZERO(S) SecureZeroMemory((S), sizeof(*(S)))
 #else
 #warning                                                                       \
     "Couldn't find a `memset_s` alternative. `A3_STRUCT_ZERO` may be optimized out."
