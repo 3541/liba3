@@ -44,6 +44,7 @@ String string_clone(CString other) {
 }
 
 void string_free(String* this) {
+    assert(this);
     assert(this->ptr);
     free(this->ptr);
     this->ptr = NULL;
