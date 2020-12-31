@@ -20,7 +20,7 @@ protected:
 
     void SetUp() override {
         log_init(stderr, DEBUG);
-        CACHE_INIT(CString, CString)(&cache, CACHE_CAPACITY);
+        CACHE_INIT(CString, CString)(&cache, CACHE_CAPACITY, nullptr);
     }
 
     void TearDown() override { CACHE_DESTROY(CString, CString)(&cache); }
@@ -60,4 +60,30 @@ TEST_F(CacheTest, eviction) {
 
     for (auto& s : strings)
         string_free(&s);
+}
+
+static size_t evicted = 0;
+static void eviction_callback(CString* key, CString* value) {
+    (void)value;
+    evicted++;
+    string_free(reinterpret_cast<String*>(key));
+}
+
+TEST_F(CacheTest, eviction_callback) {
+    CACHE_DESTROY(CString, CString)(&cache);
+    CACHE_INIT(CString, CString)(&cache, CACHE_CAPACITY, eviction_callback);
+
+    for (size_t i = 0; i < CACHE_CAPACITY * 2; i++) {
+        auto s = S_CONST(string_itoa(i));
+        CACHE_INSERT(CString, CString)(&cache, s, s);
+    }
+
+    EXPECT_EQ(evicted, CACHE_CAPACITY);
+    EXPECT_EQ(cache.table.size, CACHE_CAPACITY);
+
+    for (size_t i = 0; i < CACHE_CAPACITY; i++)
+        CACHE_EVICT(CString, CString)(&cache);
+
+    EXPECT_EQ(evicted, CACHE_CAPACITY * 2);
+    EXPECT_EQ(cache.table.size, 0ULL);
 }

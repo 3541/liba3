@@ -16,8 +16,9 @@
 #include <a3/ht.h>
 #include <a3/util.h>
 
-#define CACHE_ENTRY(K, V) HT_ENTRY(K, V)
-#define CACHE(K, V)       struct K##V##Cache
+#define CACHE_ENTRY(K, V)    HT_ENTRY(K, V)
+#define CACHE(K, V)          struct K##V##Cache
+#define CACHE_EVICT_CB(K, V) K##V##EvictCallback
 
 #define CACHE_BLOCK_FULL        SIZE_MAX
 #define CACHE_ENTRIES_PER_BLOCK (sizeof(size_t) * 8)
@@ -27,8 +28,11 @@
                                                                                \
     HT_DEFINE_STRUCTS(K, V)                                                    \
                                                                                \
+    typedef void (*CACHE_EVICT_CB(K, V))(K*, V*);                              \
+                                                                               \
     CACHE(K, V) {                                                              \
-        size_t  eviction_index;                                                \
+        size_t eviction_index;                                                 \
+        CACHE_EVICT_CB(K, V) eviction_callback;                                \
         size_t* accessed;                                                      \
         HT(K, V) table;                                                        \
     };                                                                         \
@@ -44,44 +48,48 @@
 #define CACHE_ACCESSED(K, V) K##V##_cache_accessed
 #define CACHE_EVICT(K, V)    K##V##_cache_evict
 
-#define CACHE_FIND(K, V)      K##V##_cache_find
-#define CACHE_INSERT(K, V)    K##V##_cache_insert
-#define CACHE_EVICT_KEY(K, V) K##V##_cache_evict_key
+#define CACHE_FIND(K, V)   K##V##_cache_find
+#define CACHE_INSERT(K, V) K##V##_cache_insert
 
 #define CACHE_DECLARE_METHODS(K, V)                                            \
     H_BEGIN                                                                    \
                                                                                \
-    void CACHE_INIT(K, V)(CACHE(K, V)*, size_t capacity);                      \
-    CACHE(K, V) * CACHE_NEW(K, V)(size_t capacity);                            \
+    void CACHE_INIT(K, V)(CACHE(K, V)*, size_t capacity,                       \
+                          CACHE_EVICT_CB(K, V));                               \
+    CACHE(K, V) * CACHE_NEW(K, V)(size_t capacity, CACHE_EVICT_CB(K, V));      \
     void CACHE_DESTROY(K, V)(CACHE(K, V)*);                                    \
     void CACHE_FREE(K, V)(CACHE(K, V)*);                                       \
                                                                                \
     V*   CACHE_FIND(K, V)(CACHE(K, V)*, K);                                    \
     void CACHE_INSERT(K, V)(CACHE(K, V)*, K, V);                               \
-    bool CACHE_EVICT_KEY(K, V)(CACHE(K, V)*, K);                               \
                                                                                \
     HT_DECLARE_METHODS(K, V)                                                   \
                                                                                \
     H_END
 
 #define CACHE_DEFINE_METHODS_NOHT(K, V)                                        \
-    void CACHE_INIT(K, V)(CACHE(K, V) * cache, size_t capacity) {              \
+    void CACHE_INIT(K, V)(CACHE(K, V) * cache, size_t capacity,                \
+                          CACHE_EVICT_CB(K, V) eviction_callback) {            \
         assert(cache);                                                         \
         assert(capacity > 0);                                                  \
                                                                                \
-        cache->eviction_index = 0;                                             \
-        UNWRAPN(cache->accessed, (size_t*)calloc(capacity, sizeof(size_t)));   \
+        cache->eviction_index    = 0;                                          \
+        cache->eviction_callback = eviction_callback;                          \
+        UNWRAPN(cache->accessed,                                               \
+                (size_t*)calloc(capacity / CACHE_ENTRIES_PER_BLOCK,            \
+                                sizeof(size_t)));                              \
         HT_INIT(K, V)(&cache->table, false);                                   \
         HT_RESIZE(K, V)(&cache->table, capacity);                              \
     }                                                                          \
                                                                                \
-    CACHE(K, V) * CACHE_NEW(K, V)(size_t capacity) {                           \
+    CACHE(K, V) * CACHE_NEW(K, V)(size_t capacity,                             \
+                                  CACHE_EVICT_CB(K, V) eviction_callback) {    \
         assert(capacity > 0);                                                  \
                                                                                \
         CACHE(K, V)* ret = (CACHE(K, V)*)calloc(1, sizeof(CACHE(K, V)));       \
         if (!ret)                                                              \
             return NULL;                                                       \
-        CACHE_INIT(K, V)(ret, capacity);                                       \
+        CACHE_INIT(K, V)(ret, capacity, eviction_callback);                    \
         return ret;                                                            \
     }                                                                          \
                                                                                \
@@ -142,6 +150,11 @@
                                                                                \
         if (cache->eviction_index == start && !found)                          \
             PANIC("Unable to evict an entry. This shouldn't be possible.");    \
+        if (cache->eviction_callback) {                                        \
+            HT_ENTRY(K, V)* entry =                                            \
+                &cache->table.entries[cache->eviction_index];                  \
+            cache->eviction_callback(&entry->key, &entry->value);              \
+        }                                                                      \
         HT_DELETE_INDEX(K, V)(&cache->table, cache->eviction_index);           \
         /* The access map needs to be thrown away at this point, since         \
          * deletion likely caused elements to shift. */                        \
