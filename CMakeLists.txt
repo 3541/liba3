@@ -30,6 +30,7 @@ endif()
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
+include(ClangTidy)
 include(PlatformChecks)
 include(IWYU)
 add_library(a3
@@ -74,6 +75,7 @@ if (lto_support)
   )
 endif()
 target_add_iwyu(a3)
+target_add_clang_tidy(a3)
 
 add_subdirectory(extern/highwayhash EXCLUDE_FROM_ALL)
 
