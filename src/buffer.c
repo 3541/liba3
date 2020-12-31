@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <a3/platform.h>
+#include <a3/platform/types.h>
 #include <a3/str.h>
 #include <a3/util.h>
 

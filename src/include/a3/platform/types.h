@@ -1,6 +1,6 @@
 /*
- * PLATFORM -- Cross-platform shims for annoying little differences. A variant
- * which exposes nicer, but likelier to collide names is available in
+ * PLATFORM TYPES -- Cross-platform shims for annoying little differences. A
+ * variant which exposes nicer, but likelier to collide names is available in
  * platform_private.h.
  *
  * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>

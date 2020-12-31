@@ -1,5 +1,5 @@
 /*
- * PLATFORM (PRIVATE) -- Nice names for platform-specific concepts.
+ * PLATFORM TYPES (PRIVATE) -- Nice names for platform-specific concepts.
  *
  * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>
  *
@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <a3/platform.h>
+#include <a3/platform/types.h>
 
 // Types
 #ifndef a3_HAVE_ssize_t

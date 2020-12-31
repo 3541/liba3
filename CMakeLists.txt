@@ -44,8 +44,8 @@ add_library(a3
   src/include/a3/ht.h
   src/include/a3/ll.h
   src/include/a3/log.h
-  src/include/a3/platform.h
-  src/include/a3/platform_private.h
+  src/include/a3/platform/types.h
+  src/include/a3/platform/types_private.h
   src/include/a3/pool.h
   src/include/a3/pq.h
   src/include/a3/sll.h

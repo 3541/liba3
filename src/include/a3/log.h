@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 #include <a3/cpp.h>
-#include <a3/platform.h>
+#include <a3/platform/types.h>
 
 H_BEGIN
 
