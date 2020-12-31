@@ -38,11 +38,11 @@ TEST_F(CacheTest, insert) {
 
     auto* found = CACHE_FIND(CString, CString)(&cache, CS("Key"));
     ASSERT_TRUE(found);
-    size_t index =
-        (size_t)(CONTAINER_OF(found, HT_ENTRY(CString, CString), value) -
-                 cache.table.entries) /
-        sizeof(HT_ENTRY(CString, CString));
-    EXPECT_TRUE(CACHE_ACCESSED(CString, CString)(&cache, index));
+
+    ssize_t index = HT_FIND_INDEX(CString, CString)(&cache.table, CS("Key"));
+    ASSERT_GE(index, 0LL);
+    ASSERT_EQ(found, &cache.table.entries[(size_t)index].value);
+    EXPECT_TRUE(CACHE_ACCESSED(CString, CString)(&cache, (size_t)index));
 }
 
 TEST_F(CacheTest, eviction) {

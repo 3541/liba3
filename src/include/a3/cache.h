@@ -115,16 +115,14 @@
     }                                                                          \
                                                                                \
     V* CACHE_FIND(K, V)(CACHE(K, V) * cache, K key) {                          \
-        HT_ENTRY(K, V)* entry = HT_FIND_ENTRY(K, V)(&cache->table, key);       \
-        if (!entry)                                                            \
+        A3_SSIZE_T index = HT_FIND_INDEX(K, V)(&cache->table, key);            \
+        if (index < 0)                                                         \
             return NULL;                                                       \
+        size_t i = (size_t)index;                                              \
+        assert(i < cache->table.cap);                                          \
+        CACHE_ACCESS(K, V)(cache, i);                                          \
                                                                                \
-        size_t index =                                                         \
-            (size_t)(entry - cache->table.entries) / sizeof(HT_ENTRY(K, V));   \
-        assert(index < cache->table.cap);                                      \
-        CACHE_ACCESS(K, V)(cache, index);                                      \
-                                                                               \
-        return &entry->value;                                                  \
+        return &cache->table.entries[i].value;                                 \
     }                                                                          \
                                                                                \
     static void CACHE_EVICT(K, V)(CACHE(K, V) * cache) {                       \
