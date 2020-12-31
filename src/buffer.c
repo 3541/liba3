@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include <a3/platform/types.h>
+#include <a3/platform/util.h>
 #include <a3/str.h>
 #include <a3/util.h>
 
@@ -69,7 +70,7 @@ void buf_destroy(Buffer* buf) {
     assert(buf_initialized(buf));
 
     string_free(&buf->data);
-    memset(buf, 0, sizeof(Buffer));
+    A3_STRUCT_ZERO(buf);
 }
 
 void buf_free(Buffer* buf) {

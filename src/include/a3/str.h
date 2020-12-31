@@ -40,7 +40,7 @@ ALWAYS_INLINE String CS_MUT(CString s) {
 
 ALWAYS_INLINE CString S_CONST(String s) { return { s.ptr, s.len }; }
 
-ALWAYS_INLINE String  S_OF(char* str) {
+ALWAYS_INLINE String S_OF(char* str) {
     if (!str)
         return S_NULL;
     return { reinterpret_cast<uint8_t*>(str), strlen(str) };
@@ -75,7 +75,7 @@ ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
 
 #endif // !__cplusplus
 
-#define S_F "%.*s"
+#define S_F     "%.*s"
 #define S_FA(S) ((int)(S).len), ((S).ptr)
 
 ALWAYS_INLINE CString CS_OF(const char* str) {
