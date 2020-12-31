@@ -4,6 +4,7 @@
 
 #include <a3/cache.h>
 #include <a3/log.h>
+#include <a3/platform/types_private.h>
 #include <a3/str.h>
 
 using std::vector;
