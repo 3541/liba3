@@ -35,7 +35,7 @@ TEST_F(CacheTest, init) {
 }
 
 TEST_F(CacheTest, insert) {
-    CACHE_INSERT(CString, CString)(&cache, CS("Key"), CS("Value"));
+    CACHE_INSERT(CString, CString)(&cache, CS("Key"), CS("Value"), nullptr);
 
     auto* found = CACHE_FIND(CString, CString)(&cache, CS("Key"));
     ASSERT_TRUE(found);
@@ -53,7 +53,7 @@ TEST_F(CacheTest, eviction) {
         auto s = string_itoa(i);
         strings.push_back(s);
         auto sc = S_CONST(s);
-        CACHE_INSERT(CString, CString)(&cache, sc, sc);
+        CACHE_INSERT(CString, CString)(&cache, sc, sc, nullptr);
         ASSERT_TRUE(CACHE_FIND(CString, CString)(&cache, sc));
         EXPECT_LE(cache.table.size, cache.table.cap);
         EXPECT_EQ(cache.table.cap, CACHE_CAPACITY);
@@ -64,7 +64,8 @@ TEST_F(CacheTest, eviction) {
 }
 
 static size_t evicted = 0;
-static void eviction_callback(CString* key, CString* value) {
+static void eviction_callback(void* ctx, CString* key, CString* value) {
+    (void)ctx;
     (void)value;
     evicted++;
     string_free(reinterpret_cast<String*>(key));
@@ -76,14 +77,14 @@ TEST_F(CacheTest, eviction_callback) {
 
     for (size_t i = 0; i < CACHE_CAPACITY * 2; i++) {
         auto s = S_CONST(string_itoa(i));
-        CACHE_INSERT(CString, CString)(&cache, s, s);
+        CACHE_INSERT(CString, CString)(&cache, s, s, nullptr);
     }
 
     EXPECT_EQ(evicted, CACHE_CAPACITY);
     EXPECT_EQ(cache.table.size, CACHE_CAPACITY);
 
     for (size_t i = 0; i < CACHE_CAPACITY; i++)
-        CACHE_EVICT(CString, CString)(&cache);
+        CACHE_EVICT(CString, CString)(&cache, nullptr);
 
     EXPECT_EQ(evicted, CACHE_CAPACITY * 2);
     EXPECT_EQ(cache.table.size, 0ULL);
