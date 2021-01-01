@@ -14,6 +14,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <time.h>
 
 #include <a3/cpp.h>
 #include <a3/util.h>
@@ -120,6 +121,8 @@ H_END
     static void HT_INSERT_AT(K, V)(HT(K, V) * table, uint64_t hash, K key,       \
                                    V value) {                                    \
         assert(table);                                                           \
+        assert(hash);                                                            \
+        assert(table->cap > 0ULL);                                               \
                                                                                  \
         for (size_t i = hash % table->cap, probe_count = 0;;                     \
              i = (i + 1) % table->cap, probe_count++) {                          \
@@ -291,8 +294,8 @@ H_END
 
 // Define methods with HighwayHash as the hash function. Helpers have the
 // signatures:
-//     const uint8_t* KEY_BYTES(K* key);
-//           size_t   KEY_SIZE(K* key);
+//     const uint8_t* KEY_BYTES(K key);
+//           size_t   KEY_SIZE(K key);
 // See HT_DEFINE_METHODS_HASHER for information on the comparator C.
 #define HT_DEFINE_METHODS(K, V, KEY_BYTES, KEY_SIZE, C)                        \
     static uint64_t HT_DEFAULT_HASH(K, V)(HT(K, V) * table, K key) {           \
