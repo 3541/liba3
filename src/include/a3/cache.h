@@ -50,6 +50,7 @@
 
 #define CACHE_FIND(K, V)   K##V##_cache_find
 #define CACHE_INSERT(K, V) K##V##_cache_insert
+#define CACHE_CLEAR(K, V)  K##V##_cache_clear
 
 #define CACHE_DECLARE_METHODS(K, V)                                            \
     H_BEGIN                                                                    \
@@ -62,6 +63,7 @@
                                                                                \
     V*   CACHE_FIND(K, V)(CACHE(K, V)*, K);                                    \
     void CACHE_INSERT(K, V)(CACHE(K, V)*, K, V, void* callback_ctx);           \
+    void CACHE_CLEAR(K, V)(CACHE(K, V)*, void* callback_ctx);                  \
                                                                                \
     HT_DECLARE_METHODS(K, V)                                                   \
                                                                                \
@@ -173,6 +175,22 @@
                 PANIC("Unable to insert after eviction.");                     \
         }                                                                      \
         CACHE_FIND(K, V)(cache, key);                                          \
+    }                                                                          \
+                                                                               \
+    void CACHE_CLEAR(K, V)(CACHE(K, V) * cache, void* callback_ctx) {          \
+        assert(cache);                                                         \
+                                                                               \
+        for (size_t i = 0; i < cache->table.cap; i++) {                        \
+            HT_ENTRY(K, V)* entry = &cache->table.entries[i];                  \
+            if (!entry->hash)                                                  \
+                continue;                                                      \
+            if (cache->eviction_callback)                                      \
+                cache->eviction_callback(callback_ctx, &entry->key,            \
+                                         &entry->value);                       \
+            HT_DELETE_INDEX(K, V)(&cache->table, i);                           \
+        }                                                                      \
+        memset(cache->accessed, 0,                                             \
+               cache->table.cap / CACHE_ENTRIES_PER_BLOCK * sizeof(size_t));   \
     }
 
 // See HT.h for information on the latter arguments.
