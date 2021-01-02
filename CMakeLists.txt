@@ -66,6 +66,7 @@ if (NOT MSVC)
 endif()
 set_target_properties(a3 PROPERTIES
   C_STANDARD 11
+  C_STANDARD_REQUIRED TRUE
   C_EXTENSIONS OFF
 )
 target_compile_definitions(a3 PRIVATE _XOPEN_SOURCE=600)
