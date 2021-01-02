@@ -52,6 +52,7 @@ jobs:
       env:
         CC: gcc-9
         CXX: g++-9
+        SANITIZE_FORCE_OFF: 1
 
     #- run: |
     #   make bootstrap
