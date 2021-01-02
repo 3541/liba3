@@ -15,11 +15,21 @@ nontrivial C project.
 ## Features
 - Simple and lightweight — approx. 1 kLOC. Less, without `a3_hash`.
 - Type-generic data structures — (ab)uses preprocessor macros to imitate C++ templates.
+- C++ compatible - can be freely used in mixed projects.
 
-## Usage
-CMake or Meson projects should easily be able to hook into the build system. The CMake file provides a library target `a3`. The hash table also requires linking against `a3_hash`, which pulls in [HighwayHash](https://github.com/google/highwayhash) as a dependency.
+## Building and Usage
+Dependencies:
+- A C compiler supporting C11 or later.
+- CMake 3.10 or later.
 
-Tests can be run either through the `test` target or with CTest.
+Test suite dependencies:
+- A C++ compiler supporting C++20.
+
+To build, create a build directory and change into it. Then run `cmake .. [-DCMAKE_BUILD_TYPE=___]` to set up the build system, and `cmake --build .` to build the library.
+
+CMake or Meson projects should easily be able to hook into the build system using `add_subdirectory` or `cmake.subproject`, respectively. The CMake file provides a library target `a3`. The hash table also requires linking against `a3_hash`, which pulls in [HighwayHash](https://github.com/google/highwayhash) as a dependency.
+
+Tests can be run either through the `test` target, with CTest, or by directly executing the `a3_test` binary.
 
 ## Notes
 Most objects (buffer, hash table, linked list, etc...) provide the following functions to do with their lifecycle:
