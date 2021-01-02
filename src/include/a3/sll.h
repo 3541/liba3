@@ -28,7 +28,11 @@
     H_END
 
 // Invoke this macro in a struct body to make it a node.
+#ifdef __cplusplus
+#define SLL_NODE(TY) TY* _sll_next { nullptr }
+#else
 #define SLL_NODE(TY) TY* _sll_next
+#endif
 
 #define SLL_INIT(TY)    TY##_sll_init
 #define SLL_NEW(TY)     TY##_sll_new
