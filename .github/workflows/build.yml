@@ -1,6 +1,16 @@
 name: Build and test
 
-on: [push]
+on:
+  push:
+    paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '**/*.cc'
+      - '**/*.hh'
+      - '.github/workflows/build.yml'
+      - 'CMakeLists.txt'
+      - 'extern/liba3'
+      - 'boilerplate'
 
 jobs:
   build:
