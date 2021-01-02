@@ -4,7 +4,7 @@
 
 struct SLLNode {
     size_t data;
-    SLL_NODE(SLLNode) {};
+    SLL_NODE(SLLNode);
 
     explicit SLLNode(size_t d) : data { d } {}
 };
