@@ -45,18 +45,20 @@ jobs:
       with:
         languages: ${{ matrix.language }}
 
-    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v1
+    - name: Create build directory
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
       env:
         CC: gcc-9
         CXX: g++-9
-        SANITIZE_FORCE_OFF: 1
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release -DSANITIZE_FORCE_OFF=1
 
-    #- run: |
-    #   make bootstrap
-    #   make release
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      run: cmake --build .
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
