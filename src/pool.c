@@ -31,6 +31,7 @@ struct Pool {
     PoolSlot* free;
     size_t    block_size;
     size_t    cap; // In bytes.
+    bool zero_blocks;
 };
 
 static inline size_t align_down(size_t v, size_t align) {
@@ -41,7 +42,7 @@ static inline size_t align_up(size_t v, size_t align) {
     return align_down(v + align - 1, align);
 }
 
-Pool* pool_new(size_t block_size, size_t blocks, size_t align) {
+Pool* pool_new(size_t block_size, size_t blocks, size_t align, bool zero_blocks) {
     if (block_size < sizeof(PoolSlot))
         PANIC_FMT("Block size %zu is too small for a pool slot (%zu).",
                   block_size, sizeof(PoolSlot));
@@ -51,6 +52,7 @@ Pool* pool_new(size_t block_size, size_t blocks, size_t align) {
 
     Pool* ret;
     UNWRAPN(ret, calloc(1, sizeof(Pool)));
+    ret->zero_blocks = zero_blocks;
     ret->block_size = block_size;
     ret->cap        = blocks * block_size;
 #ifndef _WIN32
@@ -76,7 +78,9 @@ void* pool_alloc_block(Pool* pool) {
     PoolSlot* slot = pool->free;
 
     pool->free = slot->next;
-    memset(slot, 0, pool->block_size);
+    slot->next = NULL;
+    if (pool->zero_blocks)
+        memset(slot, 0, pool->block_size);
 
     return (void*)slot;
 }

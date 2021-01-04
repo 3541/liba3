@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stddef.h>
 
 #ifndef _WIN32
@@ -22,13 +23,17 @@
 
 H_BEGIN
 
+#define POOL_ZERO_BLOCKS true
+#define POOL_PRESERVE_BLOCKS false
+
 typedef struct Pool Pool;
 
-EXPORT Pool* pool_new(size_t block_size, size_t blocks, size_t align);
+EXPORT Pool* pool_new(size_t block_size, size_t blocks, size_t align,
+                      bool zero_blocks);
 EXPORT void* pool_alloc_block(Pool*);
 EXPORT void  pool_free_block(Pool*, void*);
 EXPORT void  pool_free(Pool*);
 
-#define POOL_OF(TY, COUNT) pool_new(sizeof(TY), (COUNT), alignof(TY))
+#define POOL_OF(TY, COUNT, ZB) pool_new(sizeof(TY), (COUNT), alignof(TY), (ZB))
 
 H_END
