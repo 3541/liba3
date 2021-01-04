@@ -21,7 +21,7 @@ protected:
     Pool* pool { nullptr };
 
     void SetUp() override {
-        pool = POOL_OF(TestObject, POOL_SIZE, POOL_ZERO_BLOCKS);
+        pool = POOL_OF(TestObject, POOL_SIZE, POOL_ZERO_BLOCKS, nullptr);
     }
 
     void TearDown() override { pool_free(pool); }
