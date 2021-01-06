@@ -20,13 +20,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(CheckIPOSupported)
 check_ipo_supported(RESULT lto_support)
 
-if (MSVC)
-  add_compile_options(/W4)
-  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-else()
-  add_compile_options(-Wall -Wextra -pedantic)
-endif()
-
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
@@ -57,7 +50,7 @@ target_include_directories(a3 PUBLIC src/include)
 target_link_math(a3)
 
 include(AddWarnings)
-target_add_extra_warnings(a3)
+target_add_extra_warnings(a3 TRUE)
 target_platform_checks(a3)
 if (NOT MSVC)
   target_add_warning(a3 "no-pointer-arith" FALSE)
@@ -125,9 +118,9 @@ set_target_properties(a3_test PROPERTIES
   C_EXTENSIONS OFF
 )
 target_add_sanitizers(a3_test TRUE)
-target_add_extra_warnings(a3_test)
+target_add_extra_warnings(a3_test FALSE)
 if (NOT MSVC)
-  target_add_warnings(a3_test "no-c99-extensions;no-pedantic" FALSE)
+  target_add_warnings(a3_test "no-c99-extensions" FALSE)
 endif()
 target_add_clang_tidy(a3_test)
 
