@@ -27,10 +27,12 @@ typedef struct PoolSlot {
 } PoolSlot;
 
 struct Pool {
-    void*     data;
-    PoolSlot* free;
-    size_t    block_size;
-    size_t    cap; // In bytes.
+    void*            data;
+    PoolSlot*        free;
+    size_t           block_size;
+    size_t           cap; // In bytes.
+    bool             zero_blocks;
+    PoolFreeCallback free_cb;
 };
 
 static inline size_t align_down(size_t v, size_t align) {
@@ -41,7 +43,8 @@ static inline size_t align_up(size_t v, size_t align) {
     return align_down(v + align - 1, align);
 }
 
-Pool* pool_new(size_t block_size, size_t blocks, size_t align) {
+Pool* pool_new(size_t block_size, size_t blocks, size_t align, bool zero_blocks,
+               PoolFreeCallback free_cb) {
     if (block_size < sizeof(PoolSlot))
         PANIC_FMT("Block size %zu is too small for a pool slot (%zu).",
                   block_size, sizeof(PoolSlot));
@@ -51,8 +54,10 @@ Pool* pool_new(size_t block_size, size_t blocks, size_t align) {
 
     Pool* ret;
     UNWRAPN(ret, calloc(1, sizeof(Pool)));
-    ret->block_size = block_size;
-    ret->cap        = blocks * block_size;
+    ret->zero_blocks = zero_blocks;
+    ret->free_cb     = free_cb;
+    ret->block_size  = block_size;
+    ret->cap         = blocks * block_size;
 #ifndef _WIN32
     UNWRAPSD(posix_memalign(&ret->data, align, ret->cap));
 #else
@@ -76,7 +81,9 @@ void* pool_alloc_block(Pool* pool) {
     PoolSlot* slot = pool->free;
 
     pool->free = slot->next;
-    memset(slot, 0, pool->block_size);
+    slot->next = NULL;
+    if (pool->zero_blocks)
+        memset(slot, 0, pool->block_size);
 
     return (void*)slot;
 }
@@ -92,6 +99,10 @@ void pool_free_block(Pool* pool, void* block) {
 
 void pool_free(Pool* pool) {
     assert(pool);
+
+    if (pool->free_cb)
+        for (PoolSlot* current = pool->free; current; current = current->next)
+            pool->free_cb(current);
 
 #ifndef _WIN32
     free(pool->data);
