@@ -37,7 +37,7 @@ jobs:
       env:
         CC: ${{ matrix.c_compiler }}
         CXX: ${{ matrix.cxx_compiler }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release -DUSE_WERROR=1
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
