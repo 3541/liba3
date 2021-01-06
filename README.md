@@ -1,7 +1,8 @@
 # liba3
 
 My personal C library. All the little things I keep rewriting for every
-nontrivial C project.
+nontrivial C project. This was largely born out of frustration while working on
+[Short Circuit](https://github.com/3541/short-circuit).
 
 ## Provides
 - Growable buffer.
