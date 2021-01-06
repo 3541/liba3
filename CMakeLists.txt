@@ -8,6 +8,9 @@ project(
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/boilerplate/cmake" ${CMAKE_MODULE_PATH})
 
+include(FixDefaultFlags)
+fix_default_flags()
+
 set(default_build_type "Release")
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "Unspecified build type. Using ${default_build_type}.")
