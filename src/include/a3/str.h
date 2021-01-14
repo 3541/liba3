@@ -29,13 +29,6 @@ typedef struct CString {
     size_t         len;
 } CString;
 
-// Ensure that this is the last member of any parent struct.
-typedef struct InlineString {
-    size_t len;
-    // Flexible array members are not permitted to nest, but this is allowed.
-    uint8_t buf[1];
-} InlineString;
-
 #ifdef __cplusplus
 #define CS(S)   (CString { reinterpret_cast<const uint8_t*>(S), sizeof(S) - 1 })
 #define CS_NULL (CString { nullptr, 0 })
@@ -96,10 +89,6 @@ ALWAYS_INLINE const char* S_AS_C_STR(CString s) { return (const char*)s.ptr; }
 ALWAYS_INLINE uint8_t* S_PTR(String s) { return s.ptr; }
 ALWAYS_INLINE const uint8_t* CS_PTR(CString s) { return s.ptr; }
 ALWAYS_INLINE size_t         S_LEN(CString s) { return s.len; }
-
-ALWAYS_INLINE size_t IS_SIZEOF(InlineString* s) {
-    return sizeof(InlineString) + s->len * sizeof(uint8_t);
-}
 
 EXPORT String string_alloc(size_t len);
 EXPORT String string_realloc(String*, size_t new_len);
