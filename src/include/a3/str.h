@@ -31,7 +31,7 @@ typedef struct CString {
 
 // Ensure that this is the last member of any parent struct.
 typedef struct InlineString {
-    size_t  len;
+    size_t len;
     // Flexible array members are not permitted to nest, but this is allowed.
     uint8_t buf[1];
 } InlineString;

@@ -64,7 +64,7 @@ TEST_F(CacheTest, eviction) {
 }
 
 static size_t evicted = 0;
-static void eviction_callback(void* ctx, CString* key, CString* value) {
+static void   eviction_callback(void* ctx, CString* key, CString* value) {
     (void)ctx;
     (void)value;
     evicted++;
