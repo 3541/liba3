@@ -16,7 +16,7 @@ nontrivial C project. This was largely born out of frustration while working on
 ## Features
 - Simple and lightweight — approx. 1 kLOC. Less, without `a3_hash`.
 - Type-generic data structures — (ab)uses preprocessor macros to imitate C++ templates.
-- C++ compatible - can be freely used in mixed projects.
+- C++ compatible — can be freely used in mixed projects.
 
 ## Building and Usage
 Dependencies:
