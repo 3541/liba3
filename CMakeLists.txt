@@ -66,6 +66,7 @@ set_target_properties(a3 PROPERTIES
   C_EXTENSIONS OFF
 )
 target_compile_definitions(a3 PRIVATE _XOPEN_SOURCE=600)
+target_compile_definitions(a3 PUBLIC _DEFAULT_SOURCE)
 if (lto_support)
   set_target_properties(a3 PROPERTIES
     INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
