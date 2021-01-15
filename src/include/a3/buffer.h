@@ -195,4 +195,6 @@ EXPORT inline bool buf_write_str(Buffer* buf, CString str) {
     return true;
 }
 
+#define BUF_WRITE_STRUCT(BUF, S) buf_write_str((BUF), CSS((S)))
+
 H_END

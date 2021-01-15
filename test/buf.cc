@@ -51,6 +51,20 @@ TEST_F(BufferTest, write_num) {
     ASSERT_EQ(string_cmpi(buf_read_ptr(&buf), CS("1234567")), 0);
 }
 
+TEST_F(BufferTest, write_struct) {
+    struct TestStruct {
+        int a;
+        int b;
+    };
+    static_assert(sizeof(TestStruct) == 8ULL);
+
+    TestStruct t = { 42, 43 };
+    BUF_WRITE_STRUCT(&buf, t);
+
+    EXPECT_EQ(*buf.data.ptr, 42);
+    EXPECT_EQ(buf.data.ptr[sizeof(int)], 43);
+}
+
 TEST_F(BufferTest, reset) {
     buf_write_line(&buf, CS("A line"));
     ASSERT_NE(buf.tail, 0ULL);

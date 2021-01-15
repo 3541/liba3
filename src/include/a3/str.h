@@ -31,9 +31,9 @@ typedef struct CString {
 
 #ifdef __cplusplus
 #define CS(S)   (CString { reinterpret_cast<const uint8_t*>(S), sizeof(S) - 1 })
+#define CSS(S)  (CString { reinterpret_cast<const uint8_t*>(&S), sizeof(S) })
 #define CS_NULL (CString { nullptr, 0 })
 #define S_NULL  (String { nullptr, 0 })
-#define SI(I)   (String { &I.buf[0], I.len })
 
 ALWAYS_INLINE String CS_MUT(CString s) {
     return { const_cast<uint8_t*>(s.ptr), s.len };
@@ -53,9 +53,9 @@ ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
 
 #else // __cplusplus
 #define CS(S)   ((CString) { .ptr = (uint8_t*)S, .len = (sizeof(S) - 1) })
+#define CSS(S)  ((CString) { .ptr = (void*)&S, .len = sizeof(S) })
 #define CS_NULL ((CString) { .ptr = NULL, .len = 0 })
 #define S_NULL  ((String) { .ptr = NULL, .len = 0 })
-#define SI(I)   ((String) { .ptr = &I.buf[0], .len = I.len })
 
 ALWAYS_INLINE String CS_MUT(CString s) {
     return (String) { .ptr = (uint8_t*)s.ptr, .len = s.len };
