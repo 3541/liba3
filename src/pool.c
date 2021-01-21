@@ -1,7 +1,7 @@
 /*
  * POOL -- A pool allocator for high-traffic objects.
  *
- * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -22,17 +22,17 @@
 
 #include <a3/util.h>
 
-typedef struct PoolSlot {
-    struct PoolSlot* next;
-} PoolSlot;
+struct A3PoolSlot {
+    struct A3PoolSlot* next;
+};
 
-struct Pool {
-    void*            data;
-    PoolSlot*        free;
-    size_t           block_size;
-    size_t           cap; // In bytes.
-    bool             zero_blocks;
-    PoolFreeCallback free_cb;
+struct A3Pool {
+    void*              data;
+    A3PoolSlot*        free;
+    size_t             block_size;
+    size_t             cap; // In bytes.
+    bool               zero_blocks;
+    A3PoolFreeCallback free_cb;
 };
 
 static inline size_t align_down(size_t v, size_t align) {
@@ -43,25 +43,25 @@ static inline size_t align_up(size_t v, size_t align) {
     return align_down(v + align - 1, align);
 }
 
-Pool* pool_new(size_t block_size, size_t blocks, size_t align, bool zero_blocks,
-               PoolFreeCallback free_cb) {
-    if (block_size < sizeof(PoolSlot))
-        PANIC_FMT("Block size %zu is too small for a pool slot (%zu).",
-                  block_size, sizeof(PoolSlot));
+A3Pool* a3_pool_new(size_t block_size, size_t blocks, size_t align,
+                    bool zero_blocks, A3PoolFreeCallback free_cb) {
+    if (block_size < sizeof(A3PoolSlot))
+        A3_PANIC_FMT("Block size %zu is too small for a pool slot (%zu).",
+                     block_size, sizeof(A3PoolSlot));
 
-    align      = MAX(align, alignof(PoolSlot));
+    align      = MAX(align, alignof(A3PoolSlot));
     block_size = align_up(block_size, align);
 
-    Pool* ret;
-    UNWRAPN(ret, calloc(1, sizeof(Pool)));
+    A3Pool* ret;
+    A3_UNWRAPN(ret, calloc(1, sizeof(A3Pool)));
     ret->zero_blocks = zero_blocks;
     ret->free_cb     = free_cb;
     ret->block_size  = block_size;
     ret->cap         = blocks * block_size;
 #ifndef _WIN32
-    UNWRAPSD(posix_memalign(&ret->data, align, ret->cap));
+    A3_UNWRAPSD(posix_memalign(&ret->data, align, ret->cap));
 #else
-    UNWRAPN(ret->data, _aligned_malloc(ret->cap, align));
+    A3_UNWRAPN(ret->data, _aligned_malloc(ret->cap, align));
 #endif
     memset(ret->data, 0, ret->cap);
     ret->free = ret->data;
@@ -73,12 +73,12 @@ Pool* pool_new(size_t block_size, size_t blocks, size_t align, bool zero_blocks,
     return ret;
 }
 
-void* pool_alloc_block(Pool* pool) {
+void* a3_pool_alloc_block(A3Pool* pool) {
     assert(pool);
 
     if (!pool->free)
         return NULL;
-    PoolSlot* slot = pool->free;
+    A3PoolSlot* slot = pool->free;
 
     pool->free = slot->next;
     slot->next = NULL;
@@ -88,20 +88,20 @@ void* pool_alloc_block(Pool* pool) {
     return (void*)slot;
 }
 
-void pool_free_block(Pool* pool, void* block) {
+void a3_pool_free_block(A3Pool* pool, void* block) {
     assert(pool);
     assert(block);
 
-    PoolSlot* slot = block;
-    slot->next     = pool->free;
-    pool->free     = slot;
+    A3PoolSlot* slot = block;
+    slot->next       = pool->free;
+    pool->free       = slot;
 }
 
-void pool_free(Pool* pool) {
+void a3_pool_free(A3Pool* pool) {
     assert(pool);
 
     if (pool->free_cb)
-        for (PoolSlot* current = pool->free; current; current = current->next)
+        for (A3PoolSlot* current = pool->free; current; current = current->next)
             pool->free_cb(current);
 
 #ifndef _WIN32

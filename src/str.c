@@ -1,7 +1,7 @@
 /*
  * STRING -- Fat pointers for strings and byte strings.
  *
- * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -22,28 +22,28 @@
 
 #include <a3/util.h>
 
-String string_alloc(size_t len) {
-    return (String) { .ptr = calloc(len + 1, sizeof(uint8_t)), .len = len };
+A3String a3_string_alloc(size_t len) {
+    return (A3String) { .ptr = calloc(len + 1, sizeof(uint8_t)), .len = len };
 }
 
-String string_realloc(String* this, size_t new_len) {
-    String ret = { .ptr = realloc(this->ptr, new_len + 1), .len = new_len };
+A3String a3_string_realloc(A3String* this, size_t new_len) {
+    A3String ret = { .ptr = realloc(this->ptr, new_len + 1), .len = new_len };
     ret.ptr[new_len] = '\0';
     this->ptr        = NULL;
     this->len        = 0;
     return ret;
 }
 
-String string_clone(CString other) {
+A3String a3_string_clone(A3CString other) {
     if (!other.ptr)
-        return S_NULL;
+        return A3_S_NULL;
 
-    String ret = string_alloc(other.len);
-    string_copy(ret, other);
+    A3String ret = a3_string_alloc(other.len);
+    a3_string_copy(ret, other);
     return ret;
 }
 
-void string_free(String* this) {
+void a3_string_free(A3String* this) {
     assert(this);
     assert(this->ptr);
     free(this->ptr);
@@ -51,13 +51,13 @@ void string_free(String* this) {
     this->len = 0;
 }
 
-void string_copy(String dst, CString src) {
+void a3_string_copy(A3String dst, A3CString src) {
     if (!dst.ptr || !src.ptr || dst.ptr == src.ptr)
         return;
     memcpy(dst.ptr, src.ptr, MIN(dst.len, src.len));
 }
 
-void string_concat(String str, size_t count, ...) {
+void a3_string_concat(A3String str, size_t count, ...) {
     assert(str.ptr);
 
     va_list args;
@@ -65,15 +65,15 @@ void string_concat(String str, size_t count, ...) {
 
     size_t offset = 0;
     for (size_t i = 0; i < count; i++) {
-        CString arg = va_arg(args, CString);
-        string_copy(S_OFFSET(str, offset), arg);
+        A3CString arg = va_arg(args, A3CString);
+        a3_string_copy(A3_S_OFFSET(str, offset), arg);
         offset += arg.len;
     }
 
     va_end(args);
 }
 
-void string_reverse(String str) {
+void a3_string_reverse(A3String str) {
     for (size_t i = 0; i < str.len / 2; i++) {
         uint8_t tmp              = str.ptr[i];
         str.ptr[i]               = str.ptr[str.len - 1 - i];
@@ -81,25 +81,25 @@ void string_reverse(String str) {
     }
 }
 
-String string_itoa_into(String dst, size_t v) {
+A3String a3_string_itoa_into(A3String dst, size_t v) {
     size_t i = 0;
     do {
         dst.ptr[i] = (uint8_t) "0123456789"[v % 10];
         v /= 10;
         i++;
     } while (i <= dst.len && v);
-    String ret = { .ptr = dst.ptr, .len = i };
-    string_reverse(ret);
+    A3String ret = { .ptr = dst.ptr, .len = i };
+    a3_string_reverse(ret);
     return ret;
 }
 
-String string_itoa(size_t v) {
-    double digits = v > 0 ? floor(log10((double)v)) + 1.0 : 1.0;
-    String dst    = string_alloc((size_t)digits);
-    return string_itoa_into(dst, v);
+A3String a3_string_itoa(size_t v) {
+    double   digits = v > 0 ? floor(log10((double)v)) + 1.0 : 1.0;
+    A3String dst    = a3_string_alloc((size_t)digits);
+    return a3_string_itoa_into(dst, v);
 }
 
-bool string_isascii(CString str) {
+bool a3_string_isascii(A3CString str) {
     assert(str.ptr);
 
     for (size_t i = 0; i < str.len; i++)
@@ -108,30 +108,30 @@ bool string_isascii(CString str) {
     return true;
 }
 
-int string_cmp(CString s1, CString s2) {
+int a3_string_cmp(A3CString s1, A3CString s2) {
     assert(s1.ptr && s2.ptr);
     if (s1.len != s2.len)
         return -1;
     return strncmp((char*)s1.ptr, (char*)s2.ptr, s1.len);
 }
 
-int string_cmpi(CString s1, CString s2) {
+int a3_string_cmpi(A3CString s1, A3CString s2) {
     assert(s1.ptr && s2.ptr);
     if (s1.len != s2.len)
         return -1;
     return strncasecmp((char*)s1.ptr, (char*)s2.ptr, s1.len);
 }
 
-CString string_rchr(CString str, uint8_t c) {
+A3CString a3_string_rchr(A3CString str, uint8_t c) {
     assert(str.ptr);
 
     for (size_t i = str.len - 1;; i--) {
         if (str.ptr[i] == c)
-            return (CString) { .ptr = &str.ptr[i], .len = str.len - i };
+            return (A3CString) { .ptr = &str.ptr[i], .len = str.len - i };
 
         if (i == 0)
             break;
     }
 
-    return CS_NULL;
+    return A3_CS_NULL;
 }

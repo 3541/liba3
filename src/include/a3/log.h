@@ -1,7 +1,7 @@
 /*
  * LOG -- Simple logging utilities.
  *
- * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -14,24 +14,24 @@
 #include <a3/cpp.h>
 #include <a3/platform/types.h>
 
-H_BEGIN
+A3_H_BEGIN
 
-typedef enum LogLevel { TRACE, DEBUG, INFO, WARN, ERROR } LogLevel;
+typedef enum A3LogLevel { TRACE, DEBUG, INFO, WARN, ERROR } A3LogLevel;
 
-EXPORT void log_init(FILE*, LogLevel);
-EXPORT void log_msg(LogLevel, const char*);
-EXPORT void log_error(int error, const char* msg);
+A3_EXPORT void a3_log_init(FILE*, A3LogLevel);
+A3_EXPORT void a3_log_msg(A3LogLevel, const char*);
+A3_EXPORT void a3_log_error(int error, const char* msg);
 
-EXPORT void log_fmt(LogLevel, const char*, ...);
+A3_EXPORT void a3_log_fmt(A3LogLevel, const char*, ...);
 
-#define ERR_FMT(fmt, ...)                                                      \
+#define A3_ERR_FMT(fmt, ...)                                                   \
     do {                                                                       \
-        log_fmt(ERROR, "%s (%d): " fmt, __FILE__, __LINE__, __VA_ARGS__);      \
+        a3_log_fmt(ERROR, "%s (%d): " fmt, __FILE__, __LINE__, __VA_ARGS__);   \
     } while (0)
 
-#define ERR(msg)                                                               \
+#define A3_ERR(msg)                                                            \
     do {                                                                       \
-        ERR_FMT("%s", (msg));                                                  \
+        A3_ERR_FMT("%s", (msg));                                               \
     } while (0)
 
-H_END
+A3_H_END

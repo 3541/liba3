@@ -1,7 +1,7 @@
 /*
  * SINGLY-LINKED LIST -- A type-generic intrusive singly-linked list.
  *
- * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -14,136 +14,135 @@
 #include <a3/cpp.h>
 #include <a3/util.h>
 
-#define SLL(TY) struct TY##SLL
-//#define SLL_NODE_PTR(TY) struct TY##SLLNodePtr
+#define A3_SLL(TY) struct TY##A3SLL
 
-#define SLL_DEFINE_STRUCTS(TY)                                                 \
-    H_BEGIN                                                                    \
+#define A3_SLL_DEFINE_STRUCTS(TY)                                              \
+    A3_H_BEGIN                                                                 \
                                                                                \
-    SLL(TY) {                                                                  \
+    A3_SLL(TY) {                                                               \
         TY* head;                                                              \
         TY* end;                                                               \
     };                                                                         \
                                                                                \
-    H_END
+    A3_H_END
 
 // Invoke this macro in a struct body to make it a node.
 #ifdef __cplusplus
-#define SLL_NODE(TY)                                                           \
-    TY* _sll_next { nullptr }
+#define A3_SLL_NODE(TY)                                                        \
+    TY* _a3_sll_next { nullptr }
 #else
-#define SLL_NODE(TY) TY* _sll_next
+#define A3_SLL_NODE(TY) TY* _a3_sll_next
 #endif
 
-#define SLL_INIT(TY)    TY##_sll_init
-#define SLL_NEW(TY)     TY##_sll_new
-#define SLL_DESTROY(TY) TY##_sll_destroy
-#define SLL_FREE(TY)    TY##_sll_free
+#define A3_SLL_INIT(TY)    TY##_a3_sll_init
+#define A3_SLL_NEW(TY)     TY##_a3_sll_new
+#define A3_SLL_DESTROY(TY) TY##_a3_sll_destroy
+#define A3_SLL_FREE(TY)    TY##_a3_sll_free
 
-#define SLL_PEEK(TY)    TY##_sll_peek
-#define SLL_NEXT(TY)    TY##_sll_next
-#define SLL_REMOVE(TY)  TY##_sll_remove
-#define SLL_PUSH(TY)    TY##_sll_push
-#define SLL_POP(TY)     TY##_sll_pop
-#define SLL_ENQUEUE(TY) TY##_sll_enqueue
-#define SLL_DEQUEUE(TY) TY##_sll_dequeue
+#define A3_SLL_PEEK(TY)    TY##_a3_sll_peek
+#define A3_SLL_NEXT(TY)    TY##_a3_sll_next
+#define A3_SLL_REMOVE(TY)  TY##_a3_sll_remove
+#define A3_SLL_PUSH(TY)    TY##_a3_sll_push
+#define A3_SLL_POP(TY)     TY##_a3_sll_pop
+#define A3_SLL_ENQUEUE(TY) TY##_a3_sll_enqueue
+#define A3_SLL_DEQUEUE(TY) TY##_a3_sll_dequeue
 
-#define SLL_DECLARE_METHODS(TY)                                                \
-    H_BEGIN                                                                    \
+#define A3_SLL_DECLARE_METHODS(TY)                                             \
+    A3_H_BEGIN                                                                 \
                                                                                \
-    void SLL_INIT(TY)(SLL(TY)*);                                               \
-    SLL(TY) * SLL_NEW(TY)(void);                                               \
-    void SLL_DESTROY(TY)(SLL(TY)*);                                            \
-    void SLL_FREE(TY)(SLL(TY)*);                                               \
+    void A3_SLL_INIT(TY)(A3_SLL(TY)*);                                         \
+    A3_SLL(TY) * A3_SLL_NEW(TY)(void);                                         \
+    void A3_SLL_DESTROY(TY)(A3_SLL(TY)*);                                      \
+    void A3_SLL_FREE(TY)(A3_SLL(TY)*);                                         \
                                                                                \
-    TY*  SLL_PEEK(TY)(SLL(TY)*);                                               \
-    TY*  SLL_NEXT(TY)(TY*);                                                    \
-    void SLL_REMOVE(TY)(SLL(TY)*, TY*);                                        \
-    void SLL_PUSH(TY)(SLL(TY)*, TY*);                                          \
-    TY*  SLL_POP(TY)(SLL(TY)*);                                                \
-    void SLL_ENQUEUE(TY)(SLL(TY)*, TY*);                                       \
-    TY*  SLL_DEQUEUE(TY)(SLL(TY)*);                                            \
+    TY*  A3_SLL_PEEK(TY)(A3_SLL(TY)*);                                         \
+    TY*  A3_SLL_NEXT(TY)(TY*);                                                 \
+    void A3_SLL_REMOVE(TY)(A3_SLL(TY)*, TY*);                                  \
+    void A3_SLL_PUSH(TY)(A3_SLL(TY)*, TY*);                                    \
+    TY*  A3_SLL_POP(TY)(A3_SLL(TY)*);                                          \
+    void A3_SLL_ENQUEUE(TY)(A3_SLL(TY)*, TY*);                                 \
+    TY*  A3_SLL_DEQUEUE(TY)(A3_SLL(TY)*);                                      \
                                                                                \
-    H_END;
+    A3_H_END;
 
-#define SLL_DEFINE_METHODS(TY)                                                 \
-    void SLL_INIT(TY)(SLL(TY) * list) {                                        \
+#define A3_SLL_DEFINE_METHODS(TY)                                              \
+    void A3_SLL_INIT(TY)(A3_SLL(TY) * list) {                                  \
         assert(list);                                                          \
         list->head = NULL;                                                     \
         list->end  = NULL;                                                     \
     }                                                                          \
                                                                                \
-    SLL(TY) * SLL_NEW(TY)() {                                                  \
-        SLL(TY)* ret = (SLL(TY)*)calloc(1, sizeof(SLL(TY)));                   \
-        SLL_INIT(TY)(ret);                                                     \
+    A3_SLL(TY) * A3_SLL_NEW(TY)() {                                            \
+        A3_SLL(TY)* ret = (A3_SLL(TY)*)calloc(1, sizeof(A3_SLL(TY)));          \
+        A3_SLL_INIT(TY)(ret);                                                  \
         return ret;                                                            \
     }                                                                          \
                                                                                \
-    void SLL_DESTROY(TY)(SLL(TY) * list) {                                     \
+    void A3_SLL_DESTROY(TY)(A3_SLL(TY) * list) {                               \
         assert(list);                                                          \
         list->head = NULL;                                                     \
         list->end  = NULL;                                                     \
     }                                                                          \
                                                                                \
-    void SLL_FREE(TY)(SLL(TY) * list) {                                        \
+    void A3_SLL_FREE(TY)(A3_SLL(TY) * list) {                                  \
         assert(list);                                                          \
-        SLL_DESTROY(TY)(list);                                                 \
+        A3_SLL_DESTROY(TY)(list);                                              \
     }                                                                          \
                                                                                \
-    TY* SLL_PEEK(TY)(SLL(TY) * list) {                                         \
+    TY* A3_SLL_PEEK(TY)(A3_SLL(TY) * list) {                                   \
         assert(list);                                                          \
         return list->head;                                                     \
     }                                                                          \
                                                                                \
-    TY* SLL_NEXT(TY)(TY * item) {                                              \
+    TY* A3_SLL_NEXT(TY)(TY * item) {                                           \
         assert(item);                                                          \
-        return item->_sll_next;                                                \
+        return item->_a3_sll_next;                                             \
     }                                                                          \
                                                                                \
-    void SLL_REMOVE(TY)(SLL(TY) * list, TY * item) {                           \
+    void A3_SLL_REMOVE(TY)(A3_SLL(TY) * list, TY * item) {                     \
         assert(list);                                                          \
         assert(item);                                                          \
         TY** it = &list->head;                                                 \
         while (*it && *it != item)                                             \
-            it = &(*it)->_sll_next;                                            \
-        UNWRAPND(*it);                                                         \
+            it = &(*it)->_a3_sll_next;                                         \
+        A3_UNWRAPND(*it);                                                      \
         if (*it == list->end)                                                  \
             list->end = NULL;                                                  \
-        *it             = item->_sll_next;                                     \
-        item->_sll_next = NULL;                                                \
+        *it                = item->_a3_sll_next;                               \
+        item->_a3_sll_next = NULL;                                             \
     }                                                                          \
                                                                                \
-    void SLL_PUSH(TY)(SLL(TY) * list, TY * item) {                             \
+    void A3_SLL_PUSH(TY)(A3_SLL(TY) * list, TY * item) {                       \
         assert(list);                                                          \
         assert(item);                                                          \
-        assert(!item->_sll_next);                                              \
-        item->_sll_next = list->head;                                          \
-        list->head      = item;                                                \
+        assert(!item->_a3_sll_next);                                           \
+        item->_a3_sll_next = list->head;                                       \
+        list->head         = item;                                             \
         if (!list->end)                                                        \
             list->end = item;                                                  \
     }                                                                          \
                                                                                \
-    TY* SLL_POP(TY)(SLL(TY) * list) {                                          \
+    TY* A3_SLL_POP(TY)(A3_SLL(TY) * list) {                                    \
         assert(list);                                                          \
         TY* ret = list->head;                                                  \
         if (ret) {                                                             \
-            list->head     = ret->_sll_next;                                   \
-            ret->_sll_next = NULL;                                             \
+            list->head        = ret->_a3_sll_next;                             \
+            ret->_a3_sll_next = NULL;                                          \
             if (ret == list->end)                                              \
                 list->end = NULL;                                              \
         }                                                                      \
         return ret;                                                            \
     }                                                                          \
                                                                                \
-    void SLL_ENQUEUE(TY)(SLL(TY) * list, TY * item) {                          \
+    void A3_SLL_ENQUEUE(TY)(A3_SLL(TY) * list, TY * item) {                    \
         assert(list);                                                          \
         assert(item);                                                          \
-        assert(!item->_sll_next);                                              \
+        assert(!item->_a3_sll_next);                                           \
         if (list->end)                                                         \
-            list->end->_sll_next = item;                                       \
+            list->end->_a3_sll_next = item;                                    \
         if (!list->head)                                                       \
             list->head = item;                                                 \
         list->end = item;                                                      \
     }                                                                          \
                                                                                \
-    TY* SLL_DEQUEUE(TY)(SLL(TY) * list) { return SLL_POP(TY)(list); }
+    TY* A3_SLL_DEQUEUE(TY)(A3_SLL(TY) * list) { return A3_SLL_POP(TY)(list); }

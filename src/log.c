@@ -1,7 +1,7 @@
 /*
  * LOG -- Simple logging utilities.
  *
- * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -15,16 +15,16 @@
 
 #include <a3/util.h>
 
-static FILE*    log_out   = NULL;
-static LogLevel log_level = ERROR;
+static FILE*      log_out   = NULL;
+static A3LogLevel log_level = ERROR;
 
-void log_init(FILE* out, LogLevel level) {
+void a3_log_init(FILE* out, A3LogLevel level) {
     log_out   = out;
     log_level = level;
 }
 
-FORMAT_FN(2, 3)
-void log_fmt(LogLevel level, const char* fmt, ...) {
+A3_FORMAT_FN(2, 3)
+void a3_log_fmt(A3LogLevel level, const char* fmt, ...) {
     if (level < log_level)
         return;
 
@@ -35,8 +35,10 @@ void log_fmt(LogLevel level, const char* fmt, ...) {
     va_end(args);
 }
 
-void log_msg(LogLevel level, const char* msg) { log_fmt(level, "%s", msg); }
+void a3_log_msg(A3LogLevel level, const char* msg) {
+    a3_log_fmt(level, "%s", msg);
+}
 
-void log_error(int error, const char* msg) {
-    log_fmt(ERROR, "Error: %s (%s).", msg, strerror(error));
+void a3_log_error(int error, const char* msg) {
+    a3_log_fmt(ERROR, "Error: %s (%s).", msg, strerror(error));
 }

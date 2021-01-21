@@ -9,22 +9,22 @@
 
 using std::vector;
 
-CACHE_DEFINE_STRUCTS(CString, CString)
+A3_CACHE_DEFINE_STRUCTS(A3CString, A3CString)
 
-CACHE_DECLARE_METHODS(CString, CString)
-CACHE_DEFINE_METHODS_NOHT(CString, CString)
+A3_CACHE_DECLARE_METHODS(A3CString, A3CString)
+A3_CACHE_DEFINE_METHODS_NOHT(A3CString, A3CString)
 
 class CacheTest : public ::testing::Test {
 protected:
     static constexpr size_t CACHE_CAPACITY = 512;
-    CACHE(CString, CString) cache {};
+    A3_CACHE(A3CString, A3CString) cache {};
 
     void SetUp() override {
-        log_init(stderr, DEBUG);
-        CACHE_INIT(CString, CString)(&cache, CACHE_CAPACITY, nullptr);
+        a3_log_init(stderr, DEBUG);
+        A3_CACHE_INIT(A3CString, A3CString)(&cache, CACHE_CAPACITY, nullptr);
     }
 
-    void TearDown() override { CACHE_DESTROY(CString, CString)(&cache); }
+    void TearDown() override { A3_CACHE_DESTROY(A3CString, A3CString)(&cache); }
 };
 
 TEST_F(CacheTest, init) {
@@ -35,56 +35,59 @@ TEST_F(CacheTest, init) {
 }
 
 TEST_F(CacheTest, insert) {
-    CACHE_INSERT(CString, CString)(&cache, CS("Key"), CS("Value"), nullptr);
+    A3_CACHE_INSERT(A3CString, A3CString)
+    (&cache, A3_CS("Key"), A3_CS("Value"), nullptr);
 
-    auto* found = CACHE_FIND(CString, CString)(&cache, CS("Key"));
+    auto* found = A3_CACHE_FIND(A3CString, A3CString)(&cache, A3_CS("Key"));
     ASSERT_TRUE(found);
 
-    ssize_t index = HT_FIND_INDEX(CString, CString)(&cache.table, CS("Key"));
+    ssize_t index =
+        A3_HT_FIND_INDEX(A3CString, A3CString)(&cache.table, A3_CS("Key"));
     ASSERT_GE(index, 0LL);
     ASSERT_EQ(found, &cache.table.entries[(size_t)index].value);
-    EXPECT_TRUE(CACHE_ACCESSED(CString, CString)(&cache, (size_t)index));
+    EXPECT_TRUE(A3_CACHE_ACCESSED(A3CString, A3CString)(&cache, (size_t)index));
 }
 
 TEST_F(CacheTest, eviction) {
-    vector<String> strings;
+    vector<A3String> strings;
 
     for (size_t i = 0; i < CACHE_CAPACITY * 3; i++) {
-        auto s = string_itoa(i);
+        auto s = a3_string_itoa(i);
         strings.push_back(s);
-        auto sc = S_CONST(s);
-        CACHE_INSERT(CString, CString)(&cache, sc, sc, nullptr);
-        ASSERT_TRUE(CACHE_FIND(CString, CString)(&cache, sc));
+        auto sc = A3_S_CONST(s);
+        A3_CACHE_INSERT(A3CString, A3CString)(&cache, sc, sc, nullptr);
+        ASSERT_TRUE(A3_CACHE_FIND(A3CString, A3CString)(&cache, sc));
         EXPECT_LE(cache.table.size, cache.table.cap);
         EXPECT_EQ(cache.table.cap, CACHE_CAPACITY);
     }
 
     for (auto& s : strings)
-        string_free(&s);
+        a3_string_free(&s);
 }
 
 static size_t evicted = 0;
-static void   eviction_callback(void* ctx, CString* key, CString* value) {
+static void   eviction_callback(void* ctx, A3CString* key, A3CString* value) {
     (void)ctx;
     (void)value;
     evicted++;
-    string_free(reinterpret_cast<String*>(key));
+    a3_string_free(reinterpret_cast<A3String*>(key));
 }
 
 TEST_F(CacheTest, eviction_callback) {
-    CACHE_DESTROY(CString, CString)(&cache);
-    CACHE_INIT(CString, CString)(&cache, CACHE_CAPACITY, eviction_callback);
+    A3_CACHE_DESTROY(A3CString, A3CString)(&cache);
+    A3_CACHE_INIT(A3CString, A3CString)
+    (&cache, CACHE_CAPACITY, eviction_callback);
 
     for (size_t i = 0; i < CACHE_CAPACITY * 2; i++) {
-        auto s = S_CONST(string_itoa(i));
-        CACHE_INSERT(CString, CString)(&cache, s, s, nullptr);
+        auto s = A3_S_CONST(a3_string_itoa(i));
+        A3_CACHE_INSERT(A3CString, A3CString)(&cache, s, s, nullptr);
     }
 
     EXPECT_EQ(evicted, CACHE_CAPACITY);
     EXPECT_EQ(cache.table.size, CACHE_CAPACITY);
 
     for (size_t i = 0; i < CACHE_CAPACITY; i++)
-        CACHE_EVICT(CString, CString)(&cache, nullptr);
+        A3_CACHE_EVICT(A3CString, A3CString)(&cache, nullptr);
 
     EXPECT_EQ(evicted, CACHE_CAPACITY * 2);
     EXPECT_EQ(cache.table.size, 0ULL);

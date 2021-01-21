@@ -1,7 +1,7 @@
 /*
  * PRIORITY QUEUE -- A type-generic priority queue backed by a binary heap.
  *
- * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -15,52 +15,53 @@
 #include <a3/cpp.h>
 #include <a3/util.h>
 
-#define PQ(TY) struct TY##Pq
+#define A3_PQ(TY) struct TY##A3PQ
 
-#define PQ_IMPL_STRUCT(TY)                                                     \
-    H_BEGIN                                                                    \
-    PQ(TY) {                                                                   \
+#define A3_PQ_IMPL_STRUCT(TY)                                                  \
+    A3_H_BEGIN                                                                 \
+    A3_PQ(TY) {                                                                \
         TY*    data;                                                           \
         size_t len;                                                            \
         size_t cap;                                                            \
         size_t max_cap;                                                        \
     };                                                                         \
-    H_END
+    A3_H_END
 
-#define PQ_INIT(TY)    TY##_pq_init
-#define PQ_PEEK(TY)    TY##_pq_peek
-#define PQ_GET(TY)     TY##_pq_get
-#define PQ_SET(TY)     TY##_pq_set
-#define PQ_ENQUEUE(TY) TY##_pq_enqueue
-#define PQ_HEAPIFY(TY) TY##_pq_heapify
-#define PQ_DEQUEUE(TY) TY##_pq_dequeue
+#define A3_PQ_INIT(TY)    TY##_a3_pq_init
+#define A3_PQ_PEEK(TY)    TY##_a3_pq_peek
+#define A3_PQ_GET(TY)     TY##_a3_pq_get
+#define A3_PQ_SET(TY)     TY##_a3_pq_set
+#define A3_PQ_ENQUEUE(TY) TY##_a3_pq_enqueue
+#define A3_PQ_HEAPIFY(TY) TY##_a3_pq_heapify
+#define A3_PQ_DEQUEUE(TY) TY##_a3_pq_dequeue
 
-H_BEGIN
-inline size_t pq_parent(size_t i) { return i / 2; }
-inline size_t pq_left_child(size_t i) { return i * 2; }
-inline size_t pq_right_child(size_t i) { return i * 2 + 1; }
-H_END
+A3_H_BEGIN
+inline size_t a3_pq_parent(size_t i) { return i / 2; }
+inline size_t a3_pq_left_child(size_t i) { return i * 2; }
+inline size_t a3_pq_right_child(size_t i) { return i * 2 + 1; }
+A3_H_END
 
-#define PQ_DECLARE_METHODS(TY)                                                 \
-    H_BEGIN                                                                    \
-    void PQ_INIT(TY)(PQ(TY)*, size_t initial_cap, size_t max_cap);             \
-    TY*  PQ_PEEK(TY)(PQ(TY)*);                                                 \
-    void PQ_ENQUEUE(TY)(PQ(TY)*, TY);                                          \
-    void PQ_HEAPIFY(TY)(PQ(TY)*, size_t i);                                    \
-    TY   PQ_DEQUEUE(TY)(PQ(TY)*);                                              \
-    H_END
+#define A3_PQ_DECLARE_METHODS(TY)                                              \
+    A3_H_BEGIN                                                                 \
+    void A3_PQ_INIT(TY)(A3_PQ(TY)*, size_t initial_cap, size_t max_cap);       \
+    TY*  A3_PQ_PEEK(TY)(A3_PQ(TY)*);                                           \
+    void A3_PQ_ENQUEUE(TY)(A3_PQ(TY)*, TY);                                    \
+    void A3_PQ_HEAPIFY(TY)(A3_PQ(TY)*, size_t i);                              \
+    TY   A3_PQ_DEQUEUE(TY)(A3_PQ(TY)*);                                        \
+    A3_H_END
 
-#define PQ_IMPL_METHODS(TY, C)                                                 \
-    H_BEGIN                                                                    \
-    void PQ_INIT(TY)(PQ(TY) * this, size_t initial_cap, size_t max_cap) {      \
+#define A3_PQ_IMPL_METHODS(TY, C)                                              \
+    A3_H_BEGIN                                                                 \
+    void A3_PQ_INIT(TY)(A3_PQ(TY) * this, size_t initial_cap,                  \
+                        size_t max_cap) {                                      \
         assert(!this->data);                                                   \
-        UNWRAPN(this->data, calloc(initial_cap, sizeof(TY)));                  \
+        A3_UNWRAPN(this->data, calloc(initial_cap, sizeof(TY)));               \
         this->len     = 0;                                                     \
         this->cap     = initial_cap;                                           \
         this->max_cap = max_cap;                                               \
     }                                                                          \
                                                                                \
-    TY* PQ_PEEK(TY)(PQ(TY) * this) {                                           \
+    TY* A3_PQ_PEEK(TY)(A3_PQ(TY) * this) {                                     \
         assert(this);                                                          \
         if (this->len == 0)                                                    \
             return NULL;                                                       \
@@ -68,60 +69,60 @@ H_END
     }                                                                          \
                                                                                \
     /* Convenience functions for 1-based indexing. */                          \
-    INLINE TY* PQ_GET(TY)(PQ(TY) * this, size_t i) {                           \
+    INLINE TY* A3_PQ_GET(TY)(A3_PQ(TY) * this, size_t i) {                     \
         assert(this);                                                          \
         assert(i > 0);                                                         \
         assert(i - 1 < this->len);                                             \
         return &this->data[i - 1];                                             \
     }                                                                          \
                                                                                \
-    INLINE void PQ_SET(TY)(PQ(TY) * this, size_t i, TY item) {                 \
+    INLINE void A3_PQ_SET(TY)(A3_PQ(TY) * this, size_t i, TY item) {           \
         assert(this);                                                          \
         assert(i > 0);                                                         \
         assert(i - 1 < this->cap);                                             \
         this->data[i - 1] = item;                                              \
     }                                                                          \
                                                                                \
-    void PQ_ENQUEUE(TY)(PQ(TY) * this, TY item) {                              \
+    void A3_PQ_ENQUEUE(TY)(A3_PQ(TY) * this, TY item) {                        \
         assert(this);                                                          \
         assert(this->len + 1 < this->cap);                                     \
                                                                                \
         size_t i = ++this->len;                                                \
-        while (i > 1 && C(PQ_GET(TY)(this, pq_parent(i)), &item) > 0) {        \
-            PQ_SET(TY)(this, i, *PQ_GET(TY)(this, pq_parent(i)));              \
+        while (i > 1 && C(A3_PQ_GET(TY)(this, pq_parent(i)), &item) > 0) {     \
+            A3_PQ_SET(TY)(this, i, *A3_PQ_GET(TY)(this, pq_parent(i)));        \
             i = pq_parent(i);                                                  \
         }                                                                      \
-        PQ_SET(TY)(this, i, item);                                             \
+        A3_PQ_SET(TY)(this, i, item);                                          \
     }                                                                          \
                                                                                \
-    void PQ_HEAPIFY(TY)(PQ(TY) * this, size_t i) {                             \
+    void A3_PQ_HEAPIFY(TY)(A3_PQ(TY) * this, size_t i) {                       \
         assert(this);                                                          \
                                                                                \
-        TY item = *PQ_GET(TY)(this, i);                                        \
+        TY item = *A3_PQ_GET(TY)(this, i);                                     \
         while (i < this->len / 2) {                                            \
             size_t min_child = pq_left_child(i);                               \
             if (min_child < this->len &&                                       \
-                C(PQ_GET(TY)(this, min_child),                                 \
-                  PQ_GET(TY)(this, min_child + 1)) > 0)                        \
+                C(A3_PQ_GET(TY)(this, min_child),                              \
+                  A3_PQ_GET(TY)(this, min_child + 1)) > 0)                     \
                 min_child++;                                                   \
-            if (C(&item, PQ_GET(TY)(this, min_child)) <= 0)                    \
+            if (C(&item, A3_PQ_GET(TY)(this, min_child)) <= 0)                 \
                 break;                                                         \
-            PQ_SET(TY)(this, i, *PQ_GET(TY)(this, min_child));                 \
+            A3_PQ_SET(TY)(this, i, *A3_PQ_GET(TY)(this, min_child));           \
             i = min_child;                                                     \
         }                                                                      \
-        PQ_SET(TY)(this, i, item);                                             \
+        A3_PQ_SET(TY)(this, i, item);                                          \
     }                                                                          \
                                                                                \
-    TY PQ_DEQUEUE(TY)(PQ(TY) * this) {                                         \
+    TY A3_PQ_DEQUEUE(TY)(A3_PQ(TY) * this) {                                   \
         assert(this);                                                          \
         assert(this->len > 0);                                                 \
         if (this->len == 0)                                                    \
-            PANIC("DEQUEUE on empty PQ.");                                     \
+            A3_PANIC("DEQUEUE on empty A3_PQ.");                               \
                                                                                \
-        TY ret = *PQ_PEEK(TY)(this);                                           \
-        PQ_SET(TY)(this, 1, *PQ_GET(TY)(this, this->len--));                   \
-        PQ_HEAPIFY(TY)(this, 1);                                               \
+        TY ret = *A3_PQ_PEEK(TY)(this);                                        \
+        A3_PQ_SET(TY)(this, 1, *A3_PQ_GET(TY)(this, this->len--));             \
+        A3_PQ_HEAPIFY(TY)(this, 1);                                            \
                                                                                \
         return ret;                                                            \
     }                                                                          \
-    H_END
+    A3_H_END

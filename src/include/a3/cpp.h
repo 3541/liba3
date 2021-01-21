@@ -1,9 +1,9 @@
 #pragma once
 
 #ifdef __cplusplus
-#define H_BEGIN extern "C" {
-#define H_END   }
+#define A3_H_BEGIN extern "C" {
+#define A3_H_END   }
 #else
-#define H_BEGIN
-#define H_END
+#define A3_H_BEGIN
+#define A3_H_END
 #endif

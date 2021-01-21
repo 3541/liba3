@@ -1,7 +1,7 @@
 /*
  * STRING -- Fat pointers for strings and byte strings.
  *
- * Copyright (c) 2020, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -17,94 +17,98 @@
 #include <a3/cpp.h>
 #include <a3/platform/types.h>
 
-H_BEGIN
+A3_H_BEGIN
 
-typedef struct String {
+typedef struct A3String {
     uint8_t* ptr;
     size_t   len;
-} String;
+} A3String;
 
-typedef struct CString {
+typedef struct A3CString {
     const uint8_t* ptr;
     size_t         len;
-} CString;
+} A3CString;
 
 #ifdef __cplusplus
-#define CS(S)   (CString { reinterpret_cast<const uint8_t*>(S), sizeof(S) - 1 })
-#define CSS(S)  (CString { reinterpret_cast<const uint8_t*>(&S), sizeof(S) })
-#define CS_NULL (CString { nullptr, 0 })
-#define S_NULL  (String { nullptr, 0 })
+#define A3_CS(S)                                                               \
+    (A3CString { reinterpret_cast<const uint8_t*>(S), sizeof(S) - 1 })
+#define A3_CSS(S)                                                              \
+    (A3CString { reinterpret_cast<const uint8_t*>(&S), sizeof(S) })
+#define A3_CS_NULL (A3CString { nullptr, 0 })
+#define A3_S_NULL  (A3String { nullptr, 0 })
 
-ALWAYS_INLINE String CS_MUT(CString s) {
+A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) {
     return { const_cast<uint8_t*>(s.ptr), s.len };
 }
 
-ALWAYS_INLINE CString S_CONST(String s) { return { s.ptr, s.len }; }
+A3_ALWAYS_INLINE A3CString A3_S_CONST(A3String s) { return { s.ptr, s.len }; }
 
-ALWAYS_INLINE String S_OF(char* str) {
+A3_ALWAYS_INLINE A3String A3_S_OF(char* str) {
     if (!str)
-        return S_NULL;
+        return A3_S_NULL;
     return { reinterpret_cast<uint8_t*>(str), strlen(str) };
 }
 
-ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
+A3_ALWAYS_INLINE A3String A3_S_OFFSET(A3String s, size_t offset) {
     return { s.ptr + offset, s.len - offset };
 }
 
 #else // __cplusplus
-#define CS(S)   ((CString) { .ptr = (uint8_t*)S, .len = (sizeof(S) - 1) })
-#define CSS(S)  ((CString) { .ptr = (void*)&S, .len = sizeof(S) })
-#define CS_NULL ((CString) { .ptr = NULL, .len = 0 })
-#define S_NULL  ((String) { .ptr = NULL, .len = 0 })
+#define A3_CS(S)   ((A3CString) { .ptr = (uint8_t*)S, .len = (sizeof(S) - 1) })
+#define A3_CSS(S)  ((A3CString) { .ptr = (void*)&S, .len = sizeof(S) })
+#define A3_CS_NULL ((A3CString) { .ptr = NULL, .len = 0 })
+#define A3_S_NULL  ((A3String) { .ptr = NULL, .len = 0 })
 
-ALWAYS_INLINE String CS_MUT(CString s) {
-    return (String) { .ptr = (uint8_t*)s.ptr, .len = s.len };
+A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) {
+    return (A3String) { .ptr = (uint8_t*)s.ptr, .len = s.len };
 }
 
-ALWAYS_INLINE CString S_CONST(String s) {
-    return (CString) { .ptr = s.ptr, .len = s.len };
+A3_ALWAYS_INLINE A3CString A3_S_CONST(A3String s) {
+    return (A3CString) { .ptr = s.ptr, .len = s.len };
 }
 
-ALWAYS_INLINE String S_OF(char* str) {
+A3_ALWAYS_INLINE A3String A3_S_OF(char* str) {
     if (!str)
-        return S_NULL;
-    return (String) { .ptr = (uint8_t*)str, .len = strlen(str) };
+        return A3_S_NULL;
+    return (A3String) { .ptr = (uint8_t*)str, .len = strlen(str) };
 }
 
-ALWAYS_INLINE String S_OFFSET(String s, size_t offset) {
-    return (String) { .ptr = s.ptr + offset, .len = s.len - offset };
+A3_ALWAYS_INLINE A3String A3_S_OFFSET(A3String s, size_t offset) {
+    return (A3String) { .ptr = s.ptr + offset, .len = s.len - offset };
 }
 
 #endif // !__cplusplus
 
-#define S_F     "%.*s"
-#define S_FA(S) ((int)(S).len), ((S).ptr)
+#define A3_S_F     "%.*s"
+#define A3_S_FA(S) ((int)(S).len), ((S).ptr)
 
-ALWAYS_INLINE CString CS_OF(const char* str) {
-    return S_CONST(S_OF((char*)str));
+A3_ALWAYS_INLINE A3CString A3_CS_OF(const char* str) {
+    return A3_S_CONST(A3_S_OF((char*)str));
 }
-ALWAYS_INLINE const uint8_t* S_END(CString s) { return s.ptr + s.len; }
-ALWAYS_INLINE const char* S_AS_C_STR(CString s) { return (const char*)s.ptr; }
+A3_ALWAYS_INLINE const uint8_t* A3_S_END(A3CString s) { return s.ptr + s.len; }
+A3_ALWAYS_INLINE const char*    A3_S_AS_C_STR(A3CString s) {
+    return (const char*)s.ptr;
+}
 
-ALWAYS_INLINE uint8_t* S_PTR(String s) { return s.ptr; }
-ALWAYS_INLINE const uint8_t* CS_PTR(CString s) { return s.ptr; }
-ALWAYS_INLINE size_t         S_LEN(CString s) { return s.len; }
+A3_ALWAYS_INLINE uint8_t* A3_S_PTR(A3String s) { return s.ptr; }
+A3_ALWAYS_INLINE const uint8_t* A3_CS_PTR(A3CString s) { return s.ptr; }
+A3_ALWAYS_INLINE size_t         A3_S_LEN(A3CString s) { return s.len; }
 
-EXPORT String string_alloc(size_t len);
-EXPORT String string_realloc(String*, size_t new_len);
-EXPORT String string_clone(CString);
-EXPORT void   string_free(String*);
+A3_EXPORT A3String a3_string_alloc(size_t len);
+A3_EXPORT A3String a3_string_realloc(A3String*, size_t new_len);
+A3_EXPORT A3String a3_string_clone(A3CString);
+A3_EXPORT void     a3_string_free(A3String*);
 
-EXPORT void string_copy(String dst, CString src);
-EXPORT void string_concat(String dst, size_t count, ...);
+A3_EXPORT void a3_string_copy(A3String dst, A3CString src);
+A3_EXPORT void a3_string_concat(A3String dst, size_t count, ...);
 
-void   string_reverse(String);
-String string_itoa_into(String dst, size_t);
-String string_itoa(size_t);
+void     a3_string_reverse(A3String);
+A3String a3_string_itoa_into(A3String dst, size_t);
+A3String a3_string_itoa(size_t);
 
-EXPORT bool    string_isascii(CString);
-EXPORT int     string_cmp(CString lhs, CString rhs);
-EXPORT int     string_cmpi(CString lhs, CString rhs);
-EXPORT CString string_rchr(CString, uint8_t c);
+A3_EXPORT bool      a3_string_isascii(A3CString);
+A3_EXPORT int       a3_string_cmp(A3CString lhs, A3CString rhs);
+A3_EXPORT int       a3_string_cmpi(A3CString lhs, A3CString rhs);
+A3_EXPORT A3CString a3_string_rchr(A3CString, uint8_t c);
 
-H_END
+A3_H_END

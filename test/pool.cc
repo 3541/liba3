@@ -18,20 +18,20 @@ class PoolTest : public ::testing::Test {
     static constexpr size_t POOL_SIZE = 1024;
 
 protected:
-    Pool* pool { nullptr };
+    A3Pool* pool { nullptr };
 
     void SetUp() override {
-        pool = POOL_OF(TestObject, POOL_SIZE, POOL_ZERO_BLOCKS, nullptr);
+        pool = A3_POOL_OF(TestObject, POOL_SIZE, A3_POOL_ZERO_BLOCKS, nullptr);
     }
 
-    void TearDown() override { pool_free(pool); }
+    void TearDown() override { a3_pool_free(pool); }
 
     TestObject* alloc() {
-        return static_cast<TestObject*>(pool_alloc_block(pool));
+        return static_cast<TestObject*>(a3_pool_alloc_block(pool));
     }
 
     void free(TestObject* block) {
-        pool_free_block(pool, static_cast<void*>(block));
+        a3_pool_free_block(pool, static_cast<void*>(block));
     }
 
     void* pool_start() const { return *reinterpret_cast<void**>(pool); }
