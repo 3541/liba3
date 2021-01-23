@@ -130,7 +130,6 @@ target_add_extra_warnings(a3_test FALSE)
 if (NOT MSVC)
   target_add_warnings(a3_test "no-c99-extensions" FALSE)
 endif()
-target_add_clang_tidy(a3_test)
 
 target_link_libraries(a3_test PRIVATE a3hash)
 target_link_libraries(a3_test PRIVATE a3 ${GTEST_LIB})
