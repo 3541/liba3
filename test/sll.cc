@@ -51,21 +51,18 @@ TEST_F(A3_SLLTest, many_insertions) {
 
     EXPECT_EQ(i, 0ULL);
 
-    for (auto* node = A3_SLL_POP(SLLNode)(&list); node;
-         node       = A3_SLL_POP(SLLNode)(&list))
+    for (auto* node = A3_SLL_POP(SLLNode)(&list); node; node = A3_SLL_POP(SLLNode)(&list))
         delete node;
 
     for (i = 1; i <= 128; i++)
         A3_SLL_ENQUEUE(SLLNode)(&list, new SLLNode { i });
 
     i = 1;
-    for (auto* node = A3_SLL_PEEK(SLLNode)(&list); node;
-         node       = A3_SLL_NEXT(SLLNode)(node), i++)
+    for (auto* node = A3_SLL_PEEK(SLLNode)(&list); node; node = A3_SLL_NEXT(SLLNode)(node), i++)
         EXPECT_EQ(node->data, i);
 
     EXPECT_EQ(i, 129ULL);
 
-    for (auto* node = A3_SLL_POP(SLLNode)(&list); node;
-         node       = A3_SLL_POP(SLLNode)(&list))
+    for (auto* node = A3_SLL_POP(SLLNode)(&list); node; node = A3_SLL_POP(SLLNode)(&list))
         delete node;
 }

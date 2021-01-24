@@ -26,20 +26,15 @@ protected:
 
     void TearDown() override { a3_pool_free(pool); }
 
-    TestObject* alloc() {
-        return static_cast<TestObject*>(a3_pool_alloc_block(pool));
-    }
+    TestObject* alloc() { return static_cast<TestObject*>(a3_pool_alloc_block(pool)); }
 
-    void free(TestObject* block) {
-        a3_pool_free_block(pool, static_cast<void*>(block));
-    }
+    void free(TestObject* block) { a3_pool_free_block(pool, static_cast<void*>(block)); }
 
     void* pool_start() const { return *reinterpret_cast<void**>(pool); }
 
     void* pool_end() const {
-        return reinterpret_cast<void*>(
-            reinterpret_cast<uintptr_t>(pool_start()) +
-            POOL_SIZE * sizeof(TestObject));
+        return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(pool_start()) +
+                                       POOL_SIZE * sizeof(TestObject));
     }
 };
 
@@ -87,8 +82,7 @@ TEST_F(PoolTest, alloc_all) {
     // Alloc the entire pool.
     while (auto a = alloc()) {
         // There should be no duplicate pointers.
-        EXPECT_EQ(std::find(allocations.begin(), allocations.end(), a),
-                  allocations.end());
+        EXPECT_EQ(std::find(allocations.begin(), allocations.end(), a), allocations.end());
         allocations.push_back(a);
     }
 

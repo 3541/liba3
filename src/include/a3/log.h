@@ -24,14 +24,14 @@ A3_EXPORT void a3_log_error(int error, const char* msg);
 
 A3_EXPORT void a3_log_fmt(A3LogLevel, const char*, ...);
 
-#define A3_ERR_FMT(fmt, ...)                                                   \
-    do {                                                                       \
-        a3_log_fmt(ERROR, "%s (%d): " fmt, __FILE__, __LINE__, __VA_ARGS__);   \
+#define A3_ERR_FMT(fmt, ...)                                                                       \
+    do {                                                                                           \
+        a3_log_fmt(ERROR, "%s (%d): " fmt, __FILE__, __LINE__, __VA_ARGS__);                       \
     } while (0)
 
-#define A3_ERR(msg)                                                            \
-    do {                                                                       \
-        A3_ERR_FMT("%s", (msg));                                               \
+#define A3_ERR(msg)                                                                                \
+    do {                                                                                           \
+        A3_ERR_FMT("%s", (msg));                                                                   \
     } while (0)
 
 A3_H_END

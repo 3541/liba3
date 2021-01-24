@@ -35,19 +35,15 @@ struct A3Pool {
     A3PoolFreeCallback free_cb;
 };
 
-static inline size_t align_down(size_t v, size_t align) {
-    return v & ~(align - 1);
-}
+static inline size_t align_down(size_t v, size_t align) { return v & ~(align - 1); }
 
-static inline size_t align_up(size_t v, size_t align) {
-    return align_down(v + align - 1, align);
-}
+static inline size_t align_up(size_t v, size_t align) { return align_down(v + align - 1, align); }
 
-A3Pool* a3_pool_new(size_t block_size, size_t blocks, size_t align,
-                    bool zero_blocks, A3PoolFreeCallback free_cb) {
+A3Pool* a3_pool_new(size_t block_size, size_t blocks, size_t align, bool zero_blocks,
+                    A3PoolFreeCallback free_cb) {
     if (block_size < sizeof(A3PoolSlot))
-        A3_PANIC_FMT("Block size %zu is too small for a pool slot (%zu).",
-                     block_size, sizeof(A3PoolSlot));
+        A3_PANIC_FMT("Block size %zu is too small for a pool slot (%zu).", block_size,
+                     sizeof(A3PoolSlot));
 
     align      = MAX(align, alignof(A3PoolSlot));
     block_size = align_up(block_size, align);

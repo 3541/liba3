@@ -30,16 +30,12 @@ typedef struct A3CString {
 } A3CString;
 
 #ifdef __cplusplus
-#define A3_CS(S)                                                               \
-    (A3CString { reinterpret_cast<const uint8_t*>(S), sizeof(S) - 1 })
-#define A3_CSS(S)                                                              \
-    (A3CString { reinterpret_cast<const uint8_t*>(&S), sizeof(S) })
+#define A3_CS(S)   (A3CString { reinterpret_cast<const uint8_t*>(S), sizeof(S) - 1 })
+#define A3_CSS(S)  (A3CString { reinterpret_cast<const uint8_t*>(&S), sizeof(S) })
 #define A3_CS_NULL (A3CString { nullptr, 0 })
 #define A3_S_NULL  (A3String { nullptr, 0 })
 
-A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) {
-    return { const_cast<uint8_t*>(s.ptr), s.len };
-}
+A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return { const_cast<uint8_t*>(s.ptr), s.len }; }
 
 A3_ALWAYS_INLINE A3CString A3_S_CONST(A3String s) { return { s.ptr, s.len }; }
 
@@ -82,13 +78,9 @@ A3_ALWAYS_INLINE A3String A3_S_OFFSET(A3String s, size_t offset) {
 #define A3_S_F     "%.*s"
 #define A3_S_FA(S) ((int)(S).len), ((S).ptr)
 
-A3_ALWAYS_INLINE A3CString A3_CS_OF(const char* str) {
-    return A3_S_CONST(A3_S_OF((char*)str));
-}
+A3_ALWAYS_INLINE A3CString A3_CS_OF(const char* str) { return A3_S_CONST(A3_S_OF((char*)str)); }
 A3_ALWAYS_INLINE const uint8_t* A3_S_END(A3CString s) { return s.ptr + s.len; }
-A3_ALWAYS_INLINE const char*    A3_S_AS_C_STR(A3CString s) {
-    return (const char*)s.ptr;
-}
+A3_ALWAYS_INLINE const char*    A3_S_AS_C_STR(A3CString s) { return (const char*)s.ptr; }
 
 A3_ALWAYS_INLINE uint8_t* A3_S_PTR(A3String s) { return s.ptr; }
 A3_ALWAYS_INLINE const uint8_t* A3_CS_PTR(A3CString s) { return s.ptr; }

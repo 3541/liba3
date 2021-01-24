@@ -31,13 +31,12 @@ typedef struct A3PoolSlot A3PoolSlot;
 
 typedef void (*A3PoolFreeCallback)(A3PoolSlot*);
 
-A3_EXPORT A3Pool* a3_pool_new(size_t block_size, size_t blocks, size_t align,
-                              bool zero_blocks, A3PoolFreeCallback free_cb);
+A3_EXPORT A3Pool* a3_pool_new(size_t block_size, size_t blocks, size_t align, bool zero_blocks,
+                              A3PoolFreeCallback free_cb);
 A3_EXPORT void*   a3_pool_alloc_block(A3Pool*);
 A3_EXPORT void    a3_pool_free_block(A3Pool*, void*);
 A3_EXPORT void    a3_pool_free(A3Pool*);
 
-#define A3_POOL_OF(TY, COUNT, ZB, CB)                                          \
-    a3_pool_new(sizeof(TY), (COUNT), alignof(TY), (ZB), (CB))
+#define A3_POOL_OF(TY, COUNT, ZB, CB) a3_pool_new(sizeof(TY), (COUNT), alignof(TY), (ZB), (CB))
 
 A3_H_END

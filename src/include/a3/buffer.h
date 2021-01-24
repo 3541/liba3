@@ -59,10 +59,10 @@ typedef struct _a3_buf_token_next_args {
 
 A3_EXPORT A3String a3_buf_token_next_impl(_a3_buf_token_next_args);
 
-#define a3_buf_token_next(BUF, DELIM, ...)                                     \
-    a3_buf_token_next_impl((_a3_buf_token_next_args) {                         \
+#define a3_buf_token_next(BUF, DELIM, ...)                                                         \
+    a3_buf_token_next_impl((_a3_buf_token_next_args) {                                             \
         .buf = (BUF), .delim = (DELIM), .preserve_end = false, __VA_ARGS__ })
-#define a3_buf_token_next_copy(BUF, DELIM, ...)                                \
+#define a3_buf_token_next_copy(BUF, DELIM, ...)                                                    \
     a3_string_clone(A3_S_CONST(a3_buf_token_next((BUF), (DELIM), __VA_ARGS__)))
 
 A3_EXPORT inline bool a3_buf_initialized(const A3Buffer* buf) {
@@ -136,8 +136,7 @@ A3_EXPORT inline bool a3_buf_ensure_cap(A3Buffer* buf, size_t min_extra_cap) {
     size_t new_cap = buf->data.len;
     for (; new_cap < buf->data.len + min_extra_cap; new_cap *= 2)
         ;
-    A3String new_data =
-        a3_string_realloc(&buf->data, MIN(new_cap, buf->max_cap));
+    A3String new_data = a3_string_realloc(&buf->data, MIN(new_cap, buf->max_cap));
     A3_TRYB(new_data.ptr);
     buf->data = new_data;
 
@@ -162,8 +161,7 @@ A3_EXPORT inline A3String a3_buf_write_ptr(A3Buffer* buf) {
 #ifdef __cplusplus
     return { buf->data.ptr + buf->tail, a3_buf_space(buf) };
 #else
-    return (A3String) { .ptr = buf->data.ptr + buf->tail,
-                        .len = a3_buf_space(buf) };
+    return (A3String) { .ptr = buf->data.ptr + buf->tail, .len = a3_buf_space(buf) };
 #endif
 }
 
@@ -173,8 +171,7 @@ A3_EXPORT inline A3CString a3_buf_read_ptr(const A3Buffer* buf) {
 #ifdef __cplusplus
     return { buf->data.ptr + buf->head, a3_buf_len(buf) };
 #else
-    return (A3CString) { .ptr = buf->data.ptr + buf->head,
-                         .len = a3_buf_len(buf) };
+    return (A3CString) { .ptr = buf->data.ptr + buf->head, .len = a3_buf_len(buf) };
 #endif
 }
 

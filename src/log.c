@@ -35,9 +35,7 @@ void a3_log_fmt(A3LogLevel level, const char* fmt, ...) {
     va_end(args);
 }
 
-void a3_log_msg(A3LogLevel level, const char* msg) {
-    a3_log_fmt(level, "%s", msg);
-}
+void a3_log_msg(A3LogLevel level, const char* msg) { a3_log_fmt(level, "%s", msg); }
 
 void a3_log_error(int error, const char* msg) {
     a3_log_fmt(ERROR, "Error: %s (%s).", msg, strerror(error));

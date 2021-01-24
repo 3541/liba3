@@ -35,8 +35,7 @@ TEST_F(A3_HTTest, insert_and_delete) {
     (&table, A3_CS("A key"), A3_CS("A value"));
     EXPECT_EQ(A3_HT_SIZE(A3CString, A3CString)(&table), 1ULL);
     EXPECT_EQ(
-        a3_string_cmp(*A3_HT_FIND(A3CString, A3CString)(&table, A3_CS("A key")),
-                      A3_CS("A value")),
+        a3_string_cmp(*A3_HT_FIND(A3CString, A3CString)(&table, A3_CS("A key")), A3_CS("A value")),
         0);
 
     EXPECT_TRUE(A3_HT_DELETE(A3CString, A3CString)(&table, A3_CS("A key")));
@@ -106,8 +105,7 @@ TEST_F(A3_HTTest, fixed_size) {
     // Clear the whole table. Every slot should now be a tombstone.
     auto clear_table = [this, &keys]() {
         for (auto& key : keys)
-            ASSERT_TRUE(
-                A3_HT_DELETE(A3CString, A3CString)(&table, A3_S_CONST(key)));
+            ASSERT_TRUE(A3_HT_DELETE(A3CString, A3CString)(&table, A3_S_CONST(key)));
 
         EXPECT_EQ(table.size, 0ULL);
     };

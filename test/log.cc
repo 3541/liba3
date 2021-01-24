@@ -24,7 +24,7 @@ protected:
         fflush(stream);
         fseek(stream, 0, SEEK_SET);
         std::string ret(READ_BUF_SIZE, '\0');
-        size_t written = fread(ret.data(), sizeof(char), READ_BUF_SIZE, stream);
+        size_t      written = fread(ret.data(), sizeof(char), READ_BUF_SIZE, stream);
         ret.resize(written);
         return ret;
     }
@@ -52,8 +52,7 @@ TEST_F(LogTest, format) {
 }
 
 TEST_F(LogTest, format_string) {
-    a3_log_fmt(DEBUG, "Some formatting: " A3_S_F,
-               A3_S_FA(A3_CS("test string")));
+    a3_log_fmt(DEBUG, "Some formatting: " A3_S_F, A3_S_FA(A3_CS("test string")));
     ASSERT_EQ(read_written(), "Some formatting: test string\n");
 }
 

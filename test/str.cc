@@ -83,8 +83,7 @@ TEST(String, copy) {
 TEST(String, concat) {
     A3String dst = a3_string_alloc(11);
 
-    a3_string_concat(dst, 5, A3_CS("01"), A3_CS("23"), A3_CS("45"), A3_CS("67"),
-                     A3_CS("89"));
+    a3_string_concat(dst, 5, A3_CS("01"), A3_CS("23"), A3_CS("45"), A3_CS("67"), A3_CS("89"));
     dst.ptr[dst.len - 1] = '\0';
     EXPECT_STREQ(A3_S_AS_C_STR(A3_S_CONST(dst)), "0123456789");
 

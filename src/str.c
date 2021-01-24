@@ -27,7 +27,7 @@ A3String a3_string_alloc(size_t len) {
 }
 
 A3String a3_string_realloc(A3String* this, size_t new_len) {
-    A3String ret = { .ptr = realloc(this->ptr, new_len + 1), .len = new_len };
+    A3String ret     = { .ptr = realloc(this->ptr, new_len + 1), .len = new_len };
     ret.ptr[new_len] = '\0';
     this->ptr        = NULL;
     this->len        = 0;

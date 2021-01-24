@@ -121,8 +121,7 @@ bool a3_buf_write_fmt(A3Buffer* this, const char* fmt, ...) {
 
 bool a3_buf_write_num(A3Buffer* this, size_t num) {
     static A3_THREAD_LOCAL uint8_t _BUF[20] = { '\0' };
-    A3String                       num_str  = a3_string_itoa_into(
-        (A3String) { .ptr = _BUF, .len = sizeof(_BUF) }, num);
+    A3String num_str = a3_string_itoa_into((A3String) { .ptr = _BUF, .len = sizeof(_BUF) }, num);
     return a3_buf_write_str(this, A3_S_CONST(num_str));
 }
 
@@ -137,13 +136,13 @@ void a3_buf_read(A3Buffer* this, size_t len) {
 
 #ifdef _WIN32
 // Windows doesn't have memmem.
-static void* memmem(const void* haystack, size_t haystacklen,
-                    const void* needle, size_t needlelen) {
+static void* memmem(const void* haystack, size_t haystacklen, const void* needle,
+                    size_t needlelen) {
     if (!haystack || !haystacklen || !needle || !needlelen)
         return NULL;
 
-    for (const uint8_t* sp = haystack;
-         sp + needlelen < (const uint8_t*)haystack + haystacklen; sp++) {
+    for (const uint8_t* sp = haystack; sp + needlelen < (const uint8_t*)haystack + haystacklen;
+         sp++) {
         if (memcmp(sp, needle, needlelen) == 0)
             return (void*)sp;
     }
@@ -160,8 +159,8 @@ A3String a3_buf_memmem(A3Buffer* this, A3CString needle) {
     if (a3_buf_len(this) == 0)
         return A3_S_NULL;
 
-    uint8_t* ret_ptr = memmem(&this->data.ptr[this->head], a3_buf_len(this),
-                              needle.ptr, needle.len);
+    uint8_t* ret_ptr =
+        memmem(&this->data.ptr[this->head], a3_buf_len(this), needle.ptr, needle.len);
     return (A3String) { .ptr = ret_ptr, .len = needle.len };
 }
 
@@ -177,8 +176,7 @@ A3String a3_buf_token_next_impl(_a3_buf_token_next_args args) {
     // <head>[delim][token][delim]...<tail>
 
     // Eat preceding delimiters.
-    for (; this->head < this->tail &&
-           memchr(delim.ptr, this->data.ptr[this->head], delim.len);
+    for (; this->head < this->tail && memchr(delim.ptr, this->data.ptr[this->head], delim.len);
          a3_buf_read(this, 1))
         ;
 
@@ -186,21 +184,16 @@ A3String a3_buf_token_next_impl(_a3_buf_token_next_args args) {
 
     // Find following delimiter.
     size_t end = this->head;
-    for (;
-         end < this->tail && !memchr(delim.ptr, this->data.ptr[end], delim.len);
-         end++)
+    for (; end < this->tail && !memchr(delim.ptr, this->data.ptr[end], delim.len); end++)
         ;
 
     // Zero out all delimiters.
     size_t last = end;
     if (!preserve_end)
-        for (; last < this->tail &&
-               memchr(delim.ptr, this->data.ptr[last], delim.len);
-             last++)
+        for (; last < this->tail && memchr(delim.ptr, this->data.ptr[last], delim.len); last++)
             this->data.ptr[last] = '\0';
 
-    A3String ret = { .ptr = &this->data.ptr[this->head],
-                     .len = end - this->head };
+    A3String ret = { .ptr = &this->data.ptr[this->head], .len = end - this->head };
     this->head   = last;
     return ret;
 }

@@ -58,13 +58,11 @@ TEST_F(A3_LLTest, many_insertions) {
     A3_LL_INSERT_AFTER(LLNode)(mid_node, new LLNode { 128 });
 
     size_t i = 0;
-    for (auto* node = A3_LL_PEEK(LLNode)(&list); node;
-         node       = A3_LL_NEXT(LLNode)(&list, node), i++)
+    for (auto* node = A3_LL_PEEK(LLNode)(&list); node; node = A3_LL_NEXT(LLNode)(&list, node), i++)
         EXPECT_EQ(node->data, i);
 
     EXPECT_EQ(i, 513ULL);
 
-    for (auto* node = A3_LL_DEQUEUE(LLNode)(&list); node;
-         node       = A3_LL_DEQUEUE(LLNode)(&list))
+    for (auto* node = A3_LL_DEQUEUE(LLNode)(&list); node; node = A3_LL_DEQUEUE(LLNode)(&list))
         delete node;
 }
