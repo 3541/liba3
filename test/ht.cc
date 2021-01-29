@@ -13,7 +13,7 @@ A3_HT_DEFINE_STRUCTS(A3CString, A3CString)
 A3_HT_DECLARE_METHODS(A3CString, A3CString)
 A3_HT_DEFINE_METHODS(A3CString, A3CString, A3_CS_PTR, A3_S_LEN, a3_string_cmp)
 
-class A3_HTTest : public ::testing::Test {
+class HTTest : public ::testing::Test {
 protected:
     A3_HT(A3CString, A3CString) table {};
 
@@ -22,13 +22,13 @@ protected:
     void TearDown() override { A3_HT_DESTROY(A3CString, A3CString)(&table); }
 };
 
-TEST_F(A3_HTTest, init) {
+TEST_F(HTTest, init) {
     EXPECT_EQ(A3_HT_SIZE(A3CString, A3CString)(&table), 0ULL);
     EXPECT_EQ(table.cap, A3_HT_INITIAL_CAP);
     EXPECT_TRUE(table.entries);
 }
 
-TEST_F(A3_HTTest, insert_and_delete) {
+TEST_F(HTTest, insert_and_delete) {
     EXPECT_EQ(A3_HT_SIZE(A3CString, A3CString)(&table), 0ULL);
 
     A3_HT_INSERT(A3CString, A3CString)
@@ -43,7 +43,7 @@ TEST_F(A3_HTTest, insert_and_delete) {
     EXPECT_FALSE(A3_HT_FIND(A3CString, A3CString)(&table, A3_CS("A key")));
 }
 
-TEST_F(A3_HTTest, grow) {
+TEST_F(HTTest, grow) {
     vector<A3CString> keys;
 
     auto all_present = [this, &keys]() {
@@ -79,7 +79,7 @@ TEST_F(A3_HTTest, grow) {
 }
 
 // This test is deliberately meant to provoke the issue discovered in 4f33b27.
-TEST_F(A3_HTTest, fixed_size) {
+TEST_F(HTTest, fixed_size) {
     constexpr size_t TEST_CAP = 512;
     A3_HT_RESIZE(A3CString, A3CString)(&table, TEST_CAP);
 
@@ -117,4 +117,33 @@ TEST_F(A3_HTTest, fixed_size) {
 
     for (auto& key : keys)
         a3_string_free(&key);
+}
+
+TEST_F(HTTest, duplicate_reject) {
+    EXPECT_TRUE(A3_HT_INSERT(A3CString, A3CString)(&table, A3_CS("key"), A3_CS("val1")));
+    EXPECT_TRUE(A3_HT_FIND(A3CString, A3CString)(&table, A3_CS("key")));
+
+    EXPECT_FALSE(A3_HT_INSERT(A3CString, A3CString)(&table, A3_CS("key"), A3_CS("val2")));
+    EXPECT_EQ(a3_string_cmp(*A3_HT_FIND(A3CString, A3CString)(&table, A3_CS("key")), A3_CS("val1")),
+              0);
+}
+
+static bool combine_val(A3CString* current_value, A3CString new_value) {
+    A3String combined_value = a3_string_alloc(current_value->len + new_value.len + 2);
+    a3_string_concat(combined_value, 3, *current_value, A3_CS(", "), new_value);
+    *current_value = A3_S_CONST(combined_value);
+    return true;
+}
+
+TEST_F(HTTest, duplicate_combine) {
+    A3_HT_SET_DUPLICATE_CB(A3CString, A3CString)(&table, combine_val);
+
+    EXPECT_TRUE(A3_HT_INSERT(A3CString, A3CString)(&table, A3_CS("key"), A3_CS("val1")));
+    EXPECT_TRUE(A3_HT_FIND(A3CString, A3CString)(&table, A3_CS("key")));
+
+    EXPECT_TRUE(A3_HT_INSERT(A3CString, A3CString)(&table, A3_CS("key"), A3_CS("val2")));
+    A3CString* combined_value = A3_HT_FIND(A3CString, A3CString)(&table, A3_CS("key"));
+    EXPECT_EQ(a3_string_cmp(*combined_value, A3_CS("val1, val2")), 0);
+
+    a3_string_free((A3String*)combined_value);
 }

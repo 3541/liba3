@@ -17,6 +17,7 @@
 #include <time.h>
 
 #include <a3/cpp.h>
+#include <a3/platform/util.h>
 #include <a3/util.h>
 
 // From highwayhash.h. Forward-declared since the library header causes unused
@@ -37,11 +38,14 @@ A3_H_END
 #define A3_HT_HASH_KEY_SIZE 4ULL
 #endif
 
-#define A3_HT(K, V)       struct K##V##A3HT
-#define A3_HT_ENTRY(K, V) struct K##V##A3HTEntry
+#define A3_HT(K, V)        struct K##V##A3HT
+#define A3_HT_ENTRY(K, V)  struct K##V##A3HTEntry
+#define A3_HT_DUP_CB(K, V) K##V##A3HTDuplicateCallback
 
 #define A3_HT_DEFINE_STRUCTS(K, V)                                                                 \
     A3_H_BEGIN                                                                                     \
+                                                                                                   \
+    typedef bool (*K##V##A3HTDuplicateCallback)(V * table_value, K new_value);                     \
                                                                                                    \
     A3_HT_ENTRY(K, V) {                                                                            \
         K        key;                                                                              \
@@ -50,10 +54,11 @@ A3_H_END
     };                                                                                             \
                                                                                                    \
     A3_HT(K, V) {                                                                                  \
-        size_t   size;                                                                             \
-        size_t   cap;                                                                              \
-        bool     can_grow;                                                                         \
-        uint64_t hash_key[A3_HT_HASH_KEY_SIZE];                                                    \
+        size_t                      size;                                                          \
+        size_t                      cap;                                                           \
+        bool                        can_grow;                                                      \
+        K##V##A3HTDuplicateCallback duplicate_cb;                                                  \
+        uint64_t                    hash_key[A3_HT_HASH_KEY_SIZE];                                 \
         A3_HT_ENTRY(K, V) * entries;                                                               \
     };                                                                                             \
                                                                                                    \
@@ -68,10 +73,11 @@ A3_H_END
 #define A3_HT_FIND_INDEX(K, V)   K##V##_a3_ht_find_index
 #define A3_HT_FIND_ENTRY(K, V)   K##V##_a3_ht_find_entry
 
-#define A3_HT_INIT(K, V)    K##V##_a3_ht_init
-#define A3_HT_NEW(K, V)     K##V##_a3_ht_new
-#define A3_HT_DESTROY(K, V) K##V##_a3_ht_destroy
-#define A3_HT_FREE(K, V)    K##V##_a3_ht_free
+#define A3_HT_INIT(K, V)             K##V##_a3_ht_init
+#define A3_HT_NEW(K, V)              K##V##_a3_ht_new
+#define A3_HT_SET_DUPLICATE_CB(K, V) K##V##_a3_ht_set_duplicate_cb
+#define A3_HT_DESTROY(K, V)          K##V##_a3_ht_destroy
+#define A3_HT_FREE(K, V)             K##V##_a3_ht_free
 
 #define A3_HT_INSERT(K, V)       K##V##_a3_ht_insert
 #define A3_HT_FIND(K, V)         K##V##_a3_ht_find
@@ -83,6 +89,7 @@ A3_H_END
     A3_H_BEGIN                                                                                     \
     void A3_HT_INIT(K, V)(A3_HT(K, V)*, bool can_grow);                                            \
     A3_HT(K, V) * A3_HT_NEW(K, V)(bool can_grow);                                                  \
+    void A3_HT_SET_DUPLICATE_CB(K, V)(A3_HT(K, V)*, A3_HT_DUP_CB(K, V));                           \
     void A3_HT_DESTROY(K, V)(A3_HT(K, V)*);                                                        \
     void A3_HT_FREE(K, V)(A3_HT(K, V)*);                                                           \
                                                                                                    \
@@ -117,7 +124,7 @@ A3_H_END
         return (index + table->cap - hash % table->cap) % table->cap;                              \
     }                                                                                              \
                                                                                                    \
-    static void A3_HT_INSERT_AT(K, V)(A3_HT(K, V) * table, uint64_t hash, K key, V value) {        \
+    static bool A3_HT_INSERT_AT(K, V)(A3_HT(K, V) * table, uint64_t hash, K key, V value) {        \
         assert(table);                                                                             \
         assert(hash);                                                                              \
         assert(table->cap > 0ULL);                                                                 \
@@ -131,7 +138,14 @@ A3_H_END
                 current_entry->key   = key;                                                        \
                 current_entry->value = value;                                                      \
                 current_entry->hash  = hash;                                                       \
-                return;                                                                            \
+                return true;                                                                       \
+            }                                                                                      \
+                                                                                                   \
+            /* Duplicate entry. */                                                                 \
+            if (hash == current_entry->hash && C(key, current_entry->key) == 0) {                  \
+                if (!table->duplicate_cb)                                                          \
+                    return false;                                                                  \
+                return table->duplicate_cb(&current_entry->value, value);                          \
             }                                                                                      \
                                                                                                    \
             if (A3_HT_PROBE_COUNT(K, V)(table, i, current_entry->hash) < probe_count) {            \
@@ -200,6 +214,7 @@ A3_H_END
                                                                                                    \
     void A3_HT_INIT(K, V)(A3_HT(K, V) * table, bool can_grow) {                                    \
         assert(table);                                                                             \
+        A3_STRUCT_ZERO(table);                                                                     \
         table->can_grow = can_grow;                                                                \
         table->size     = 0;                                                                       \
         table->cap      = A3_HT_INITIAL_CAP;                                                       \
@@ -216,6 +231,11 @@ A3_H_END
         A3_HT(K, V)* ret = (A3_HT(K, V)*)calloc(1, sizeof(A3_HT(K, V)));                           \
         A3_HT_INIT(K, V)(ret, can_grow);                                                           \
         return ret;                                                                                \
+    }                                                                                              \
+                                                                                                   \
+    void A3_HT_SET_DUPLICATE_CB(K, V)(A3_HT(K, V) * table, A3_HT_DUP_CB(K, V) cb) {                \
+        assert(table);                                                                             \
+        table->duplicate_cb = cb;                                                                  \
     }                                                                                              \
                                                                                                    \
     void A3_HT_DESTROY(K, V)(A3_HT(K, V) * table) {                                                \
@@ -238,9 +258,7 @@ A3_H_END
                 return false;                                                                      \
                                                                                                    \
         table->size++;                                                                             \
-        A3_HT_INSERT_AT(K, V)                                                                      \
-        (table, A3_HT_HASH(K, V)(table, key), key, value);                                         \
-        return true;                                                                               \
+        return A3_HT_INSERT_AT(K, V)(table, A3_HT_HASH(K, V)(table, key), key, value);             \
     }                                                                                              \
                                                                                                    \
     V* A3_HT_FIND(K, V)(A3_HT(K, V) * table, K key) {                                              \
