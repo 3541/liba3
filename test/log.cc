@@ -15,7 +15,7 @@ protected:
 
     void SetUp() override {
         stream = tmpfile();
-        a3_log_init(stream, DEBUG);
+        a3_log_init(stream, LOG_DEBUG);
     }
 
     void TearDown() override { fclose(stream); }
@@ -37,22 +37,22 @@ TEST_F(LogTest, init) {
 }
 
 TEST_F(LogTest, msg) {
-    a3_log_msg(DEBUG, "A test message.");
+    a3_log_msg(LOG_DEBUG, "A test message.");
     ASSERT_EQ(read_written(), "A test message.\n");
 }
 
 TEST_F(LogTest, filter) {
-    a3_log_msg(TRACE, "This shouldn't appear.");
+    a3_log_msg(LOG_TRACE, "This shouldn't appear.");
     ASSERT_EQ(read_written(), "");
 }
 
 TEST_F(LogTest, format) {
-    a3_log_fmt(DEBUG, "%d, %0.1f, %s", 123, 1.2, "string");
+    a3_log_fmt(LOG_DEBUG, "%d, %0.1f, %s", 123, 1.2, "string");
     ASSERT_EQ(read_written(), "123, 1.2, string\n");
 }
 
 TEST_F(LogTest, format_string) {
-    a3_log_fmt(DEBUG, "Some formatting: " A3_S_F, A3_S_FA(A3_CS("test string")));
+    a3_log_fmt(LOG_DEBUG, "Some formatting: " A3_S_F, A3_S_FA(A3_CS("test string")));
     ASSERT_EQ(read_written(), "Some formatting: test string\n");
 }
 

@@ -16,7 +16,7 @@
 #include <a3/util.h>
 
 static FILE*      log_out   = NULL;
-static A3LogLevel log_level = ERROR;
+static A3LogLevel log_level = LOG_ERROR;
 
 void a3_log_init(FILE* out, A3LogLevel level) {
     log_out   = out;
@@ -38,5 +38,5 @@ void a3_log_fmt(A3LogLevel level, const char* fmt, ...) {
 void a3_log_msg(A3LogLevel level, const char* msg) { a3_log_fmt(level, "%s", msg); }
 
 void a3_log_error(int error, const char* msg) {
-    a3_log_fmt(ERROR, "Error: %s (%s).", msg, strerror(error));
+    a3_log_fmt(LOG_ERROR, "Error: %s (%s).", msg, strerror(error));
 }

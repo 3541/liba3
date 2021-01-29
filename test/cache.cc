@@ -20,7 +20,7 @@ protected:
     A3_CACHE(A3CString, A3CString) cache {};
 
     void SetUp() override {
-        a3_log_init(stderr, DEBUG);
+        a3_log_init(stderr, LOG_DEBUG);
         A3_CACHE_INIT(A3CString, A3CString)(&cache, CACHE_CAPACITY, nullptr);
     }
 

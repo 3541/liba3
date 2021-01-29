@@ -16,7 +16,7 @@
 
 A3_H_BEGIN
 
-typedef enum A3LogLevel { TRACE, DEBUG, INFO, WARN, ERROR } A3LogLevel;
+typedef enum A3LogLevel { LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR } A3LogLevel;
 
 A3_EXPORT void a3_log_init(FILE*, A3LogLevel);
 A3_EXPORT void a3_log_msg(A3LogLevel, const char*);
@@ -26,7 +26,7 @@ A3_EXPORT void a3_log_fmt(A3LogLevel, const char*, ...);
 
 #define A3_ERR_FMT(fmt, ...)                                                                       \
     do {                                                                                           \
-        a3_log_fmt(ERROR, "%s (%d): " fmt, __FILE__, __LINE__, __VA_ARGS__);                       \
+        a3_log_fmt(LOG_ERROR, "%s (%d): " fmt, __FILE__, __LINE__, __VA_ARGS__);                       \
     } while (0)
 
 #define A3_ERR(msg)                                                                                \
