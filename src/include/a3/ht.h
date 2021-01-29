@@ -54,11 +54,11 @@ A3_H_END
     };                                                                                             \
                                                                                                    \
     A3_HT(K, V) {                                                                                  \
-        size_t                      size;                                                          \
-        size_t                      cap;                                                           \
-        bool                        can_grow;                                                      \
-        K##V##A3HTDuplicateCallback duplicate_cb;                                                  \
-        uint64_t                    hash_key[A3_HT_HASH_KEY_SIZE];                                 \
+        size_t   size;                                                                             \
+        size_t   cap;                                                                              \
+        bool     can_grow;                                                                         \
+        uint64_t hash_key[A3_HT_HASH_KEY_SIZE];                                                    \
+        A3_HT_DUP_CB(K, V) duplicate_cb;                                                           \
         A3_HT_ENTRY(K, V) * entries;                                                               \
     };                                                                                             \
                                                                                                    \
