@@ -26,7 +26,7 @@ A3_EXPORT void a3_log_fmt(A3LogLevel, const char*, ...);
 
 #define A3_ERR_FMT(fmt, ...)                                                                       \
     do {                                                                                           \
-        a3_log_fmt(LOG_ERROR, "%s (%d): " fmt, __FILE__, __LINE__, __VA_ARGS__);                       \
+        a3_log_fmt(LOG_ERROR, "%s (%d): " fmt, __FILE__, __LINE__, __VA_ARGS__);                   \
     } while (0)
 
 #define A3_ERR(msg)                                                                                \
