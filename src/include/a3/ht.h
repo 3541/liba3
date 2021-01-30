@@ -45,7 +45,7 @@ A3_H_END
 #define A3_HT_DEFINE_STRUCTS(K, V)                                                                 \
     A3_H_BEGIN                                                                                     \
                                                                                                    \
-    typedef bool (*K##V##A3HTDuplicateCallback)(V * table_value, K new_value);                     \
+    typedef bool (*A3_HT_DUP_CB(K, V))(V * current_value, V new_value);                            \
                                                                                                    \
     A3_HT_ENTRY(K, V) {                                                                            \
         K        key;                                                                              \
