@@ -75,6 +75,7 @@ A3_H_END
 #define A3_HT_GROW(K, V)         K##V##_a3_ht_grow
 #define A3_HT_FIND_INDEX(K, V)   K##V##_a3_ht_find_index
 #define A3_HT_FIND_ENTRY(K, V)   K##V##_a3_ht_find_entry
+#define A3_HT_NEXT_ENTRY(K, V)   K##V##a3_ht_next_entry
 
 #define A3_HT_INIT(K, V)             K##V##_a3_ht_init
 #define A3_HT_NEW(K, V)              K##V##_a3_ht_new
@@ -101,9 +102,10 @@ A3_H_END
     bool       A3_HT_INSERT(K, V)(A3_HT(K, V)*, K, V);                                             \
     A3_SSIZE_T A3_HT_FIND_INDEX(K, V)(A3_HT(K, V)*, K);                                            \
     A3_HT_ENTRY(K, V) * A3_HT_FIND_ENTRY(K, V)(A3_HT(K, V)*, K);                                   \
-    V*   A3_HT_FIND(K, V)(A3_HT(K, V)*, K);                                                        \
-    bool A3_HT_DELETE_INDEX(K, V)(A3_HT(K, V)*, size_t);                                           \
-    bool A3_HT_DELETE(K, V)(A3_HT(K, V)*, K);                                                      \
+    V*         A3_HT_FIND(K, V)(A3_HT(K, V)*, K);                                                  \
+    bool       A3_HT_DELETE_INDEX(K, V)(A3_HT(K, V)*, size_t);                                     \
+    bool       A3_HT_DELETE(K, V)(A3_HT(K, V)*, K);                                                \
+    A3_SSIZE_T A3_HT_NEXT_ENTRY(K, V)(A3_HT(K, V)*, size_t index);                                 \
                                                                                                    \
     inline size_t A3_HT_SIZE(K, V)(A3_HT(K, V) * table) {                                          \
         assert(table);                                                                             \
@@ -162,6 +164,13 @@ A3_H_END
                 probe_count                 = A3_HT_PROBE_COUNT(K, V)(table, i, hash);             \
             }                                                                                      \
         }                                                                                          \
+    }                                                                                              \
+                                                                                                   \
+    A3_SSIZE_T A3_HT_NEXT_ENTRY(K, V)(A3_HT(K, V) * table, size_t index) {                         \
+        for (index++; index < table->cap; index++)                                                 \
+            if (table->entries[index].hash)                                                        \
+                return index;                                                                      \
+        return -1;                                                                                 \
     }                                                                                              \
                                                                                                    \
     void A3_HT_RESIZE(K, V)(A3_HT(K, V) * table, size_t new_cap) {                                 \
@@ -316,3 +325,11 @@ A3_H_END
     }                                                                                              \
                                                                                                    \
     A3_HT_DEFINE_METHODS_HASHER(K, V, A3_HT_DEFAULT_HASH(K, V), C)
+
+#define A3_HT_FOR_EACH(K, V, T, K_OUT, V_OUT)                                                      \
+    A3_SSIZE_T i     = 0;                                                                          \
+    K*         K_OUT = &(T)->entries[0].key;                                                       \
+    V*         V_OUT = &(T)->entries[0].value;                                                     \
+    for (; i > 0 && (size_t)i < (T)->cap; i     = A3_HT_NEXT_ENTRY(K, V)((T), (size_t)i),          \
+                                          K_OUT = &(T)->entries[i].key,                            \
+                                          V_OUT = &(T)->entries[i].value)
