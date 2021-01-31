@@ -38,6 +38,9 @@ A3_H_END
 #define A3_HT_HASH_KEY_SIZE 4ULL
 #endif
 
+#define A3_HT_ALLOW_GROWTH  true
+#define A3_HT_FORBID_GROWTH false
+
 #define A3_HT(K, V)        struct K##V##A3HT
 #define A3_HT_ENTRY(K, V)  struct K##V##A3HTEntry
 #define A3_HT_DUP_CB(K, V) K##V##A3HTDuplicateCallback
