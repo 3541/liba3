@@ -118,3 +118,10 @@ TEST(String, rchr) {
     EXPECT_EQ(ans.ptr, got.ptr);
     EXPECT_EQ(ans.len, got.len);
 }
+
+TEST(String, lowercase) {
+    A3String s = a3_string_to_lowercase(A3_CS("UPPERcAse"));
+    EXPECT_EQ(a3_string_cmp(A3_S_CONST(s), A3_CS("uppercase")), 0);
+
+    a3_string_free(&s);
+}
