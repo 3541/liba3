@@ -169,7 +169,7 @@ A3_H_END
     A3_SSIZE_T A3_HT_NEXT_ENTRY(K, V)(A3_HT(K, V) * table, size_t index) {                         \
         for (index++; index < table->cap; index++)                                                 \
             if (table->entries[index].hash)                                                        \
-                return index;                                                                      \
+                return (A3_SSIZE_T)index;                                                          \
         return -1;                                                                                 \
     }                                                                                              \
                                                                                                    \
