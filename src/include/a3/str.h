@@ -94,9 +94,11 @@ A3_EXPORT void     a3_string_free(A3String*);
 A3_EXPORT void a3_string_copy(A3String dst, A3CString src);
 A3_EXPORT void a3_string_concat(A3String dst, size_t count, ...);
 
-void     a3_string_reverse(A3String);
-A3String a3_string_itoa_into(A3String dst, size_t);
-A3String a3_string_itoa(size_t);
+A3_EXPORT void     a3_string_reverse(A3String);
+A3_EXPORT void     a3_string_lowercase(A3String);
+A3_EXPORT A3String a3_string_to_lowercase(A3CString);
+A3_EXPORT A3String a3_string_itoa_into(A3String dst, size_t);
+A3_EXPORT A3String a3_string_itoa(size_t);
 
 A3_EXPORT bool      a3_string_isascii(A3CString);
 A3_EXPORT int       a3_string_cmp(A3CString lhs, A3CString rhs);

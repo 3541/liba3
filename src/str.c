@@ -81,6 +81,17 @@ void a3_string_reverse(A3String str) {
     }
 }
 
+void a3_string_lowercase(A3String str) {
+    for (size_t i = 0; i < str.len && str.ptr[i]; i++)
+        str.ptr[i] = tolower(str.ptr[i]);
+}
+
+A3String a3_string_to_lowercase(A3CString str) {
+    A3String ret = a3_string_clone(str);
+    a3_string_lowercase(ret);
+    return ret;
+}
+
 A3String a3_string_itoa_into(A3String dst, size_t v) {
     size_t i = 0;
     do {
