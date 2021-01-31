@@ -37,6 +37,7 @@ add_library(a3
 
   src/include/a3/buffer.h
   src/include/a3/cpp.h
+  src/include/a3/forward.h
   src/include/a3/ht.h
   src/include/a3/ll.h
   src/include/a3/log.h
