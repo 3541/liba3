@@ -14,16 +14,16 @@ A3_SLL_DEFINE_STRUCTS(SLLNode);
 A3_SLL_DECLARE_METHODS(SLLNode);
 A3_SLL_DEFINE_METHODS(SLLNode);
 
-class A3_SLLTest : public ::testing::Test {
+class SLLTest : public ::testing::Test {
 protected:
     A3_SLL(SLLNode) list {};
 
     void SetUp() override { A3_SLL_INIT(SLLNode)(&list); }
 };
 
-TEST_F(A3_SLLTest, init) { EXPECT_FALSE(list.head); }
+TEST_F(SLLTest, init) { EXPECT_FALSE(list.head); }
 
-TEST_F(A3_SLLTest, push_pop) {
+TEST_F(SLLTest, push_pop) {
     auto* t = new SLLNode { 1234 };
     A3_SLL_PUSH(SLLNode)(&list, t);
 
@@ -40,7 +40,7 @@ TEST_F(A3_SLLTest, push_pop) {
     delete p;
 }
 
-TEST_F(A3_SLLTest, many_insertions) {
+TEST_F(SLLTest, many_insertions) {
     for (size_t i = 1; i <= 128; i++)
         A3_SLL_PUSH(SLLNode)(&list, new SLLNode { i });
 

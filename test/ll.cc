@@ -14,19 +14,19 @@ struct LLNode {
 A3_LL_DECLARE_METHODS(LLNode);
 A3_LL_DEFINE_METHODS(LLNode);
 
-class A3_LLTest : public ::testing::Test {
+class LLTest : public ::testing::Test {
 protected:
     A3_LL(LLNode) list {};
 
     void SetUp() override { A3_LL_INIT(LLNode)(&list); }
 };
 
-TEST_F(A3_LLTest, init) {
+TEST_F(LLTest, init) {
     EXPECT_EQ(list.head.next, &list.end);
     EXPECT_EQ(&list.head, list.end.prev);
 }
 
-TEST_F(A3_LLTest, enqueue_dequeue) {
+TEST_F(LLTest, enqueue_dequeue) {
     auto* t = new LLNode { 1234 };
     A3_LL_ENQUEUE(LLNode)(&list, t);
 
@@ -46,7 +46,7 @@ TEST_F(A3_LLTest, enqueue_dequeue) {
     delete p;
 }
 
-TEST_F(A3_LLTest, many_insertions) {
+TEST_F(LLTest, many_insertions) {
     for (size_t i = 0; i < 128; i++)
         A3_LL_ENQUEUE(LLNode)(&list, new LLNode { i });
 
