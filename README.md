@@ -41,3 +41,20 @@ Most objects (buffer, hash table, linked list, etc...) provide the following fun
 - `void X_free(X*)` deinitializes (by calling `X_destroy`) and frees an object.
 
 This vaguely mirrors the C++ object lifecycle, where `X_new` and `X_free` mimic `new` and `delete`, and `X_init` and `X_destroy` are the constructor and destructor.
+
+## Licensing
+
+`liba3` is licensed under the 3-clause BSD license, the terms of which are
+described [here](https://github.com/3541/liba3/blob/trunk/LICENSE).
+
+`liba3` uses the following third-party projects:
+
+### HighayHash
+The project links with [HighwayHash](https://github.com/google/highwayhash),
+which is licensed under the [Apache
+license](https://github.com/google/highwayhash/blob/master/LICENSE).
+
+### Google Test
+The test framework uses [Google Test](https://github.com/google/googletest),
+which is licensed under the [3-clause BSD
+license](https://github.com/google/googletest/blob/master/LICENSE).
