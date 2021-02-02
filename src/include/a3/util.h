@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -24,7 +25,7 @@
 #define A3_PANIC_FMT(fmt, ...)                                                                     \
     do {                                                                                           \
         A3_ERR_FMT(fmt, __VA_ARGS__);                                                              \
-        exit(EXIT_FAILURE);                                                                        \
+        assert(false);                                                                             \
     } while (0)
 
 #define A3_PANIC(msg) A3_PANIC_FMT("%s", (msg))
