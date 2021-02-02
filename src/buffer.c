@@ -171,7 +171,9 @@ A3String a3_buf_token_next_impl(_a3_buf_token_next_args args) {
     struct A3Buffer* this  = args.buf;
     A3CString delim        = args.delim;
     bool      preserve_end = args.preserve_end;
-    assert(a3_buf_initialized(this));
+
+    if (!a3_buf_initialized(this))
+        return A3_S_NULL;
 
     // <head>[delim][token][delim]...<tail>
 
