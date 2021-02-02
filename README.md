@@ -30,7 +30,9 @@ To build, create a build directory and change into it. Then run `cmake .. [-DCMA
 
 CMake or Meson projects should easily be able to hook into the build system using `add_subdirectory` or `cmake.subproject`, respectively. The CMake file provides a library target `a3`. The hash table also requires linking against `a3_hash`, which pulls in [HighwayHash](https://github.com/google/highwayhash) as a dependency.
 
-Tests can be run either through the `test` target, with CTest, or by directly executing the `a3_test` binary.
+Tests can be run either through the `a3_check` target, with CTest, or by
+directly executing the `a3_test` binary. In the latter two cases, the `a3_test`
+target must first be built.
 
 ## Notes
 Most objects (buffer, hash table, linked list, etc...) provide the following functions to do with their lifecycle:

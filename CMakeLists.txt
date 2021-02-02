@@ -109,7 +109,7 @@ include(DisableRTTI)
 include(Sanitize)
 include(SetCXX20)
 
-add_executable(a3_test
+add_executable(a3_test EXCLUDE_FROM_ALL
   test/buf.cc
   test/cache.cc
   test/ht.cc
@@ -135,3 +135,7 @@ endif()
 target_link_libraries(a3_test PRIVATE a3hash)
 target_link_libraries(a3_test PRIVATE a3 ${GTEST_LIB})
 gtest_discover_tests(a3_test)
+
+add_custom_target(a3_check COMMAND ${CMAKE_CTEST_COMMAND}
+  DEPENDS a3_test
+)
