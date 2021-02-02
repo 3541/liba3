@@ -167,7 +167,7 @@ A3_H_END
     }                                                                                              \
                                                                                                    \
     A3_SSIZE_T A3_HT_NEXT_ENTRY(K, V)(A3_HT(K, V) * table, size_t index) {                         \
-        for (index++; index < table->cap; index++)                                                 \
+        for (; index < table->cap; index++)                                                        \
             if (table->entries[index].hash)                                                        \
                 return (A3_SSIZE_T)index;                                                          \
         return -1;                                                                                 \
@@ -327,9 +327,9 @@ A3_H_END
     A3_HT_DEFINE_METHODS_HASHER(K, V, A3_HT_DEFAULT_HASH(K, V), C)
 
 #define A3_HT_FOR_EACH(K, V, T, K_OUT, V_OUT)                                                      \
-    A3_SSIZE_T i     = 0;                                                                          \
-    K*         K_OUT = &(T)->entries[0].key;                                                       \
-    V*         V_OUT = &(T)->entries[0].value;                                                     \
-    for (; i > 0 && (size_t)i < (T)->cap; i     = A3_HT_NEXT_ENTRY(K, V)((T), (size_t)i),          \
-                                          K_OUT = &(T)->entries[i].key,                            \
-                                          V_OUT = &(T)->entries[i].value)
+    A3_SSIZE_T _i    = A3_HT_NEXT_ENTRY(K, V)((T), 0);                                             \
+    K*         K_OUT = (_i >= 0) ? &(T)->entries[_i].key : NULL;                                   \
+    V*         V_OUT = (_i >= 0) ? &(T)->entries[_i].value : NULL;                                 \
+    for (; _i >= 0 && (size_t)_i < (T)->cap; _i    = A3_HT_NEXT_ENTRY(K, V)((T), (size_t)_i + 1),  \
+                                             K_OUT = &(T)->entries[MAX(_i, 0)].key,                \
+                                             V_OUT = &(T)->entries[MAX(_i, 0)].value)
