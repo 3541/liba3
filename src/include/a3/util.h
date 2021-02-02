@@ -26,6 +26,7 @@
     do {                                                                                           \
         A3_ERR_FMT(fmt, __VA_ARGS__);                                                              \
         assert(false);                                                                             \
+        exit(EXIT_FAILURE);                                                                        \
     } while (0)
 
 #define A3_PANIC(msg) A3_PANIC_FMT("%s", (msg))
