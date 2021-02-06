@@ -230,7 +230,6 @@ A3_H_END
         table->can_grow = can_grow;                                                                \
         table->size     = 0;                                                                       \
         table->cap      = A3_HT_INITIAL_CAP;                                                       \
-        srand((unsigned int)time(NULL));                                                           \
         uint8_t* key_bytes = (uint8_t*)&table->hash_key[0];                                        \
         for (size_t i = 0; i < A3_HT_HASH_KEY_SIZE * sizeof(table->hash_key[0]); i++) {            \
             key_bytes[i] = (uint8_t)rand();                                                        \
