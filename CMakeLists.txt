@@ -70,6 +70,7 @@ target_compile_definitions(a3 PRIVATE _XOPEN_SOURCE=600)
 if (${CMAKE_SYSTEM_NAME} STREQUAL OpenBSD)
   target_compile_definitions(a3 PUBLIC _BSD_SOURCE)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
+  # Required for explicit_bzero.
   target_compile_definitions(a3 PUBLIC _DEFAULT_SOURCE)
 endif()
 if (lto_support)
