@@ -29,6 +29,8 @@ typedef struct A3CString {
     size_t         len;
 } A3CString;
 
+A3_H_END
+
 #ifdef __cplusplus
 #define A3_CS(S)   (A3CString { reinterpret_cast<const uint8_t*>(S), sizeof(S) - 1 })
 #define A3_CSS(S)  (A3CString { reinterpret_cast<const uint8_t*>(&S), sizeof(S) })
@@ -38,6 +40,7 @@ typedef struct A3CString {
 A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return { const_cast<uint8_t*>(s.ptr), s.len }; }
 
 A3_ALWAYS_INLINE A3CString A3_S_CONST(A3String s) { return { s.ptr, s.len }; }
+A3_ALWAYS_INLINE A3CString A3_S_CONST(A3CString s) { return s; }
 
 A3_ALWAYS_INLINE A3String A3_S_OF(char* str) {
     if (!str)
@@ -50,18 +53,20 @@ A3_ALWAYS_INLINE A3String A3_S_OFFSET(A3String s, size_t offset) {
 }
 
 #else // __cplusplus
-#define A3_CS(S)   ((A3CString) { .ptr = (uint8_t*)S, .len = (sizeof(S) - 1) })
-#define A3_CSS(S)  ((A3CString) { .ptr = (void*)&S, .len = sizeof(S) })
-#define A3_CS_NULL ((A3CString) { .ptr = NULL, .len = 0 })
-#define A3_S_NULL  ((A3String) { .ptr = NULL, .len = 0 })
+#define A3_CS(S)      ((A3CString) { .ptr = (uint8_t*)S, .len = (sizeof(S) - 1) })
+#define A3_CSS(S)     ((A3CString) { .ptr = (void*)&S, .len = sizeof(S) })
+#define A3_CS_NULL    ((A3CString) { .ptr = NULL, .len = 0 })
+#define A3_S_NULL     ((A3String) { .ptr = NULL, .len = 0 })
 
 A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) {
     return (A3String) { .ptr = (uint8_t*)s.ptr, .len = s.len };
 }
 
-A3_ALWAYS_INLINE A3CString A3_S_CONST(A3String s) {
+A3_ALWAYS_INLINE A3CString _A3_S_CONST(A3String s) {
     return (A3CString) { .ptr = s.ptr, .len = s.len };
 }
+A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
+#define A3_S_CONST(X) _Generic((X), A3String : _A3_S_CONST, A3CString : _A3_S_NOP)(X)
 
 A3_ALWAYS_INLINE A3String A3_S_OF(char* str) {
     if (!str)
@@ -74,6 +79,8 @@ A3_ALWAYS_INLINE A3String A3_S_OFFSET(A3String s, size_t offset) {
 }
 
 #endif // !__cplusplus
+
+A3_H_BEGIN
 
 #define A3_S_F     "%.*s"
 #define A3_S_FA(S) ((int)(S).len), ((S).ptr)
@@ -88,7 +95,6 @@ A3_ALWAYS_INLINE size_t         A3_S_LEN(A3CString s) { return s.len; }
 
 A3_EXPORT A3String a3_string_alloc(size_t len);
 A3_EXPORT A3String a3_string_realloc(A3String*, size_t new_len);
-A3_EXPORT A3String a3_string_clone(A3CString);
 A3_EXPORT void     a3_string_free(A3String*);
 
 A3_EXPORT void a3_string_copy(A3String dst, A3CString src);
@@ -96,13 +102,29 @@ A3_EXPORT void a3_string_concat(A3String dst, size_t count, ...);
 
 A3_EXPORT void     a3_string_reverse(A3String);
 A3_EXPORT void     a3_string_lowercase(A3String);
-A3_EXPORT A3String a3_string_to_lowercase(A3CString);
 A3_EXPORT A3String a3_string_itoa_into(A3String dst, size_t);
 A3_EXPORT A3String a3_string_itoa(size_t);
 
-A3_EXPORT bool      a3_string_isascii(A3CString);
-A3_EXPORT int       a3_string_cmp(A3CString lhs, A3CString rhs);
-A3_EXPORT int       a3_string_cmpi(A3CString lhs, A3CString rhs);
-A3_EXPORT A3CString a3_string_rchr(A3CString, uint8_t c);
+// A little bit of effort is required for functions which are generic over
+// String/CString. First, declare the actual implementations.
+A3_EXPORT A3String a3_string_clone_impl(A3CString);
+
+A3_EXPORT A3String a3_string_to_lowercase_impl(A3CString);
+
+A3_EXPORT bool      a3_string_isascii_impl(A3CString);
+A3_EXPORT int       a3_string_cmp_impl(A3CString lhs, A3CString rhs);
+A3_EXPORT int       a3_string_cmpi_impl(A3CString lhs, A3CString rhs);
+A3_EXPORT A3CString a3_string_rchr_impl(A3CString, uint8_t c);
+
+// Then, create overloaded macros using the type-generic A3_S_CONST.
+
+#define a3_string_clone(S) a3_string_clone_impl(A3_S_CONST(S))
+
+#define a3_string_to_lowercase(S) a3_string_to_lowercase_impl(A3_S_CONST(S))
+
+#define a3_string_isascii(S) a3_string_isascii_impl(A3_S_CONST(S))
+#define a3_string_cmp(L, R)  a3_string_cmp_impl(A3_S_CONST(L), A3_S_CONST(R))
+#define a3_string_cmpi(L, R) a3_string_cmpi_impl(A3_S_CONST(L), A3_S_CONST(R))
+#define a3_string_rchr(S, C) a3_string_rchr_impl(A3_S_CONST(S), (C))
 
 A3_H_END

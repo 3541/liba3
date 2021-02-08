@@ -34,7 +34,7 @@ A3String a3_string_realloc(A3String* this, size_t new_len) {
     return ret;
 }
 
-A3String a3_string_clone(A3CString other) {
+A3String a3_string_clone_impl(A3CString other) {
     if (!other.ptr)
         return A3_S_NULL;
 
@@ -86,7 +86,7 @@ void a3_string_lowercase(A3String str) {
         str.ptr[i] = (uint8_t)tolower(str.ptr[i]);
 }
 
-A3String a3_string_to_lowercase(A3CString str) {
+A3String a3_string_to_lowercase_impl(A3CString str) {
     A3String ret = a3_string_clone(str);
     a3_string_lowercase(ret);
     return ret;
@@ -110,7 +110,7 @@ A3String a3_string_itoa(size_t v) {
     return a3_string_itoa_into(dst, v);
 }
 
-bool a3_string_isascii(A3CString str) {
+bool a3_string_isascii_impl(A3CString str) {
     assert(str.ptr);
 
     for (size_t i = 0; i < str.len; i++)
@@ -119,21 +119,21 @@ bool a3_string_isascii(A3CString str) {
     return true;
 }
 
-int a3_string_cmp(A3CString s1, A3CString s2) {
+int a3_string_cmp_impl(A3CString s1, A3CString s2) {
     assert(s1.ptr && s2.ptr);
     if (s1.len != s2.len)
         return -1;
     return strncmp((char*)s1.ptr, (char*)s2.ptr, s1.len);
 }
 
-int a3_string_cmpi(A3CString s1, A3CString s2) {
+int a3_string_cmpi_impl(A3CString s1, A3CString s2) {
     assert(s1.ptr && s2.ptr);
     if (s1.len != s2.len)
         return -1;
     return strncasecmp((char*)s1.ptr, (char*)s2.ptr, s1.len);
 }
 
-A3CString a3_string_rchr(A3CString str, uint8_t c) {
+A3CString a3_string_rchr_impl(A3CString str, uint8_t c) {
     assert(str.ptr);
 
     for (size_t i = str.len - 1;; i--) {

@@ -45,4 +45,4 @@ jobs:
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
-      run: ctest
+      run: cmake --build . -t a3_check
