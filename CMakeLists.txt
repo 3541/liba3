@@ -135,8 +135,12 @@ endif()
 
 target_link_libraries(a3_test PRIVATE a3hash)
 target_link_libraries(a3_test PRIVATE a3 ${GTEST_LIB})
-gtest_discover_tests(a3_test)
 
 add_custom_target(a3_check COMMAND ${CMAKE_CTEST_COMMAND}
   DEPENDS a3_test
 )
+
+# Library consumers probably don't want to run the tests.
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+  gtest_discover_tests(a3_test)
+endif()
