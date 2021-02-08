@@ -1,5 +1,7 @@
 # liba3
 
+![Build and test](https://github.com/3541/liba3/workflows/Build%20and%20test/badge.svg)
+
 My personal C library. All the little things I keep rewriting for every
 nontrivial C project. This was largely born out of frustration while working on
 [Short Circuit](https://github.com/3541/short-circuit).
