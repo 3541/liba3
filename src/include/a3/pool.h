@@ -40,3 +40,52 @@ A3_EXPORT void    a3_pool_free(A3Pool*);
 #define A3_POOL_OF(TY, COUNT, ZB, CB) a3_pool_new(sizeof(TY), (COUNT), alignof(TY), (ZB), (CB))
 
 A3_H_END
+
+#ifdef __cplusplus
+
+#include <cassert>
+
+#include <a3/log.h>
+
+// The following are macros which can be used to override `new` and `delete` on a C++ class so that
+// is allocated from a pool.
+// - Invoke one of the macros A3_POOL_ALLOCATED* at the start of the class.
+// - Invoke A3_POOL_STORAGE in _one_ translation unit.
+
+#define A3_POOL_STORAGE(T, COUNT, ZB, CB) A3Pool* T::_POOL = A3_POOL_OF(T, COUNT, ZB, CB)
+
+#define A3_POOL_MEMBER static A3Pool* _POOL;
+
+#define A3_POOL_OP_NEW(T)                                                                          \
+    static void* operator new(size_t size) noexcept {                                              \
+        assert(size == sizeof(T));                                                                 \
+        (void)size;                                                                                \
+        void* ret = a3_pool_alloc_block(_POOL);                                                    \
+        if (!ret) {                                                                                \
+            a3_log_msg(LOG_ERROR, #T " pool exhausted.");                                          \
+            return nullptr;                                                                        \
+        }                                                                                          \
+        return ret;                                                                                \
+    }
+
+#define A3_POOL_OP_DELETE(T)                                                                       \
+    static void operator delete(void* ptr) {                                                       \
+        assert(ptr);                                                                               \
+        a3_pool_free_block(_POOL, ptr);                                                            \
+    }
+
+#define A3_POOL_ALLOCATED(T)                                                                       \
+private:                                                                                           \
+    A3_POOL_MEMBER                                                                                 \
+public:                                                                                            \
+    A3_POOL_OP_NEW(T)                                                                              \
+    A3_POOL_OP_DELETE(T)
+
+#define A3_POOL_ALLOCATED_PRIV_NEW(T)                                                              \
+private:                                                                                           \
+    A3_POOL_MEMBER                                                                                 \
+    A3_POOL_OP_NEW(T)                                                                              \
+public:                                                                                            \
+    A3_POOL_OP_DELETE(T)
+
+#endif
