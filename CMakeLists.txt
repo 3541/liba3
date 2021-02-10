@@ -53,6 +53,9 @@ add_library(a3
 target_include_directories(a3 PUBLIC src/include)
 target_link_math(a3)
 
+include(StackProtector)
+target_add_stack_protector(a3)
+
 include(AddWarnings)
 target_add_extra_warnings(a3 TRUE)
 target_platform_checks(a3)
@@ -120,6 +123,7 @@ add_executable(a3_test EXCLUDE_FROM_ALL
   test/sll.cc
   test/str.cc
 )
+target_add_stack_protector(a3_test)
 target_disable_exceptions(a3_test)
 target_disable_rtti(a3_test)
 target_set_cxx_std_20(a3_test)
