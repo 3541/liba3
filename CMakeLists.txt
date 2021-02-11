@@ -46,6 +46,7 @@ add_library(a3
   src/include/a3/platform/util.h
   src/include/a3/pool.h
   src/include/a3/pq.h
+  src/include/a3/rc.h
   src/include/a3/sll.h
   src/include/a3/str.h
   src/include/a3/util.h
