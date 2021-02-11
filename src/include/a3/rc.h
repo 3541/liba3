@@ -18,7 +18,11 @@
 // the refcount as appropriate using A3_REF, and decrement it using A3_UNREF. A3_UNREF allows a
 // second argument which is a destructor, called if the reference count reaches 0.
 
+#ifdef __cplusplus
+#define A3_REFCOUNTED_T(T) T _ref_count { 0 }
+#else
 #define A3_REFCOUNTED_T(T) T _ref_count
+#endif
 #define A3_REFCOUNTED      A3_REFCOUNTED_T(uint32_t)
 
 #define A3_REF_COUNT(O) (O->_ref_count)
@@ -30,4 +34,4 @@
         assert(A3_REF_COUNT(O) > 0);                                                               \
         if (--A3_REF_COUNT(O) == 0)                                                                \
             (void)__VA_ARGS__(O);                                                                  \
-    } while (0);
+    } while (0)
