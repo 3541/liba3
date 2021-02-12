@@ -227,9 +227,9 @@ A3_H_END
     void A3_HT_INIT(K, V)(A3_HT(K, V) * table, bool can_grow) {                                    \
         assert(table);                                                                             \
         A3_STRUCT_ZERO(table);                                                                     \
-        table->can_grow = can_grow;                                                                \
-        table->size     = 0;                                                                       \
-        table->cap      = A3_HT_INITIAL_CAP;                                                       \
+        table->can_grow    = can_grow;                                                             \
+        table->size        = 0;                                                                    \
+        table->cap         = A3_HT_INITIAL_CAP;                                                    \
         uint8_t* key_bytes = (uint8_t*)&table->hash_key[0];                                        \
         for (size_t i = 0; i < A3_HT_HASH_KEY_SIZE * sizeof(table->hash_key[0]); i++) {            \
             key_bytes[i] = (uint8_t)rand();                                                        \
