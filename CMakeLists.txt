@@ -47,6 +47,7 @@ add_library(a3
   src/include/a3/pool.h
   src/include/a3/pq.h
   src/include/a3/rc.h
+  src/include/a3/rc.hh
   src/include/a3/sll.h
   src/include/a3/str.h
   src/include/a3/util.h
@@ -121,6 +122,7 @@ add_executable(a3_test EXCLUDE_FROM_ALL
   test/ll.cc
   test/log.cc
   test/pool.cc
+  test/rc.cc
   test/sll.cc
   test/str.cc
 )

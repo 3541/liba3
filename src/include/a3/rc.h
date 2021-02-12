@@ -19,11 +19,12 @@
 // second argument which is a destructor, called if the reference count reaches 0.
 
 #ifdef __cplusplus
-#define A3_REFCOUNTED_T(T) T _ref_count { 0 }
+#define A3_REFCOUNTED_T(T)                                                                         \
+    T _ref_count { 0 }
 #else
 #define A3_REFCOUNTED_T(T) T _ref_count
 #endif
-#define A3_REFCOUNTED      A3_REFCOUNTED_T(uint32_t)
+#define A3_REFCOUNTED A3_REFCOUNTED_T(uint32_t)
 
 #define A3_REF_COUNT(O) (O->_ref_count)
 
