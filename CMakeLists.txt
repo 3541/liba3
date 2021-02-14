@@ -136,6 +136,11 @@ set_target_properties(a3_test PROPERTIES
   C_STANDARD 11
   C_EXTENSIONS OFF
 )
+if (MSVC)
+  set_target_properties(a3_test PROPERTIES
+    CXX_STANDARD 20
+  )
+endif()
 target_add_sanitizers(a3_test TRUE)
 target_add_extra_warnings(a3_test FALSE)
 if (NOT MSVC)
