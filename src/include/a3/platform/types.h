@@ -56,8 +56,6 @@ typedef ssize_t A3_SSIZE_T;
 #ifdef _MSC_VER
 #define A3_THREAD_LOCAL __declspec(thread)
 #else // !Thread_local && _MSC_VER
-#warning "Missing _Thread_local with no known alternative."
-// This should trigger a compile error if used.
-#define A3_THREAD_LOCAL void
+#define A3_THREAD_LOCAL __thread
 #endif // !Thread_local && !_MSC_VER
 #endif
