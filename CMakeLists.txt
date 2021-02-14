@@ -129,9 +129,11 @@ add_executable(a3_test EXCLUDE_FROM_ALL
 target_add_stack_protector(a3_test)
 target_disable_exceptions(a3_test)
 target_disable_rtti(a3_test)
-target_set_cxx_std_20(a3_test)
 set_target_properties(a3_test PROPERTIES
+  CXX_STANDARD 17
   CXX_EXTENSIONS OFF
+  CXX_STANDARD_REQUIRED TRUE
+  C_STANDARD 11
   C_EXTENSIONS OFF
 )
 target_add_sanitizers(a3_test TRUE)
