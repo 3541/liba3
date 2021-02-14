@@ -14,9 +14,10 @@ A3_CACHE_DEFINE_STRUCTS(A3CString, A3CString)
 A3_CACHE_DECLARE_METHODS(A3CString, A3CString)
 A3_CACHE_DEFINE_METHODS_NOHT(A3CString, A3CString)
 
+#define CACHE_CAPACITY (512ULL)
+
 class CacheTest : public ::testing::Test {
 protected:
-    static constexpr size_t CACHE_CAPACITY = 512;
     A3_CACHE(A3CString, A3CString) cache {};
 
     void SetUp() override {

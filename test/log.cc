@@ -24,7 +24,7 @@ protected:
         fflush(stream);
         fseek(stream, 0, SEEK_SET);
         std::string ret(READ_BUF_SIZE, '\0');
-        size_t      written = fread(ret.data(), sizeof(char), READ_BUF_SIZE, stream);
+        size_t      written = fread(&ret[0], sizeof(char), READ_BUF_SIZE, stream);
         ret.resize(written);
         return ret;
     }

@@ -4,11 +4,11 @@
 
 #include <a3/str.h>
 
+#define BUF_INITIAL_CAP (128ULL)
+#define BUF_MAX_CAP     (512ULL)
+
 class BufferTest : public ::testing::Test {
 protected:
-    static constexpr size_t BUF_INITIAL_CAP = 128;
-    static constexpr size_t BUF_MAX_CAP     = 512;
-
     A3Buffer buf { A3_S_NULL, 0, 0, 0 };
 
     void SetUp() override { a3_buf_init(&buf, BUF_INITIAL_CAP, BUF_MAX_CAP); }
@@ -53,10 +53,10 @@ TEST_F(BufferTest, write_num) {
 
 TEST_F(BufferTest, write_struct) {
     struct TestStruct {
-        int a;
-        int b;
+        int32_t a;
+        int32_t b;
     };
-    static_assert(sizeof(TestStruct) == 8ULL);
+    static_assert(sizeof(TestStruct) == 8ULL, "Unexpected size.");
 
     TestStruct t = { 42, 43 };
     A3_BUF_WRITE_STRUCT(&buf, t);
