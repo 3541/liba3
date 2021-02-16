@@ -78,20 +78,20 @@
     do {                                                                                           \
         if (!(T))                                                                                  \
             return false;                                                                          \
-    } while (0);
+    } while (0)
 
 // Bubble up an error condition, mapping the error to the given value.
 #define A3_TRYB_MAP(T, E)                                                                          \
     do {                                                                                           \
         if (!(T))                                                                                  \
             return E;                                                                              \
-    } while (0);
+    } while (0)
 
 // Map a truthy/falsy return to something else.
 #define A3_RET_MAP(F, T, E)                                                                        \
     do {                                                                                           \
         return F ? T : E;                                                                          \
-    } while (0);
+    } while (0)
 
 #if defined(__GNUC__) || defined(__clang__)
 #define A3_FORMAT_FN(FMT_INDEX, VARG_INDEX)                                                        \
