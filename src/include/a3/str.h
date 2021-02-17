@@ -65,7 +65,8 @@ A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) {
 A3_ALWAYS_INLINE A3CString _A3_S_CONST(A3String s) {
     return (A3CString) { .ptr = s.ptr, .len = s.len };
 }
-#define A3_S_CONST(X) ((A3CString) { .ptr = X.ptr, .len = X.len })
+A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
+#define A3_S_CONST(X) _Generic((X), A3String : _A3_S_CONST, A3CString : _A3_S_NOP)(X)
 
 A3_ALWAYS_INLINE A3String A3_S_OF(char* str) {
     if (!str)
