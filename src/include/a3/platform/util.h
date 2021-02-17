@@ -19,6 +19,8 @@
 #include <Windows.h>
 #define A3_STRUCT_ZERO(S) SecureZeroMemory((S), sizeof(*(S)))
 #else
+#ifndef _MSC_VER
 #warning "Couldn't find a `memset_s` alternative. `A3_STRUCT_ZERO` may be optimized out."
+#endif
 #define A3_STRUCT_ZERO(S) memset((S), 0, sizeof(*(S)))
 #endif
