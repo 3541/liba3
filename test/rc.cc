@@ -45,7 +45,7 @@ TEST(Rc, c_interface) {
     EXPECT_EQ(A3_REF_COUNT(o), 2U);
 
     bool d_called = false;
-    auto d        = [&d_called](auto*) { d_called = true; };
+    auto d        = [&d_called](TestObjectC*) { d_called = true; };
 
     A3_UNREF(o, d);
     EXPECT_EQ(A3_REF_COUNT(o), 1U);
