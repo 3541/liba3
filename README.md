@@ -26,7 +26,7 @@ Dependencies:
 - CMake 3.10 or later.
 
 Test suite dependencies:
-- A C++ compiler supporting C++20.
+- A C++ compiler supporting C++14.
 
 To build, create a build directory and change into it. Then run `cmake .. [-DCMAKE_BUILD_TYPE=___]` to set up the build system, and `cmake --build .` to build the library.
 
