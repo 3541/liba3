@@ -35,20 +35,15 @@
 #define A3_REF_INIT(O) A3_REF_COUNT(O) = 1
 #define A3_REF(O)      A3_REF_COUNT(O)++
 
-A3_H_BEGIN
-static A3_ALLOW_UNUSED inline void _a3_unref_nop_dest(void* p) { (void)p; }
-A3_H_END
-
-#define _A3_UNREF(O, D)                                                                            \
+#define A3_UNREF_D(O, D)                                                                           \
     do {                                                                                           \
         assert(A3_REF_COUNT(O) > 0);                                                               \
         if (--A3_REF_COUNT(O) == 0)                                                                \
             D(O);                                                                                  \
     } while (0)
 
-#define _A3_UNREF_DEST(O, D) _A3_UNREF(O, D)
-#define _A3_UNREF_NODEST(O)  _A3_UNREF(O, _a3_unref_nop_dest)
-
-#define _A3_UNREF_OPTIONS(...) A3_ARG3(__VA_ARGS__, _A3_UNREF_DEST, _A3_UNREF_NODEST)
-
-#define A3_UNREF(...) _A3_UNREF_OPTIONS(__VA_ARGS__)(__VA_ARGS__)
+#define A3_UNREF(O)                                                                                \
+    do {                                                                                           \
+        assert(A3_REF_COUNT(O) > 0);                                                               \
+        --A3_REF_COUNT(O);                                                                         \
+    } while (0)

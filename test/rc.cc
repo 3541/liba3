@@ -47,11 +47,11 @@ TEST(Rc, c_interface) {
     bool d_called = false;
     auto d        = [&d_called](TestObjectC*) { d_called = true; };
 
-    A3_UNREF(o, d);
+    A3_UNREF_D(o, d);
     EXPECT_EQ(A3_REF_COUNT(o), 1U);
     EXPECT_FALSE(d_called);
 
-    A3_UNREF(o, d);
+    A3_UNREF_D(o, d);
     EXPECT_EQ(A3_REF_COUNT(o), 0U);
     EXPECT_TRUE(d_called);
 

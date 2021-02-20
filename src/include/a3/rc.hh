@@ -34,7 +34,7 @@ protected:
 
     void ref() { A3_REF(this); }
 
-    void unref() { A3_UNREF(this, destroy); }
+    void unref() { A3_UNREF_D(this, destroy); }
 
 public:
     C ref_count() const { return _ref_count; }
