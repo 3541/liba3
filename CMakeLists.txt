@@ -58,6 +58,7 @@ target_link_math(a3)
 
 include(StackProtector)
 target_add_stack_protector(a3)
+target_add_stack_clash_protection(a3)
 
 include(AddWarnings)
 target_add_extra_warnings(a3 TRUE)
