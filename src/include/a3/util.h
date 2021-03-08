@@ -80,6 +80,15 @@
             return false;                                                                          \
     } while (0)
 
+// Bubble up an error condition, printing a message on failure at the specified log level.
+#define A3_TRYB_MSG(T, L, M)                                                                       \
+    do {                                                                                           \
+        if (!(T)) {                                                                                \
+            a3_log_msg((L), (M));                                                                  \
+            return false;                                                                          \
+        }                                                                                          \
+    } while (0)
+
 // Bubble up an error condition, mapping the error to the given value.
 #define A3_TRYB_MAP(T, E)                                                                          \
     do {                                                                                           \
