@@ -6,6 +6,9 @@ My personal C library. All the little things I keep rewriting for every
 nontrivial C project. This was largely born out of frustration while working on
 [Short Circuit](https://github.com/3541/short-circuit).
 
+Note: This library is absolutely neither stable nor mature, and not ready for any kind of external
+use at this time.
+
 ## Provides
 - Growable buffer.
 - Hash table (open addressing, Robin Hood).
