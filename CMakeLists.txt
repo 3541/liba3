@@ -97,7 +97,7 @@ add_subdirectory(extern/highwayhash EXCLUDE_FROM_ALL)
 
 add_library(a3hash INTERFACE)
 target_include_directories(a3hash INTERFACE src/include)
-target_link_libraries(a3hash INTERFACE highwayhash)
+target_link_libraries(a3hash INTERFACE highwayhash_c)
 
 # Testing
 include(CTest)
