@@ -11,6 +11,7 @@
 #pragma once
 
 #include <assert.h>
+#include <stdalign.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -35,11 +36,13 @@ A3_H_END
 #endif
 
 #ifndef A3_HT_HASH_KEY_SIZE
-#define A3_HT_HASH_KEY_SIZE 4ULL
+#define A3_HT_HASH_KEY_SIZE (4ULL * sizeof(uint64_t))
 #endif
 
 #define A3_HT_ALLOW_GROWTH  true
 #define A3_HT_FORBID_GROWTH false
+
+#define A3_HT_NO_HASH_KEY NULL
 
 #define A3_HT(K, V)        struct K##V##A3HT
 #define A3_HT_ENTRY(K, V)  struct K##V##A3HTEntry
@@ -57,10 +60,10 @@ A3_H_END
     };                                                                                             \
                                                                                                    \
     A3_HT(K, V) {                                                                                  \
-        size_t   size;                                                                             \
-        size_t   cap;                                                                              \
-        bool     can_grow;                                                                         \
-        uint64_t hash_key[A3_HT_HASH_KEY_SIZE];                                                    \
+        bool                      can_grow;                                                        \
+        size_t                    size;                                                            \
+        size_t                    cap;                                                             \
+        alignas(uint64_t) uint8_t hash_key[A3_HT_HASH_KEY_SIZE];                                   \
         A3_HT_DUP_CB(K, V) duplicate_cb;                                                           \
         A3_HT_ENTRY(K, V) * entries;                                                               \
     };                                                                                             \
@@ -91,8 +94,8 @@ A3_H_END
 
 #define A3_HT_DECLARE_METHODS(K, V)                                                                \
     A3_H_BEGIN                                                                                     \
-    void A3_HT_INIT(K, V)(A3_HT(K, V)*, bool can_grow);                                            \
-    A3_HT(K, V) * A3_HT_NEW(K, V)(bool can_grow);                                                  \
+    void A3_HT_INIT(K, V)(A3_HT(K, V)*, uint8_t * key, bool can_grow);                             \
+    A3_HT(K, V) * A3_HT_NEW(K, V)(uint8_t * key, bool can_grow);                                   \
     void A3_HT_SET_DUPLICATE_CB(K, V)(A3_HT(K, V)*, A3_HT_DUP_CB(K, V));                           \
     void A3_HT_DESTROY(K, V)(A3_HT(K, V)*);                                                        \
     void A3_HT_FREE(K, V)(A3_HT(K, V)*);                                                           \
@@ -224,23 +227,26 @@ A3_H_END
         return &table->entries[i];                                                                 \
     }                                                                                              \
                                                                                                    \
-    void A3_HT_INIT(K, V)(A3_HT(K, V) * table, bool can_grow) {                                    \
+    void A3_HT_INIT(K, V)(A3_HT(K, V) * table, uint8_t * key, bool can_grow) {                     \
         assert(table);                                                                             \
         A3_STRUCT_ZERO(table);                                                                     \
-        table->can_grow    = can_grow;                                                             \
-        table->size        = 0;                                                                    \
-        table->cap         = A3_HT_INITIAL_CAP;                                                    \
-        uint8_t* key_bytes = (uint8_t*)&table->hash_key[0];                                        \
-        for (size_t i = 0; i < A3_HT_HASH_KEY_SIZE * sizeof(table->hash_key[0]); i++) {            \
-            key_bytes[i] = (uint8_t)rand();                                                        \
+        table->can_grow = can_grow;                                                                \
+        table->size     = 0;                                                                       \
+        table->cap      = A3_HT_INITIAL_CAP;                                                       \
+        if (key) {                                                                                 \
+            memcpy(table->hash_key, key, A3_HT_HASH_KEY_SIZE);                                     \
+        } else {                                                                                   \
+            uint8_t* key_bytes = (uint8_t*)&table->hash_key[0];                                    \
+            for (size_t i = 0; i < A3_HT_HASH_KEY_SIZE * sizeof(table->hash_key[0]); i++)          \
+                key_bytes[i] = (uint8_t)rand();                                                    \
         }                                                                                          \
         table->entries = (A3_HT_ENTRY(K, V)*)calloc(table->cap, sizeof(A3_HT_ENTRY(K, V)));        \
         A3_UNWRAPND(table->entries);                                                               \
     }                                                                                              \
                                                                                                    \
-    A3_HT(K, V) * A3_HT_NEW(K, V)(bool can_grow) {                                                 \
+    A3_HT(K, V) * A3_HT_NEW(K, V)(uint8_t * key, bool can_grow) {                                  \
         A3_HT(K, V)* ret = (A3_HT(K, V)*)calloc(1, sizeof(A3_HT(K, V)));                           \
-        A3_HT_INIT(K, V)(ret, can_grow);                                                           \
+        A3_HT_INIT(K, V)(ret, key, can_grow);                                                      \
         return ret;                                                                                \
     }                                                                                              \
                                                                                                    \
@@ -320,7 +326,9 @@ A3_H_END
 #define A3_HT_DEFINE_METHODS(K, V, KEY_BYTES, KEY_SIZE, C)                                         \
     static uint64_t A3_HT_DEFAULT_HASH(K, V)(A3_HT(K, V) * table, K key) {                         \
         assert(table);                                                                             \
-        return HighwayHash64(KEY_BYTES(key), KEY_SIZE(key), table->hash_key);                      \
+        /* See above definition w/ alignas. */                                                     \
+        /* NOLINTNEXTLINE(clang-diagnostic-cast-align) */                                          \
+        return HighwayHash64(KEY_BYTES(key), KEY_SIZE(key), (uint64_t*)table->hash_key);           \
     }                                                                                              \
                                                                                                    \
     A3_HT_DEFINE_METHODS_HASHER(K, V, A3_HT_DEFAULT_HASH(K, V), C)

@@ -78,7 +78,7 @@
         cache->eviction_callback = eviction_callback;                                              \
         A3_UNWRAPN(cache->accessed,                                                                \
                    (size_t*)calloc(capacity / A3_CACHE_ENTRIES_PER_BLOCK, sizeof(size_t)));        \
-        A3_HT_INIT(K, V)(&cache->table, false);                                                    \
+        A3_HT_INIT(K, V)(&cache->table, A3_HT_NO_HASH_KEY, A3_HT_FORBID_GROWTH);      \
         A3_HT_RESIZE(K, V)(&cache->table, capacity);                                               \
     }                                                                                              \
                                                                                                    \
