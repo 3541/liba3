@@ -75,7 +75,7 @@ A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
 #define A3_S_CONST(X)                                                                              \
     ({                                                                                             \
         __typeof__((X)) _in_str = (X);                                                             \
-        A3CString _ret          = { .ptr = _in_str.ptr, .len = _in_str.len };                      \
+        A3CString       _ret    = { .ptr = _in_str.ptr, .len = _in_str.len };                      \
         _ret;                                                                                      \
     })
 
