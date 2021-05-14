@@ -17,7 +17,9 @@ class HTTest : public ::testing::Test {
 protected:
     A3_HT(A3CString, A3CString) table {};
 
-    void SetUp() override { A3_HT_INIT(A3CString, A3CString)(&table, true); }
+    void SetUp() override {
+        A3_HT_INIT(A3CString, A3CString)(&table, A3_HT_NO_HASH_KEY, A3_HT_ALLOW_GROWTH);
+    }
 
     void TearDown() override { A3_HT_DESTROY(A3CString, A3CString)(&table); }
 };
