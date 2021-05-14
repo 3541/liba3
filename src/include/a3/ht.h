@@ -11,7 +11,6 @@
 #pragma once
 
 #include <assert.h>
-#include <stdalign.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -36,7 +35,7 @@ A3_H_END
 #endif
 
 #ifndef A3_HT_HASH_KEY_SIZE
-#define A3_HT_HASH_KEY_SIZE (4ULL * sizeof(uint64_t))
+#define A3_HT_HASH_KEY_SIZE (4ULL)
 #endif
 
 #define A3_HT_ALLOW_GROWTH  true
@@ -60,10 +59,10 @@ A3_H_END
     };                                                                                             \
                                                                                                    \
     A3_HT(K, V) {                                                                                  \
-        bool                      can_grow;                                                        \
-        size_t                    size;                                                            \
-        size_t                    cap;                                                             \
-        alignas(uint64_t) uint8_t hash_key[A3_HT_HASH_KEY_SIZE];                                   \
+        bool     can_grow;                                                                         \
+        size_t   size;                                                                             \
+        size_t   cap;                                                                              \
+        uint64_t hash_key[A3_HT_HASH_KEY_SIZE];                                                    \
         A3_HT_DUP_CB(K, V) duplicate_cb;                                                           \
         A3_HT_ENTRY(K, V) * entries;                                                               \
     };                                                                                             \
@@ -324,17 +323,13 @@ A3_H_END
 //           size_t   KEY_SIZE(K key);
 // See A3_HT_DEFINE_METHODS_HASHER for information on the comparator C.
 #define A3_HT_DEFINE_METHODS(K, V, KEY_BYTES, KEY_SIZE, C)                                         \
-    _Pragma("GCC diagnostic push")                                                                 \
-        _Pragma("GCC diagnostic ignored \"-Wcast-align\"") static uint64_t                         \
-        A3_HT_DEFAULT_HASH(K, V)(A3_HT(K, V) * table, K key) {                                     \
+    static uint64_t A3_HT_DEFAULT_HASH(K, V)(A3_HT(K, V) * table, K key) {                         \
         assert(table);                                                                             \
         /* See above definition w/ alignas. */                                                     \
-        /* NOLINTNEXTLINE(clang-diagnostic-cast-align) */                                          \
-        return HighwayHash64(KEY_BYTES(key), KEY_SIZE(key), (uint64_t*)table->hash_key);           \
+        return HighwayHash64(KEY_BYTES(key), KEY_SIZE(key), table->hash_key);                      \
     }                                                                                              \
-    _Pragma("GCC diagnostic pop")                                                                  \
                                                                                                    \
-        A3_HT_DEFINE_METHODS_HASHER(K, V, A3_HT_DEFAULT_HASH(K, V), C)
+    A3_HT_DEFINE_METHODS_HASHER(K, V, A3_HT_DEFAULT_HASH(K, V), C)
 
 #define A3_HT_FOR_EACH(K, V, T, K_OUT, V_OUT)                                                      \
     A3_SSIZE_T _i    = A3_HT_NEXT_ENTRY(K, V)((T), 0);                                             \
