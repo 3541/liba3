@@ -324,14 +324,17 @@ A3_H_END
 //           size_t   KEY_SIZE(K key);
 // See A3_HT_DEFINE_METHODS_HASHER for information on the comparator C.
 #define A3_HT_DEFINE_METHODS(K, V, KEY_BYTES, KEY_SIZE, C)                                         \
-    static uint64_t A3_HT_DEFAULT_HASH(K, V)(A3_HT(K, V) * table, K key) {                         \
+    _Pragma("GCC diagnostic push")                                                                 \
+        _Pragma("GCC diagnostic ignored \"-Wcast-align\"") static uint64_t                         \
+        A3_HT_DEFAULT_HASH(K, V)(A3_HT(K, V) * table, K key) {                                     \
         assert(table);                                                                             \
         /* See above definition w/ alignas. */                                                     \
         /* NOLINTNEXTLINE(clang-diagnostic-cast-align) */                                          \
         return HighwayHash64(KEY_BYTES(key), KEY_SIZE(key), (uint64_t*)table->hash_key);           \
     }                                                                                              \
+    _Pragma("GCC diagnostic pop")                                                                  \
                                                                                                    \
-    A3_HT_DEFINE_METHODS_HASHER(K, V, A3_HT_DEFAULT_HASH(K, V), C)
+        A3_HT_DEFINE_METHODS_HASHER(K, V, A3_HT_DEFAULT_HASH(K, V), C)
 
 #define A3_HT_FOR_EACH(K, V, T, K_OUT, V_OUT)                                                      \
     A3_SSIZE_T _i    = A3_HT_NEXT_ENTRY(K, V)((T), 0);                                             \
