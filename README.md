@@ -7,21 +7,25 @@ nontrivial C project. This was largely born out of frustration while working on
 [Short Circuit](https://github.com/3541/short-circuit).
 
 Note: This library is absolutely neither stable nor mature, and not ready for any kind of external
-use at this time.
+use at this time. Show-stopping bugs probably exist, and the API may change drastically without any
+notice.
 
 ## Provides
-- Growable buffer.
+- Growable byte buffer.
 - Hash table (open addressing, Robin Hood).
-- Intrusive doubly-linked list.
-- Priority queue (binary heap).
+- Cache.
+- Intrusive singly and doubly-linked lists.
+- Priority queue (binary heap, WIP).
 - Logging (to arbitrary `FILE*` outputs).
 - Pool allocator.
-- Safer strings.
+- Nicer strings.
+- Refcounting.
 
 ## Features
-- Simple and lightweight — approx. 1 kLOC. Less, without `a3_hash`.
+- Simple and lightweight — <2 kLOC. Less, without the optional `a3_hash` component.
 - Type-generic data structures — (ab)uses preprocessor macros to imitate C++ templates.
-- C++ compatible — can be freely used in mixed projects.
+- C++ friendly. All headers are compatible, and convenient C++ wrappers are provided where
+  appropriate (C++ is not required, however).
 
 ## Building and Usage
 Dependencies:
