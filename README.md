@@ -24,7 +24,7 @@ notice.
 ## Features
 - Simple and lightweight — <2 kLOC. Less, without the optional `a3_hash` component.
 - Type-generic data structures — (ab)uses preprocessor macros to imitate C++ templates.
-- C++ friendly. All headers are compatible, and convenient C++ wrappers are provided where
+- C++ friendly — All headers are compatible, and convenient C++ wrappers are provided where
   appropriate (C++ is not required, however).
 
 ## Building and Usage
