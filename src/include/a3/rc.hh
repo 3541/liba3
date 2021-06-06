@@ -7,6 +7,10 @@
  * the project root for details.
  */
 
+/// \file rc.hh
+/// # Reference Counting (C++)
+/// A convenient C++ layer on top of rc.h.
+
 #pragma once
 
 #include <cassert>
@@ -20,6 +24,9 @@ namespace a3 {
 template <typename T, typename C>
 class Rc;
 
+/// A reference-counted type. Inherit from this class to give a type reference-counting semantics,
+/// and then use it through Rc pointers. If non-standard allocation is used, the type should
+/// override `operator delete`.
 template <typename T, typename C = uint32_t>
 class RefCounted {
 private:
@@ -32,14 +39,18 @@ protected:
 
     ~RefCounted() { assert(A3_REF_COUNT(this) == 0); }
 
+    /// Increment the reference count.
     void ref() { A3_REF(this); }
 
+    /// Decrement the reference count, and destroy if it reaches zero.
     void unref() { A3_UNREF_D(this, destroy); }
 
 public:
-    C ref_count() const { return _ref_count; }
+    /// Get the current reference count.
+    C ref_count() const { return A3_REF_COUNT(this); }
 };
 
+/// A pointer to a reference-counted type. The pointed-to type must inherit from RefCounted.
 template <typename T, typename C = uint32_t>
 class Rc {
 private:
@@ -48,19 +59,37 @@ private:
     Rc() : ptr { nullptr } {}
 
 public:
-    explicit Rc(T* target) : ptr { target } { ptr->ref(); }
+    /// Create an Rc pointing to the given target. Increments the reference count.
+    explicit Rc(T* target) : ptr { target } {
+        if (ptr)
+            ptr->ref();
+    }
 
-    Rc(const Rc& other) : ptr { other.ptr } { ptr->ref(); }
+    /// Create an Rc pointing to the same target as another one. Increments the reference count.
+    Rc(const Rc& other) : ptr { other.ptr } {
+        if (ptr)
+            ptr->ref();
+    }
 
+    /// Move an Rc. Nulls out the other's pointer and does not change the reference count.
     Rc(Rc&& other) : ptr { other.ptr } { other.ptr = nullptr; }
 
+    /// Copy another Rc into this one. Decrements the reference count of the existing target, if
+    /// any, and increments the reference count of the new target.
     Rc& operator=(const Rc& other) {
+        if (ptr)
+            ptr->unref();
         ptr = other.ptr;
-        ptr->ref();
+        if (ptr)
+            ptr->ref();
         return *this;
     }
 
+    /// Move another Rc into this one. Nulls out the other pointer, and decrements the reference
+    /// count of the existing target, if any.
     Rc& operator=(Rc&& other) {
+        if (ptr)
+            ptr->unref();
         ptr       = other.ptr;
         other.ptr = nullptr;
     }
@@ -73,22 +102,26 @@ public:
         ptr->unref();
     }
 
+    /// Adopt an object without changing its reference count.
     static Rc adopt(T* target) {
         Rc ret;
         ret.ptr = target;
         return ret;
     }
 
+    /// Instantiate a new target object and get an Rc pointing to it.
     template <typename... Args>
     static Rc<T, C> create(Args&&... args) {
         return Rc<T, C>::adopt(new T { std::forward<Args>(args)... });
     }
 
+    /// Dereference the pointer.
     T& operator*() {
         assert(ptr);
         return *static_cast<T*>(ptr);
     }
 
+    /// Access members on the target object.
     T* operator->() {
         assert(ptr);
         return static_cast<T*>(ptr);

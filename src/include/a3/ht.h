@@ -8,6 +8,12 @@
  * the project root for details.
  */
 
+/// \file ht.h
+/// # Hash Table
+/// A type-generic hash table using open addressing with Robin Hood hashing. To instantiate a table,
+/// use ::A3_HT_DEFINE_STRUCTS to define the necessary structures, ::A3_HT_DECLARE_METHODS to
+/// generate method prototypes, and ::A3_HT_DEFINE_METHODS to create method bodies.
+
 #pragma once
 
 #include <assert.h>
@@ -27,14 +33,18 @@ uint64_t HighwayHash64(const uint8_t* data, size_t size, const uint64_t key[4]);
 A3_H_END
 
 #ifndef A3_HT_INITIAL_CAP
+/// The initial capacity of the hash table. Can be overridden.
 #define A3_HT_INITIAL_CAP 31ULL
 #endif
 
 #ifndef A3_HT_LOAD_FACTOR
+/// The table's load factor. Can be overridden.
 #define A3_HT_LOAD_FACTOR 90ULL
 #endif
 
 #ifndef A3_HT_HASH_KEY_SIZE
+/// The size, in multiples of 8 bytes, of the hash key. This _must_ be overridden if the hash
+/// function is changed.
 #define A3_HT_HASH_KEY_SIZE (4ULL)
 #endif
 
@@ -43,10 +53,16 @@ A3_H_END
 
 #define A3_HT_NO_HASH_KEY NULL
 
-#define A3_HT(K, V)        struct K##V##A3HT
-#define A3_HT_ENTRY(K, V)  struct K##V##A3HTEntry
+/// The hash table type.
+#define A3_HT(K, V) struct K##V##A3HT
+
+/// The type of a table entry.
+#define A3_HT_ENTRY(K, V) struct K##V##A3HTEntry
+
+/// See ::A3_HT_SET_DUPLICATE_CB.
 #define A3_HT_DUP_CB(K, V) K##V##A3HTDuplicateCallback
 
+/// Define all types required for the given hash table.
 #define A3_HT_DEFINE_STRUCTS(K, V)                                                                 \
     A3_H_BEGIN                                                                                     \
                                                                                                    \
@@ -69,6 +85,7 @@ A3_H_END
                                                                                                    \
     A3_H_END
 
+#ifndef DOXYGEN
 #define A3_HT_HASH(K, V)         K##V##_a3_ht_hash
 #define A3_HT_DEFAULT_HASH(K, V) K##V##_a3_ht_default_hash
 #define A3_HT_PROBE_COUNT(K, V)  K##V##_a3_ht_probe_count
@@ -78,19 +95,81 @@ A3_H_END
 #define A3_HT_FIND_INDEX(K, V)   K##V##_a3_ht_find_index
 #define A3_HT_FIND_ENTRY(K, V)   K##V##_a3_ht_find_entry
 #define A3_HT_NEXT_ENTRY(K, V)   K##V##a3_ht_next_entry
+#endif
 
-#define A3_HT_INIT(K, V)             K##V##_a3_ht_init
-#define A3_HT_NEW(K, V)              K##V##_a3_ht_new
+///
+///     void A3_HT_INIT(K, V)(A3_HT(K, V)*, uint8_t * key, bool can_grow);
+///
+/// Initialize a new hash table. `key` should be a pointer to the hash key, or the value
+/// `A3_HT_NO_HASH_KEY`. `can_grow` should be `A3_HT_ALLOW_GROWTH` or `A3_HT_FORBID_GROWTH`.
+#define A3_HT_INIT(K, V) K##V##_a3_ht_init
+
+///
+///     A3_HT(K, V)* A3_HT_INIT(K, V)(uint8_t * key, bool can_grow);
+///
+/// Allocate and initialize a new hash table. `key` should be a pointer to the hash key, or the
+/// value `A3_HT_NO_HASH_KEY`. `can_grow` should be `A3_HT_ALLOW_GROWTH` or `A3_HT_FORBID_GROWTH`.
+#define A3_HT_NEW(K, V) K##V##_a3_ht_new
+
+///
+///     void A3_HT_SET_DUPLICATE_CB(K, V)(A3_HT(K, V)*, A3_HT_DUP_CB(K, V));
+///
+/// Set the duplicate callback. This callback will be invoked on the old entry whenever a duplicate
+/// entry is inserted.
 #define A3_HT_SET_DUPLICATE_CB(K, V) K##V##_a3_ht_set_duplicate_cb
-#define A3_HT_DESTROY(K, V)          K##V##_a3_ht_destroy
-#define A3_HT_FREE(K, V)             K##V##_a3_ht_free
 
-#define A3_HT_INSERT(K, V)       K##V##_a3_ht_insert
-#define A3_HT_FIND(K, V)         K##V##_a3_ht_find
+///
+///     void A3_HT_DESTROY(K, V)(A3_HT(K, V)*);
+///
+/// Destroy a hash table, deallocating all owned memory.
+#define A3_HT_DESTROY(K, V) K##V##_a3_ht_destroy
+
+///
+///     void A3_HT_FREE(K, V)(A3_HT(K, V)*);
+///
+/// Free a hash table, deallocating it and all owned memory.
+#define A3_HT_FREE(K, V) K##V##_a3_ht_free
+
+///
+///     bool A3_HT_INSERT(K, V)(A3_HT(K, V)*, K, V);
+///
+/// Insert an entry into the hash table. Duplicates will be replaced (potentially invoking the
+/// callback set with ::A3_HT_SET_DUPLICATE_CB).
+///
+/// Return value:
+/// * If there was no existing entry, returns `true`.
+/// * If there was an existing entry, and no duplicate callback was set, returns `false`.
+/// * If there was an existing entry, and there is a duplicate callback, invokes the duplicate
+/// callback and returns its result.
+#define A3_HT_INSERT(K, V) K##V##_a3_ht_insert
+
+///
+///     V* A3_HT_FIND(K, V)(A3_HT(K, V)*, K);
+///
+/// Find an entry (if any) with the given key. Returns a pointer into the table, or `NULL` if such
+/// an entry does not exist.
+#define A3_HT_FIND(K, V) K##V##_a3_ht_find
+
+///
+///     bool A3_HT_DELETE_INDEX(K, V)(A3_HT(K, V)*, size_t);
+///
+/// Delete the entry at the specified index.
 #define A3_HT_DELETE_INDEX(K, V) K##V##_a3_ht_delete_index
-#define A3_HT_DELETE(K, V)       K##V##_a3_ht_delete
-#define A3_HT_SIZE(K, V)         K##V##_a3_ht_size
 
+///
+///     bool A3_HT_DELETE(K, V)(A3_HT(K, V)*, K);
+///
+/// Delete the entry with the specified key. Returns `true` if such an entry existed.
+#define A3_HT_DELETE(K, V) K##V##_a3_ht_delete
+
+///
+///     size_t A3_HT_SIZE(K, V)(A3_HT(K, V) * table);
+///
+/// Get the current number of entries in the table.
+#define A3_HT_SIZE(K, V) K##V##_a3_ht_size
+
+/// Declare all methods for the given hash table. The declarations from ::A3_HT_DEFINE_STRUCTS must
+/// be visible.
 #define A3_HT_DECLARE_METHODS(K, V)                                                                \
     A3_H_BEGIN                                                                                     \
     void A3_HT_INIT(K, V)(A3_HT(K, V)*, uint8_t * key, bool can_grow);                             \
@@ -115,10 +194,13 @@ A3_H_END
     }                                                                                              \
     A3_H_END
 
-// Define methods with a custom hash function. H has the signature:
-//     uint64_t H(A3_HT(K, V)* table, K key);
-// C is a comparator, and must return zero for equal keys. It has the signature:
-//     int8_t C(K lhs, K rhs);
+/// Define methods with a custom hash function. H has the signature:
+///
+///     uint64_t H(A3_HT(K, V)* table, K key);
+///
+/// C is a comparator, and must return zero for equal keys. It has the signature:
+///
+///     int8_t C(K lhs, K rhs);
 #define A3_HT_DEFINE_METHODS_HASHER(K, V, H, C)                                                    \
     static uint64_t A3_HT_HASH(K, V)(A3_HT(K, V) * table, K key) {                                 \
         assert(table);                                                                             \
@@ -317,11 +399,13 @@ A3_H_END
         return A3_HT_DELETE_INDEX(K, V)(table, (size_t)index);                                     \
     }
 
-// Define methods with HighwayHash as the hash function. Helpers have the
-// signatures:
-//     const uint8_t* KEY_BYTES(K key);
-//           size_t   KEY_SIZE(K key);
-// See A3_HT_DEFINE_METHODS_HASHER for information on the comparator C.
+/// Define methods with HighwayHash as the hash function. Helpers have the
+/// signatures:
+///
+///     const uint8_t* KEY_BYTES(K key);
+///           size_t   KEY_SIZE(K key);
+///
+/// See ::A3_HT_DEFINE_METHODS_HASHER for information on the comparator C.
 #define A3_HT_DEFINE_METHODS(K, V, KEY_BYTES, KEY_SIZE, C)                                         \
     static uint64_t A3_HT_DEFAULT_HASH(K, V)(A3_HT(K, V) * table, K key) {                         \
         assert(table);                                                                             \
@@ -331,6 +415,8 @@ A3_H_END
                                                                                                    \
     A3_HT_DEFINE_METHODS_HASHER(K, V, A3_HT_DEFAULT_HASH(K, V), C)
 
+/// Iterate over every entry of the hash table `T`, storing keys in `K_OUT` and values in `V_OUT` on
+/// every iteration.
 #define A3_HT_FOR_EACH(K, V, T, K_OUT, V_OUT)                                                      \
     A3_SSIZE_T _i    = A3_HT_NEXT_ENTRY(K, V)((T), 0);                                             \
     K*         K_OUT = (_i >= 0) ? &(T)->entries[_i].key : NULL;                                   \

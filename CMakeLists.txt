@@ -29,32 +29,38 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 include(ClangTidy)
 include(PlatformChecks)
 include(IWYU)
+set(A3_HEADERS
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/buffer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/cpp.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/forward.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/ht.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/ll.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/log.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/macro.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/platform/types.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/platform/types_private.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/platform/util.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/pool.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/pq.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/rc.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/rc.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/sll.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/str.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include/a3/util.h
+)
+
 add_library(a3
   src/buffer.c
   src/log.c
   src/pool.c
   src/str.c
 
-  src/include/a3/buffer.h
-  src/include/a3/cpp.h
-  src/include/a3/forward.h
-  src/include/a3/ht.h
-  src/include/a3/ll.h
-  src/include/a3/log.h
-  src/include/a3/macro.h
-  src/include/a3/platform/types.h
-  src/include/a3/platform/types_private.h
-  src/include/a3/platform/util.h
-  src/include/a3/pool.h
-  src/include/a3/pq.h
-  src/include/a3/rc.h
-  src/include/a3/rc.hh
-  src/include/a3/sll.h
-  src/include/a3/str.h
-  src/include/a3/util.h
+  ${A3_HEADERS}
 )
 target_include_directories(a3 PUBLIC src/include)
 target_link_math(a3)
+
+add_subdirectory(doc)
 
 include(StackProtector)
 target_add_stack_protector(a3)
