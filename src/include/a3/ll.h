@@ -7,6 +7,10 @@
  * the project root for details.
  */
 
+/// \file ll.h
+/// # Linked List
+/// A generic intrusive doubly-linked list. See ::A3_LL_NODE.
+
 #pragma once
 
 #include <assert.h>
@@ -14,9 +18,12 @@
 #include <a3/cpp.h>
 #include <a3/util.h>
 
-#define A3_LL(TY)          struct TY##A3LL
+/// The linked list type.
+#define A3_LL(TY) struct TY##A3LL
+/// The list links.
 #define A3_LL_NODE_PTR(TY) struct TY##A3LLNodePtr
 
+/// Define all necessary types for a list of the given type.
 #define A3_LL_DEFINE_STRUCTS(TY)                                                                   \
     A3_H_BEGIN                                                                                     \
                                                                                                    \
@@ -32,25 +39,88 @@
                                                                                                    \
     A3_H_END;
 
-// Invoke this macro in the struct body to make it a node.
+/// Invoke this macro in the struct body to use it as a node.
 #define A3_LL_NODE(TY) A3_LL_NODE_PTR(TY) _a3_ll_ptr
 
+///
+///     TY* A3_LL_NODE_CONTAINER_OF(TY)(A3_LL_NODE_PTR(TY)*);
+///
+/// Get the containing object of a list link.
 #define A3_LL_NODE_CONTAINER_OF(TY) TY##_a3_ll_node_container_of
+
+///
+///     void A3_LL_NODE_INSERT_AFTER(TY)(A3_LL_NODE_PTR(TY)* prev, A3_LL_NODE_PTR(TY)* new);
+///
+/// Insert a new node following the given one.
 #define A3_LL_NODE_INSERT_AFTER(TY) TY##_a3_ll_node_insert_after
-#define A3_LL_IS_INSERTED(TY)       TY##_a3_ll_is_inserted
 
-#define A3_LL_INIT(TY)    TY##_a3_ll_init
-#define A3_LL_NEW(TY)     TY##_a3_ll_new
+///
+///     bool A3_LL_IS_INSERTED(TY)(TY*);
+///
+/// Check whether the given object has been inserted in a list.
+#define A3_LL_IS_INSERTED(TY) TY##_a3_ll_is_inserted
+
+///
+///     void A3_LL_INIT(TY)(A3_LL(TY)*);
+///
+/// Initialize a new linked list.
+#define A3_LL_INIT(TY) TY##_a3_ll_init
+
+///
+///     A3_LL(TY)* A3_LL_NEW(TY)(void);
+///
+/// Allocate and initialize a new linked list.
+#define A3_LL_NEW(TY) TY##_a3_ll_new
+
+///
+///     void A3_LL_DESTROY(A3_LL(TY*));
+///
+/// Destroy a linked list. Does nothing to the actual contents.
 #define A3_LL_DESTROY(TY) TY##_a3_ll_destroy
-#define A3_LL_FREE(TY)    TY##_a3_ll_free
 
-#define A3_LL_PEEK(TY)         TY##_a3_ll_peek
-#define A3_LL_NEXT(TY)         TY##_a3_ll_next
+///
+///     void A3_LL_FREE(A3_LL(TY*));
+///
+/// Free and destroy a linked list. Does nothing to the actual contents.
+#define A3_LL_FREE(TY) TY##_a3_ll_free
+
+///
+///     TY* A3_LL_PEEK(TY)(A3_LL(TY)*);
+///
+/// Get the first element in the list, if any. Otherwise, returns `NULL`.
+#define A3_LL_PEEK(TY) TY##_a3_ll_peek
+
+///
+///     TY* A3_LL_NEXT(TY)(A3_LL(TY)*, TY*);
+///
+/// Get the following element in the list, if any. Otherwise, returns `NULL`.
+#define A3_LL_NEXT(TY) TY##_a3_ll_next
+
+///
+///     void A3_LL_INSERT_AFTER(TY)(TY*, TY*);
+///
+/// Insert a new object following the given one.
 #define A3_LL_INSERT_AFTER(TY) TY##_a3_ll_insert_after
-#define A3_LL_REMOVE(TY)       TY##_a3_ll_remove
-#define A3_LL_ENQUEUE(TY)      TY##_a3_ll_enqueue
-#define A3_LL_DEQUEUE(TY)      TY##_a3_ll_dequeue
 
+///
+///     void A3_LL_REMOVE(TY)(TY*);
+///
+/// Remove the given object from its containing list.
+#define A3_LL_REMOVE(TY) TY##_a3_ll_remove
+
+///
+///     void A3_LL_ENQUEUE(TY)(A3_LL(TY)*, TY*);
+///
+/// Insert a new element on the end of the list.
+#define A3_LL_ENQUEUE(TY) TY##_a3_ll_enqueue
+
+///
+///     TY* A3_LL_DEQUEUE(TY)(A3_LL(TY)*);
+///
+/// Remove the first item of the list and return it.
+#define A3_LL_DEQUEUE(TY) TY##_a3_ll_dequeue
+
+/// Declare all method prototypes.
 #define A3_LL_DECLARE_METHODS(TY)                                                                  \
     A3_H_BEGIN                                                                                     \
                                                                                                    \
@@ -71,9 +141,7 @@
                                                                                                    \
     A3_H_END;
 
-// Generate method implementations. C must be a comparator function which
-// operates on TY* and returns -1, 0, or 1 if lhs is less than, equal to, or
-// greater than rhs, respectively.
+/// Generate method implementations. ::A3_LL_DECLARE_METHODS must be visible.
 #define A3_LL_DEFINE_METHODS(TY)                                                                   \
     TY* A3_LL_NODE_CONTAINER_OF(TY)(A3_LL_NODE_PTR(TY) * ptr) {                                    \
         assert(ptr);                                                                               \
