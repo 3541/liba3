@@ -116,7 +116,7 @@ bool a3_buf_write_fmt(A3Buffer* this, const char* fmt, ...) {
 }
 
 bool a3_buf_write_num(A3Buffer* this, size_t num) {
-    uint8_t tmp[20] = { '\0' };
+    uint8_t  tmp[20] = { '\0' };
     A3String num_str = a3_string_itoa_into((A3String) { .ptr = tmp, .len = sizeof(tmp) }, num);
     return a3_buf_write_str(this, A3_S_CONST(num_str));
 }

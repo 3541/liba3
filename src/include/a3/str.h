@@ -90,7 +90,7 @@ A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
 #define A3_S_CONST(X)                                                                              \
     ({                                                                                             \
         __typeof__((X)) _in_str = (X);                                                             \
-        A3CString _ret          = { .ptr = _in_str.ptr, .len = _in_str.len };                      \
+        A3CString       _ret    = { .ptr = _in_str.ptr, .len = _in_str.len };                      \
         _ret;                                                                                      \
     })
 
@@ -113,7 +113,7 @@ A3_ALWAYS_INLINE A3String A3_S_OFFSET(A3String s, size_t offset) {
 A3_H_BEGIN
 
 /// The format specifier to use to print a string. See ::A3_S_FA.
-#define A3_S_F     "%.*s"
+#define A3_S_F "%.*s"
 
 /// \brief The format argument to use to print a string.
 ///
@@ -129,7 +129,7 @@ A3_ALWAYS_INLINE A3CString A3_CS_OF(const char* str) { return A3_S_CONST(A3_S_OF
 A3_ALWAYS_INLINE const uint8_t* A3_S_END(A3CString s) { return s.ptr + s.len; }
 
 /// Get a const string as a `const char*`.
-A3_ALWAYS_INLINE const char*    A3_S_AS_C_STR(A3CString s) { return (const char*)s.ptr; }
+A3_ALWAYS_INLINE const char* A3_S_AS_C_STR(A3CString s) { return (const char*)s.ptr; }
 
 /// Get a pointer to the start of a string.
 A3_ALWAYS_INLINE uint8_t* A3_S_PTR(A3String s) { return s.ptr; }
@@ -138,7 +138,7 @@ A3_ALWAYS_INLINE uint8_t* A3_S_PTR(A3String s) { return s.ptr; }
 A3_ALWAYS_INLINE const uint8_t* A3_CS_PTR(A3CString s) { return s.ptr; }
 
 /// Get the length of a string.
-A3_ALWAYS_INLINE size_t         A3_S_LEN(A3CString s) { return s.len; }
+A3_ALWAYS_INLINE size_t A3_S_LEN(A3CString s) { return s.len; }
 
 /// Allocate a new string of the given size.
 A3_EXPORT A3String a3_string_alloc(size_t len);
@@ -147,7 +147,7 @@ A3_EXPORT A3String a3_string_alloc(size_t len);
 A3_EXPORT A3String a3_string_realloc(A3String*, size_t new_len);
 
 /// Free a string.
-A3_EXPORT void     a3_string_free(A3String*);
+A3_EXPORT void a3_string_free(A3String*);
 
 /// \brief Copy a string from `src` to `dst`.
 ///
@@ -160,10 +160,10 @@ A3_EXPORT void a3_string_copy(A3String dst, A3CString src);
 A3_EXPORT void a3_string_concat(A3String dst, size_t count, ...);
 
 /// Reverse the given string in-place.
-A3_EXPORT void     a3_string_reverse(A3String);
+A3_EXPORT void a3_string_reverse(A3String);
 
 /// Convert the given string to lowercase in-place.
-A3_EXPORT void     a3_string_lowercase(A3String);
+A3_EXPORT void a3_string_lowercase(A3String);
 
 /// Print the given number into the given string.
 A3_EXPORT A3String a3_string_itoa_into(A3String dst, size_t);
@@ -211,7 +211,7 @@ A3_EXPORT A3CString a3_string_rchr_impl(A3CString, uint8_t c);
 ///
 /// Returns a value less than, equal to, or greater than zero depending on
 /// whether `lhs` is less than, equal to, or greater than `rhs`, respectively.
-#define a3_string_cmp(L, R)  a3_string_cmp_impl(A3_S_CONST(L), A3_S_CONST(R))
+#define a3_string_cmp(L, R) a3_string_cmp_impl(A3_S_CONST(L), A3_S_CONST(R))
 
 ///
 ///     int a3_string_cmpi(A3[C]String lhs, A3[C]String rhs);
