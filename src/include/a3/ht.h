@@ -28,9 +28,11 @@
 
 // From highwayhash.h. Forward-declared since the library header causes unused
 // function warnings.
+#ifndef DOXYGEN
 A3_H_BEGIN
 uint64_t HighwayHash64(const uint8_t* data, size_t size, const uint64_t key[4]);
 A3_H_END
+#endif
 
 #ifndef A3_HT_INITIAL_CAP
 /// The initial capacity of the hash table. Can be overridden.
@@ -48,9 +50,12 @@ A3_H_END
 #define A3_HT_HASH_KEY_SIZE (4ULL)
 #endif
 
-#define A3_HT_ALLOW_GROWTH  true
+/// Allow the table to resize itself. See ::A3_HT_INIT.
+#define A3_HT_ALLOW_GROWTH true
+/// Do not allow the table to resize itself. See ::A3_HT_INIT.
 #define A3_HT_FORBID_GROWTH false
 
+/// Do not use a hash key. See ::A3_HT_INIT.
 #define A3_HT_NO_HASH_KEY NULL
 
 /// The hash table type.
@@ -105,7 +110,7 @@ A3_H_END
 #define A3_HT_INIT(K, V) K##V##_a3_ht_init
 
 ///
-///     A3_HT(K, V)* A3_HT_INIT(K, V)(uint8_t * key, bool can_grow);
+///     A3_HT(K, V)* A3_HT_NEW(K, V)(uint8_t * key, bool can_grow);
 ///
 /// Allocate and initialize a new hash table. `key` should be a pointer to the hash key, or the
 /// value `A3_HT_NO_HASH_KEY`. `can_grow` should be `A3_HT_ALLOW_GROWTH` or `A3_HT_FORBID_GROWTH`.
