@@ -30,18 +30,27 @@ notice.
 ## Building and Usage
 Dependencies:
 - A C compiler supporting C11 or later.
+- Meson 0.55 or later OR
 - CMake 3.10 or later.
 
 Test suite dependencies:
 - A C++ compiler supporting C++14.
 
-To build, create a build directory and change into it. Then run `cmake .. [-DCMAKE_BUILD_TYPE=___]` to set up the build system, and `cmake --build .` to build the library.
+To build, ensure all submodules are in place (`git submodule update --init --recursive`), and either
+run `meson setup <BUILDDIR>`, to set up the build system in `BUILDDIR`. A script which generates a
+set of build directories for various configurations is also provided (`./configure`) for
+convenience's sake. Then, run `meson compile -C <BUILDDIR>` to build.
 
-CMake or Meson projects should easily be able to hook into the build system using `add_subdirectory` or `cmake.subproject`, respectively. The CMake file provides a library target `a3`. The hash table also requires linking against `a3_hash`, which pulls in [HighwayHash](https://github.com/google/highwayhash) as a dependency.
+A CMake build script is also provided.
 
-Tests can be run either through the `a3_check` target, with CTest, or by
-directly executing the `a3_test` binary. In the latter two cases, the `a3_test`
-target must first be built.
+CMake or Meson projects should easily be able to hook into the build system using `add_subdirectory`
+or `subproject`, respectively. The CMake file provides a library target `a3`. The hash table also
+requires linking against `a3_hash`, which pulls in
+[HighwayHash](https://github.com/google/highwayhash) as a dependency. The Meson build system
+provides dependencies `a3_dep` and `a3_hash_dep`.
+
+To run the test suite, simply run `meson test -C <BUILDDIR>` (or, for CMake, build the `a3_check`
+target).
 
 ## Notes
 Most objects (buffer, hash table, linked list, etc...) provide the following functions to do with their lifecycle:

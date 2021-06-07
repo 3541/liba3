@@ -163,11 +163,7 @@ A3String a3_buf_memmem(A3Buffer* this, A3CString needle) {
 // Get a token from the buffer. NOTE: This updates the head of the buffer, so
 // care should be taken not to write into the buffer as long as the returned
 // pointer is needed.
-A3String a3_buf_token_next_impl(_a3_buf_token_next_args args) {
-    struct A3Buffer* this  = args.buf;
-    A3CString delim        = args.delim;
-    bool      preserve_end = args.preserve_end;
-
+A3String a3_buf_token_next(A3Buffer* this, A3CString delim, bool preserve_end) {
     if (!a3_buf_initialized(this))
         return A3_S_NULL;
 

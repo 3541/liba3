@@ -80,33 +80,22 @@ A3_EXPORT A3String a3_buf_memmem(A3Buffer*, A3CString needle);
 /// Consume the given string from the buffer. Returns `true` on success.
 A3_EXPORT bool a3_buf_consume(A3Buffer*, A3CString needle);
 
-#ifndef DOXYGEN
-// A hack for pseudo-optional arguments.
-typedef struct _a3_buf_token_next_args {
-    A3Buffer* buf;
-    A3CString delim;
-    bool      preserve_end;
-} _a3_buf_token_next_args;
+/// See ::a3_buf_token_next.
+#define A3_PRES_END_YES true
 
-A3_EXPORT A3String a3_buf_token_next_impl(_a3_buf_token_next_args);
-#endif
+/// See ::a3_buf_token_next.
+#define A3_PRES_END_NO false
 
-///
-///     A3String a3_buf_token_next(A3Buffer*, A3CString delim, [bool preserve_end = false]);
-///
 /// \brief Get the next token, separated by `delim`, from the buffer.
 ///
 /// Ending delimiters are preserved if `preserve_end` is true.
-#define a3_buf_token_next(BUF, DELIM, ...)                                                         \
-    a3_buf_token_next_impl((_a3_buf_token_next_args) {                                             \
-        .buf = (BUF), .delim = (DELIM), .preserve_end = false, __VA_ARGS__ })
+A3_EXPORT A3String a3_buf_token_next(A3Buffer*, A3CString delim, bool preserve_end);
 
-///
-///     A3String a3_buf_token_next(A3Buffer*, A3CString delim, [bool preserve_end = false]);
-///
 /// \brief Same as ::a3_buf_token_next, but copies the result.
-#define a3_buf_token_next_copy(BUF, DELIM, ...)                                                    \
-    a3_string_clone(A3_S_CONST(a3_buf_token_next((BUF), (DELIM), __VA_ARGS__)))
+A3_ALWAYS_INLINE A3String a3_buf_token_next_copy(A3Buffer* buf, A3CString delim,
+                                                 bool preserve_end) {
+    return a3_string_clone(a3_buf_token_next(buf, delim, preserve_end));
+}
 
 /// Check whether the buffer has been initialized.
 A3_EXPORT inline bool a3_buf_initialized(const A3Buffer* buf) {
