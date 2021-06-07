@@ -34,8 +34,8 @@ elif host_machine.system() == 'linux'
   a3_c_flags += '-D_DEFAULT_SOURCE'
   a3_cxx_flags += '-D_DEFAULT_SOURCE'
 elif host_machine.system() == 'windows'
-  a3_c_flags += '-DWIN32_LEAN_AND_MEAN'
-  a3_cxx_flags += '-DWIN32_LEAN_AND_MEAN'
+  a3_c_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
+  a3_cxx_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
 endif
 
 a3_flags_wanted = {
@@ -56,7 +56,7 @@ a3_warnings_wanted = {
   ],
 
   'msvc': [
-    '/wd5105'
+    '-wd5105'
   ]
 }
 
