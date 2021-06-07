@@ -64,7 +64,7 @@ void a3_string_concat(A3String str, size_t count, ...) {
     va_start(args, count);
 
     size_t offset = 0;
-    for (size_t i = 0; i < count; i++) {
+    for (size_t i = 0; i < count && offset < str.len; i++) {
         A3CString arg = va_arg(args, A3CString);
         a3_string_copy(A3_S_OFFSET(str, offset), arg);
         offset += arg.len;
