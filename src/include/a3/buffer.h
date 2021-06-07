@@ -7,6 +7,10 @@
  * the project root for details.
  */
 
+/// \file buffer.h
+/// # Buffer
+/// A growable byte buffer.
+
 #pragma once
 
 #include <assert.h>
@@ -23,33 +27,59 @@
 
 A3_H_BEGIN
 
-// A growable buffer.
-// tail: Index at which to write.
-// head: Index from which to read.
-// When head == tail, the buffer is empty. In such a condition,
-// a3_buf_reset_if_empty will reset both indices to 0.
+/// A growable buffer.
+/// When head == tail, the buffer is empty. In such a condition, ::a3_buf_reset_if_empty will reset
+/// both indices to 0.
 typedef struct A3Buffer {
-    A3String data;
-    size_t   tail;
-    size_t   head;
-    size_t   max_cap;
+    A3String data;    ///< The actual data.
+    size_t   tail;    ///< The index at which to write.
+    size_t   head;    ///< The index from which to read.
+    size_t   max_cap; ///< The maximum allowed capacity.
 } A3Buffer;
 
+/// \brief Initialize a buffer.
+///
+/// If the data pointer is unset, a buffer of the given capacity will be allocated. A buffer can be
+/// overlaid on existing memory by passing in a non-null data field. In such cases, `max_cap` should
+/// be set to the existing capacity in order to prevent undesired reallocations, and care should be
+/// taken to not call ::a3_buf_destroy or ::a3_buf_free.
 A3_EXPORT bool a3_buf_init(A3Buffer*, size_t cap, size_t max_cap);
-A3_EXPORT A3Buffer* a3_buf_new(size_t cap, size_t max_cap);
-A3_EXPORT void      a3_buf_destroy(A3Buffer*);
-A3_EXPORT void      a3_buf_free(A3Buffer*);
 
+/// Allocate and initialize a buffer. See ::a3_buf_init.
+A3_EXPORT A3Buffer* a3_buf_new(size_t cap, size_t max_cap);
+
+/// Destroys a buffer, freeing the underlying data.
+A3_EXPORT void a3_buf_destroy(A3Buffer*);
+
+/// Free a buffer and destroy it.
+A3_EXPORT void a3_buf_free(A3Buffer*);
+
+/// Write a byte into the buffer.
 A3_EXPORT bool a3_buf_write_byte(A3Buffer*, uint8_t);
+
+/// Write the given string into the buffer, followed by a newline.
 A3_EXPORT bool a3_buf_write_line(A3Buffer*, A3CString);
+
+/// Write the given formatted string to the buffer. See also ::a3_buf_write_fmt.
 A3_EXPORT bool a3_buf_write_vfmt(A3Buffer*, const char* fmt, va_list);
+
+/// Write the given formatted string to the buffer.
 A3_EXPORT bool a3_buf_write_fmt(A3Buffer*, const char* fmt, ...);
+
+/// Format the given number into the buffer.
 A3_EXPORT bool a3_buf_write_num(A3Buffer*, size_t);
 
-A3_EXPORT void     a3_buf_read(A3Buffer*, size_t);
-A3_EXPORT A3String a3_buf_memmem(A3Buffer*, A3CString needle);
-A3_EXPORT bool     a3_buf_consume(A3Buffer*, A3CString needle);
+/// Notify the buffer that bytes have been consumed.
+A3_EXPORT void a3_buf_read(A3Buffer*, size_t);
 
+/// Find the given needle string in the buffer, if it is present. Returns an A3String pointing to
+/// the result (may be `NULL`).
+A3_EXPORT A3String a3_buf_memmem(A3Buffer*, A3CString needle);
+
+/// Consume the given string from the buffer. Returns `true` on success.
+A3_EXPORT bool a3_buf_consume(A3Buffer*, A3CString needle);
+
+#ifndef DOXYGEN
 // A hack for pseudo-optional arguments.
 typedef struct _a3_buf_token_next_args {
     A3Buffer* buf;
@@ -58,13 +88,26 @@ typedef struct _a3_buf_token_next_args {
 } _a3_buf_token_next_args;
 
 A3_EXPORT A3String a3_buf_token_next_impl(_a3_buf_token_next_args);
+#endif
 
+///
+///     A3String a3_buf_token_next(A3Buffer*, A3CString delim, [bool preserve_end = false]);
+///
+/// \brief Get the next token, separated by `delim`, from the buffer.
+///
+/// Ending delimiters are preserved if `preserve_end` is true.
 #define a3_buf_token_next(BUF, DELIM, ...)                                                         \
     a3_buf_token_next_impl((_a3_buf_token_next_args) {                                             \
         .buf = (BUF), .delim = (DELIM), .preserve_end = false, __VA_ARGS__ })
+
+///
+///     A3String a3_buf_token_next(A3Buffer*, A3CString delim, [bool preserve_end = false]);
+///
+/// \brief Same as ::a3_buf_token_next, but copies the result.
 #define a3_buf_token_next_copy(BUF, DELIM, ...)                                                    \
     a3_string_clone(A3_S_CONST(a3_buf_token_next((BUF), (DELIM), __VA_ARGS__)))
 
+/// Check whether the buffer has been initialized.
 A3_EXPORT inline bool a3_buf_initialized(const A3Buffer* buf) {
     assert(buf);
     assert(buf->head <= buf->tail);
@@ -72,6 +115,7 @@ A3_EXPORT inline bool a3_buf_initialized(const A3Buffer* buf) {
     return buf->data.ptr;
 }
 
+/// Clear the buffer, resetting the head and tail indices.
 A3_EXPORT inline void a3_buf_reset(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 
@@ -79,6 +123,7 @@ A3_EXPORT inline void a3_buf_reset(A3Buffer* buf) {
     buf->tail = 0;
 }
 
+/// Reset the buffer if it is empty.
 A3_EXPORT inline bool a3_buf_reset_if_empty(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 
@@ -89,19 +134,19 @@ A3_EXPORT inline bool a3_buf_reset_if_empty(A3Buffer* buf) {
     return true;
 }
 
-// Length of the contents of the buffer.
+/// Get the length of the contents of the buffer.
 A3_EXPORT inline size_t a3_buf_len(const A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
     return buf->tail - buf->head;
 }
 
-// Total available capacity for writing.
+/// Get the total available capacity for writing.
 A3_EXPORT inline size_t a3_buf_cap(const A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
     return buf->data.len - a3_buf_len(buf);
 }
 
-// Available space for a single write (i.e., continguous space).
+/// Get the space available for a single write (i.e., continguous space).
 A3_EXPORT inline size_t a3_buf_space(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 
@@ -109,7 +154,7 @@ A3_EXPORT inline size_t a3_buf_space(A3Buffer* buf) {
     return buf->data.len - buf->tail;
 }
 
-// Compact the contents to the start of the buffer.
+/// Compact the contents to the start of the buffer.
 A3_EXPORT inline bool a3_buf_compact(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
     assert(buf->head != 0);
@@ -120,7 +165,7 @@ A3_EXPORT inline bool a3_buf_compact(A3Buffer* buf) {
     return true;
 }
 
-// Attempt to grow the buffer to fit at least min_extra_cap more bytes.
+/// Attempt to grow the buffer to fit at least min_extra_cap more bytes.
 A3_EXPORT inline bool a3_buf_ensure_cap(A3Buffer* buf, size_t min_extra_cap) {
     assert(a3_buf_initialized(buf));
 
@@ -143,7 +188,7 @@ A3_EXPORT inline bool a3_buf_ensure_cap(A3Buffer* buf, size_t min_extra_cap) {
     return true;
 }
 
-// Attempt to grow the buffer to its maximum capacity.
+/// Attempt to grow the buffer to its maximum capacity.
 A3_EXPORT inline bool a3_buf_ensure_max_cap(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 
@@ -153,7 +198,7 @@ A3_EXPORT inline bool a3_buf_ensure_max_cap(A3Buffer* buf) {
     return a3_buf_ensure_cap(buf, buf->max_cap - buf->data.len);
 }
 
-// Pointer for writing into the buffer.
+/// Get a pointer for writing into the buffer.
 A3_EXPORT inline A3String a3_buf_write_ptr(A3Buffer* buf) {
     assert(buf);
 
@@ -165,7 +210,7 @@ A3_EXPORT inline A3String a3_buf_write_ptr(A3Buffer* buf) {
 #endif
 }
 
-// Pointer for reading from the buffer.
+/// Get a pointer for reading from the buffer.
 A3_EXPORT inline A3CString a3_buf_read_ptr(const A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 #ifdef __cplusplus
@@ -175,7 +220,7 @@ A3_EXPORT inline A3CString a3_buf_read_ptr(const A3Buffer* buf) {
 #endif
 }
 
-// Bytes have been written into the buffer.
+/// Notify the buffer that bytes have been written into it.
 A3_EXPORT inline void a3_buf_wrote(A3Buffer* buf, size_t len) {
     assert(a3_buf_initialized(buf));
     assert(buf->tail + len <= buf->data.len);
@@ -183,6 +228,7 @@ A3_EXPORT inline void a3_buf_wrote(A3Buffer* buf, size_t len) {
     buf->tail += len;
 }
 
+/// Write a string into the buffer.
 A3_EXPORT inline bool a3_buf_write_str(A3Buffer* buf, A3CString str) {
     assert(a3_buf_initialized(buf));
 
@@ -195,6 +241,7 @@ A3_EXPORT inline bool a3_buf_write_str(A3Buffer* buf, A3CString str) {
     return true;
 }
 
+/// Copy a struct into the buffer.
 #define A3_BUF_WRITE_STRUCT(BUF, S) a3_buf_write_str((BUF), A3_CSS((S)))
 
 A3_H_END

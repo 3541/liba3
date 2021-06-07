@@ -46,11 +46,7 @@ extern inline void      a3_buf_wrote(A3Buffer*, size_t);
 
 // TODO: This should probably hand out slices of a pre-registered buffer of some
 // kind, to reduce the overhead of malloc and of mapping buffers into kernel
-// memory. For now, it just allocates or initializes a buffer. A buffer can be
-// overlaid on existing memory by passing it to a3_buf_init with a non-null data
-// field. In such cases, care should be taken not to trigger an unintended
-// resize (and thus copy). This can be simplified by initializing with cap ==
-// max_cap.
+// memory.
 bool a3_buf_init(A3Buffer* this, size_t cap, size_t max_cap) {
     if (!this->data.ptr)
         this->data = a3_string_alloc(cap);
