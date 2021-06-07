@@ -24,9 +24,10 @@ namespace a3 {
 template <typename T, typename C>
 class Rc;
 
-/// A reference-counted type. Inherit from this class to give a type reference-counting semantics,
-/// and then use it through Rc pointers. If non-standard allocation is used, the type should
-/// override `operator delete`.
+/// \brief A reference-counted type. Inherit from this to enable reference counting.
+///
+/// RefCounted objects should be accessed through Rc pointers. If non-standard allocation is used,
+/// the type should override `operator delete`.
 template <typename T, typename C = uint32_t>
 class RefCounted {
 private:

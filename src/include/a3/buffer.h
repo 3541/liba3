@@ -27,7 +27,8 @@
 
 A3_H_BEGIN
 
-/// A growable buffer.
+/// \brief A growable buffer.
+///
 /// When head == tail, the buffer is empty. In such a condition, ::a3_buf_reset_if_empty will reset
 /// both indices to 0.
 typedef struct A3Buffer {
