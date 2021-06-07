@@ -36,10 +36,10 @@ Dependencies:
 Test suite dependencies:
 - A C++ compiler supporting C++14.
 
-To build, ensure all submodules are in place (`git submodule update --init --recursive`), and either
-run `meson setup <BUILDDIR>`, to set up the build system in `BUILDDIR`. A script which generates a
-set of build directories for various configurations is also provided (`./configure`) for
-convenience's sake. Then, run `meson compile -C <BUILDDIR>` to build.
+To build, ensure all submodules are in place (`git submodule update --init --recursive`), and run
+`meson setup <BUILDDIR>` to set up the build system in `BUILDDIR`. A script which generates a set
+of build directories for various configurations is also provided (`./configure`) for convenience's
+sake. Then, run `meson compile -C <BUILDDIR>` to build.
 
 A CMake build script is also provided.
 
