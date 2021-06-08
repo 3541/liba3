@@ -17,8 +17,8 @@ a3_test_src = files(
 a3_test = executable(
   'a3_test',
   a3_test_src,
-  c_args: '-DGTEST_HAS_EXCEPTIONS=0',
-  cpp_args: '-DGTEST_HAS_EXCEPTIONS=0',
+  c_args: ['-DGTEST_HAS_EXCEPTIONS=0', '-D_CRT_SECURE_NO_WARNINGS'],
+  cpp_args: ['-DGTEST_HAS_EXCEPTIONS=0', '-D_CRT_SECURE_NO_WARNINGS'],
   dependencies: [gtest_main, a3, a3_hash],
   build_by_default: false
 )
