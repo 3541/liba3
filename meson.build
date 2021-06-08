@@ -142,11 +142,21 @@ a3_lib = library(
   gnu_symbol_visibility: 'hidden',
   build_by_default: true
 )
-a3 = declare_dependency(link_with: a3_lib, include_directories: a3_include)
+
+a3_compile_args = ['-D__STDC_WANT_LIB_EXT1__=1']
+if host_machine.system() == 'windows'
+  a3_compile_args += '-D_CRT_SECURE_NO_WARNINGS'
+endif
+
+a3 = declare_dependency(
+  link_with: a3_lib,
+  include_directories: a3_include,
+  compile_args: a3_compile_args
+)
 a3_dep = a3
 
 subdir('extern/highwayhash')
-a3_hash = declare_dependency(dependencies: highwayhash_c, include_directories: a3_include)
+a3_hash = declare_dependency(dependencies: [a3, highwayhash_c], include_directories: a3_include)
 a3_hash_dep = a3_hash
 
 subdir('test')
