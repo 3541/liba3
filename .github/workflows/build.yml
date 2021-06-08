@@ -8,7 +8,7 @@ on:
       - '**/*.cc'
       - '**/*.hh'
       - '.github/workflows/build.yml'
-      - 'meson.build'
+      - '**/meson.build'
       - 'extern/liba3'
       - 'boilerplate'
 
