@@ -35,6 +35,9 @@ jobs:
       with:
         python-version: '3.x'
 
+    - uses: ilammy/msvc-dev-cmd@v1
+      if: runner.os == 'Windows'
+
     - name: Install dependencies.
       run: pip install meson ninja
 
