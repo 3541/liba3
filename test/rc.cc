@@ -64,18 +64,18 @@ TEST(Rc, basic) {
     auto* o = new TestObject { 42, c_count, d_count };
     EXPECT_EQ(o->get_value(), 42ULL);
     EXPECT_EQ(o->ref_count(), 1U);
-    EXPECT_EQ(c_count, 1);
-    EXPECT_EQ(d_count, 0);
+    EXPECT_EQ(c_count, 1U);
+    EXPECT_EQ(d_count, 0U);
 
     o->ref();
     EXPECT_EQ(o->ref_count(), 2U);
 
     o->unref();
     EXPECT_EQ(o->ref_count(), 1U);
-    EXPECT_EQ(d_count, 0);
+    EXPECT_EQ(d_count, 0U);
 
     o->unref();
-    EXPECT_EQ(d_count, 1);
+    EXPECT_EQ(d_count, 1U);
 }
 
 TEST(Rc, wrapper_adopt) {
@@ -83,65 +83,65 @@ TEST(Rc, wrapper_adopt) {
 
     {
         auto* o = new TestObject { 42, c_count, d_count };
-        EXPECT_EQ(o->get_value(), 42);
+        EXPECT_EQ(o->get_value(), 42U);
         EXPECT_EQ(o->ref_count(), 1U);
-        EXPECT_EQ(c_count, 1);
-        EXPECT_EQ(d_count, 0);
+        EXPECT_EQ(c_count, 1U);
+        EXPECT_EQ(d_count, 0U);
         Rc<TestObject> r = Rc<TestObject>::adopt(o);
-        EXPECT_EQ(o->get_value(), 42);
+        EXPECT_EQ(o->get_value(), 42U);
         EXPECT_EQ(o->ref_count(), 1U);
-        EXPECT_EQ(c_count, 1);
-        EXPECT_EQ(d_count, 0);
+        EXPECT_EQ(c_count, 1U);
+        EXPECT_EQ(d_count, 0U);
     }
 
-    EXPECT_EQ(d_count, 1);
+    EXPECT_EQ(d_count, 1U);
 }
 
 TEST(Rc, wrapper_construct) {
     size_t c_count = 0, d_count = 0;
 
     {
-        Rc<TestObject> r = Rc<TestObject>::create(42ULL, c_count, d_count);
-        EXPECT_EQ(r->get_value(), 42);
+        auto r = Rc<TestObject>::create(42U, c_count, d_count);
+        EXPECT_EQ(r->get_value(), 42U);
         EXPECT_EQ(r->ref_count(), 1U);
-        EXPECT_EQ(c_count, 1);
-        EXPECT_EQ(d_count, 0);
+        EXPECT_EQ(c_count, 1U);
+        EXPECT_EQ(d_count, 0U);
     }
 
-    EXPECT_EQ(d_count, 1);
+    EXPECT_EQ(d_count, 1U);
 }
 
 TEST(Rc, wrapper_clone_and_move) {
     size_t c_count = 0, d_count = 0;
 
     {
-        auto r = Rc<TestObject>::create(42ULL, c_count, d_count);
-        EXPECT_EQ(r->get_value(), 42);
+        auto r = Rc<TestObject>::create(42U, c_count, d_count);
+        EXPECT_EQ(r->get_value(), 42U);
         EXPECT_EQ(r->ref_count(), 1U);
-        EXPECT_EQ(c_count, 1);
-        EXPECT_EQ(d_count, 0);
+        EXPECT_EQ(c_count, 1U);
+        EXPECT_EQ(d_count, 0U);
 
         {
             auto r1 = r;
-            EXPECT_EQ(r1->get_value(), 42);
+            EXPECT_EQ(r1->get_value(), 42U);
             EXPECT_EQ(r->ref_count(), r1->ref_count());
             EXPECT_EQ(r->ref_count(), 2U);
 
             auto r2 = Rc<TestObject> { r1 };
-            EXPECT_EQ(r2->get_value(), 42);
+            EXPECT_EQ(r2->get_value(), 42U);
             EXPECT_EQ(r->ref_count(), r1->ref_count());
             EXPECT_EQ(r->ref_count(), 3U);
 
             auto r3 = std::move(r2);
             EXPECT_FALSE(r2.ptr);
-            EXPECT_EQ(r3->get_value(), 42);
+            EXPECT_EQ(r3->get_value(), 42U);
             EXPECT_EQ(r->ref_count(), r3->ref_count());
             EXPECT_EQ(r->ref_count(), 3U);
         }
 
         EXPECT_EQ(r->ref_count(), 1U);
-        EXPECT_EQ(d_count, 0);
+        EXPECT_EQ(d_count, 0U);
     }
 
-    EXPECT_EQ(d_count, 1);
+    EXPECT_EQ(d_count, 1U);
 }
