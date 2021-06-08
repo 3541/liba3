@@ -105,13 +105,13 @@ TEST_F(BufferTest, memmem) {
 TEST_F(BufferTest, tokenization) {
     a3_buf_write_str(&buf, A3_CS("A string with a number of tokens in it."));
 
-    A3String s = a3_buf_token_next_impl({ &buf, A3_CS(" "), false });
+    A3String s = a3_buf_token_next(&buf, A3_CS(" "), A3_PRES_END_NO);
     EXPECT_TRUE(s.ptr);
     EXPECT_STREQ(A3_S_AS_C_STR(A3_S_CONST(s)), "A");
     EXPECT_EQ(buf.head, 2ULL);
     EXPECT_EQ(s.ptr[s.len], '\0');
 
-    s = a3_buf_token_next_impl({ &buf, A3_CS(" "), true });
+    s = a3_buf_token_next(&buf, A3_CS(" "), A3_PRES_END_YES);
     EXPECT_TRUE(s.ptr);
     EXPECT_EQ(buf.head, 8ULL);
     EXPECT_EQ(s.ptr[s.len], ' ');
@@ -122,11 +122,9 @@ TEST_F(BufferTest, tokenization) {
     EXPECT_STREQ(A3_S_AS_C_STR(A3_S_CONST(scmp)), "string");
     a3_string_free(&scmp);
 
-#ifndef _MSC_VER // MSVC doesn't support compound literals.
-    s = a3_buf_token_next_copy(&buf, A3_CS(" "));
+    s = a3_buf_token_next_copy(&buf, A3_CS(" "), A3_PRES_END_NO);
     EXPECT_EQ(a3_string_cmp(A3_S_CONST(s), A3_CS("with")), 0);
     a3_string_free(&s);
-#endif
 }
 
 TEST_F(BufferTest, grow) {

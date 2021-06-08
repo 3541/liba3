@@ -9,10 +9,10 @@ struct SLLNode {
     explicit SLLNode(size_t d) : data { d } {}
 };
 
-A3_SLL_DEFINE_STRUCTS(SLLNode);
+A3_SLL_DEFINE_STRUCTS(SLLNode)
 
-A3_SLL_DECLARE_METHODS(SLLNode);
-A3_SLL_DEFINE_METHODS(SLLNode);
+A3_SLL_DECLARE_METHODS(SLLNode)
+A3_SLL_DEFINE_METHODS(SLLNode)
 
 class SLLTest : public ::testing::Test {
 protected:

@@ -63,7 +63,7 @@
     void A3_SLL_ENQUEUE(TY)(A3_SLL(TY)*, TY*);                                                     \
     TY*  A3_SLL_DEQUEUE(TY)(A3_SLL(TY)*);                                                          \
                                                                                                    \
-    A3_H_END;
+    A3_H_END
 
 #define A3_SLL_DEFINE_METHODS(TY)                                                                  \
     void A3_SLL_INIT(TY)(A3_SLL(TY) * list) {                                                      \

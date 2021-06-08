@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "features.h"
+
 // Types
 #ifndef a3_HAVE_ssize_t
 #ifdef _MSC_VER

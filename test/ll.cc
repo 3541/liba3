@@ -2,7 +2,7 @@
 
 #include <a3/ll.h>
 
-A3_LL_DEFINE_STRUCTS(LLNode);
+A3_LL_DEFINE_STRUCTS(LLNode)
 
 struct LLNode {
     size_t data;
@@ -11,8 +11,8 @@ struct LLNode {
     explicit LLNode(size_t d) : data { d } {}
 };
 
-A3_LL_DECLARE_METHODS(LLNode);
-A3_LL_DEFINE_METHODS(LLNode);
+A3_LL_DECLARE_METHODS(LLNode)
+A3_LL_DEFINE_METHODS(LLNode)
 
 class LLTest : public ::testing::Test {
 protected:

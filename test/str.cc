@@ -112,7 +112,7 @@ TEST(String, compare) {
 
 TEST(String, rchr) {
     A3CString t   = A3_CS("12345654321");
-    A3CString ans = { .ptr = &t.ptr[7], .len = 4 };
+    A3CString ans = { &t.ptr[7], 4 };
 
     A3CString got = a3_string_rchr(t, '4');
     EXPECT_EQ(ans.ptr, got.ptr);

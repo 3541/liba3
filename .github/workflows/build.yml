@@ -1,6 +1,7 @@
 name: Build and test
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - '**/*.c'
@@ -8,7 +9,7 @@ on:
       - '**/*.cc'
       - '**/*.hh'
       - '.github/workflows/build.yml'
-      - 'CMakeLists.txt'
+      - '**/meson.build'
       - 'extern/liba3'
       - 'boilerplate'
 
@@ -22,27 +23,33 @@ jobs:
           - os: ubuntu-latest
             c_compiler: gcc-9
             cxx_compiler: g++-9
+          - os: windows-latest
+            c_compiler: cl
+            cxx_compiler: cl
 
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
 
-    - name: Create build directory
-      run: cmake -E make_directory ${{runner.workspace}}/build
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+
+    - uses: ilammy/msvc-dev-cmd@v1
+      if: runner.os == 'Windows'
+
+    - name: Install dependencies.
+      run: pip install meson ninja
 
     - name: Configure
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
       env:
         CC: ${{ matrix.c_compiler }}
         CXX: ${{ matrix.cxx_compiler }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Release -DUSE_WERROR=1
+      run: meson setup --buildtype release --werror build
 
     - name: Build
-      working-directory: ${{runner.workspace}}/build
-      run: cmake --build .
+      run: meson compile -C build
 
     - name: Test
-      working-directory: ${{runner.workspace}}/build
-      run: cmake --build . -t a3_check
+      run: meson test -C build

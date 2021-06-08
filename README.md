@@ -28,20 +28,27 @@ notice.
   appropriate (C++ is not required, however).
 
 ## Building and Usage
-Dependencies:
+Build dependencies:
 - A C compiler supporting C11 or later.
-- CMake 3.10 or later.
+- Meson 0.55 or later.
+- Ninja.
 
 Test suite dependencies:
 - A C++ compiler supporting C++14.
 
-To build, create a build directory and change into it. Then run `cmake .. [-DCMAKE_BUILD_TYPE=___]` to set up the build system, and `cmake --build .` to build the library.
+To build, ensure all submodules are in place (`git submodule update --init --recursive`), and run
+`meson setup <BUILDDIR>` to set up the build system in `BUILDDIR`. A script which generates a set
+of build directories for various configurations is also provided (`./configure`) for convenience's
+sake. Then, run `meson compile -C <BUILDDIR>` to build.
 
-CMake or Meson projects should easily be able to hook into the build system using `add_subdirectory` or `cmake.subproject`, respectively. The CMake file provides a library target `a3`. The hash table also requires linking against `a3_hash`, which pulls in [HighwayHash](https://github.com/google/highwayhash) as a dependency.
+To run the test suite, simply run `meson test -C <BUILDDIR>`.
 
-Tests can be run either through the `a3_check` target, with CTest, or by
-directly executing the `a3_test` binary. In the latter two cases, the `a3_test`
-target must first be built.
+Meson projects should easily be able to hook into the build system using `subproject`. The Meson
+build system provides dependencies `a3_dep` and `a3_hash_dep`.
+
+Projects using other build systems can invoke Meson directly and depend on the library produced (or
+they can simply build it themselves — take look at `meson.build` for inspiration).
+
 
 ## Notes
 Most objects (buffer, hash table, linked list, etc...) provide the following functions to do with their lifecycle:

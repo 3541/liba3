@@ -37,7 +37,7 @@
         A3_LL_NODE_PTR(TY) end;                                                                    \
     };                                                                                             \
                                                                                                    \
-    A3_H_END;
+    A3_H_END
 
 /// Invoke this macro in the struct body to use it as a node.
 #define A3_LL_NODE(TY) A3_LL_NODE_PTR(TY) _a3_ll_ptr
@@ -139,7 +139,7 @@
     void A3_LL_ENQUEUE(TY)(A3_LL(TY)*, TY*);                                                       \
     TY*  A3_LL_DEQUEUE(TY)(A3_LL(TY)*);                                                            \
                                                                                                    \
-    A3_H_END;
+    A3_H_END
 
 /// Generate method implementations. ::A3_LL_DECLARE_METHODS must be visible.
 #define A3_LL_DEFINE_METHODS(TY)                                                                   \
