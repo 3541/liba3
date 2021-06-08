@@ -36,6 +36,7 @@ elif host_machine.system() == 'linux'
 elif host_machine.system() == 'windows'
   a3_c_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
   a3_cxx_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
+  add_project_arguments('-D_HAS_EXCEPTIONS=0', language: 'cpp')
 endif
 
 a3_flags_wanted = {
