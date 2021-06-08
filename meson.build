@@ -155,7 +155,7 @@ a3 = declare_dependency(
 )
 a3_dep = a3
 
-subdir('extern/highwayhash')
+highwayhash_c = dependency('highwayhash_c', fallback: ['highwayhash', 'highwayhash_c_dep'])
 a3_hash = declare_dependency(dependencies: [a3, highwayhash_c], include_directories: a3_include)
 a3_hash_dep = a3_hash
 

@@ -2,6 +2,3 @@
 	path = boilerplate
 	url = ../boilerplate.git
 	branch = trunk
-[submodule "extern/highwayhash/highwayhash"]
-	path = extern/highwayhash/highwayhash
-	url = ../../google/highwayhash.git
