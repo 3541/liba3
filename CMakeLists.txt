@@ -60,8 +60,6 @@ add_library(a3
 target_include_directories(a3 PUBLIC src/include)
 target_link_math(a3)
 
-add_subdirectory(doc)
-
 include(StackProtector)
 target_add_stack_protector(a3)
 target_add_stack_clash_protection(a3)

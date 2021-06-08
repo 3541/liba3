@@ -160,4 +160,4 @@ a3_hash = declare_dependency(dependencies: [a3, highwayhash_c], include_director
 a3_hash_dep = a3_hash
 
 subdir('test')
-# subdir('doc')
+subdir('doc')

@@ -41,7 +41,7 @@ To build, ensure all submodules are in place (`git submodule update --init --rec
 of build directories for various configurations is also provided (`./configure`) for convenience's
 sake. Then, run `meson compile -C <BUILDDIR>` to build.
 
-A CMake build script is also provided.
+A CMake build script is also provided (though it will not build the documentation).
 
 CMake or Meson projects should easily be able to hook into the build system using `add_subdirectory`
 or `subproject`, respectively. The CMake file provides a library target `a3`. The hash table also
