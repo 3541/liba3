@@ -39,9 +39,7 @@ jobs:
       run: meson setup --buildtype release --werror build
 
     - name: Build
-      working-directory: ${{runner.workspace}}/build
-      run: meson compile
+      run: meson compile -C build
 
     - name: Test
-      working-directory: ${{runner.workspace}}/build
-      run: meson test
+      run: meson test -C build
