@@ -14,11 +14,18 @@ a3_test_src = files(
   ]
 )
 
+a3_test_args = ['-DGTEST_HAS_EXCEPTIONS=0']
+a3_test_c_args = a3_test_args
+a3_test_cxx_args = a3_test_args
+
+a3_test_c_args += c.get_supported_arguments(['-Wno-keyword-macro'])
+a3_test_cxx_args += cxx.get_supported_arguments(['-Wno-keyword-macro'])
+
 a3_test = executable(
   'a3_test',
   a3_test_src,
-  c_args: '-DGTEST_HAS_EXCEPTIONS=0',
-  cpp_args: '-DGTEST_HAS_EXCEPTIONS=0',
+  c_args: a3_test_c_args,
+  cpp_args: a3_test_cxx_args,
   dependencies: [gtest_main, a3, a3_hash],
   build_by_default: false
 )
