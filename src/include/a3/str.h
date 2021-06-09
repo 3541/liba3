@@ -66,8 +66,14 @@ A3_ALWAYS_INLINE A3CString A3_CSTRING(const uint8_t* ptr, size_t len) {
 /// A null string.
 #define A3_S_NULL A3_STRING(NULL, 0)
 
+/// A null string initializer.
+#define A3_S_NULL_INIT { NULL, 0 }
+
 /// A null constant string.
 #define A3_CS_NULL A3_CSTRING(NULL, 0)
+
+/// A null constant string initializer.
+#define A3_CS_NULL_INIT { NULL, 0 }
 
 /// Cast a constant to a mutable one.
 A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return A3_STRING((uint8_t*)s.ptr, s.len); }
