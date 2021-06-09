@@ -148,6 +148,8 @@ a3_lib = library(
 a3_compile_args = ['-D__STDC_WANT_LIB_EXT1__=1']
 if host_machine.system() == 'windows'
   a3_compile_args += '-D_CRT_SECURE_NO_WARNINGS'
+elif host_machine.system() == 'linux'
+  a3_compile_args += '-D_DEFAULT_SOURCE'
 endif
 
 a3 = declare_dependency(
