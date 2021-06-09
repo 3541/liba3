@@ -46,7 +46,7 @@ jobs:
       env:
         CC: ${{ matrix.c_compiler }}
         CXX: ${{ matrix.cxx_compiler }}
-      run: meson setup --buildtype release --werror build
+      run: meson setup --buildtype debug --werror -Db_sanitize=address,undefined build
 
     - name: Build
       run: meson compile -C build
