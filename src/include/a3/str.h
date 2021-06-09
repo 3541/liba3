@@ -38,22 +38,18 @@ typedef struct A3CString {
 
 A3_H_END
 
-A3_ALWAYS_INLINE A3String  A3_STRING(uint8_t* ptr, size_t len) { return { ptr, len }; }
-A3_ALWAYS_INLINE A3CString A3_CSTRING(const uint8_t* ptr, size_t len) { return { ptr, len }; }
+A3_ALWAYS_INLINE constexpr A3String  A3_STRING(uint8_t* ptr, size_t len) { return { ptr, len }; }
+A3_ALWAYS_INLINE constexpr A3CString A3_CSTRING(const uint8_t* ptr, size_t len) { return { ptr, len }; }
 
 A3_H_BEGIN
 
 #else
 
 /// Create a string from a given pointer and length.
-A3_ALWAYS_INLINE A3String A3_STRING(uint8_t* ptr, size_t len) {
-    return (A3String) { .ptr = ptr, .len = len };
-}
+#define A3_STRING(PTR, LEN) ((A3String) { .ptr = (PTR), .len = (LEN) })
 
 /// Create a constant string from a given pointer and length.
-A3_ALWAYS_INLINE A3CString A3_CSTRING(const uint8_t* ptr, size_t len) {
-    return (A3CString) { .ptr = ptr, .len = len };
-}
+#define A3_CSTRING(PTR, LEN) ((A3CString) { .ptr = (PTR), .len = (LEN) })
 
 #endif
 
