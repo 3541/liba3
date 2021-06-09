@@ -24,19 +24,21 @@ cxx_arg_syntax = cxx.get_argument_syntax()
 
 libm = c.find_library('m', required: false)
 
-a3_c_flags = ['-D__STDC_WANT_LIB_EXT1__=1', '-D_XOPEN_SOURCE=600']
-a3_cxx_flags = ['-D__STDC_WANT_LIB_EXT1__=1', '-D_XOPEN_SOURCE=600']
+a3_common_flags = ['-D__STDC_WANT_LIB_EXT1__=1', '-D_XOPEN_SOURCE=600']
+a3_c_flags = []
+a3_cxx_flags = []
 
 if host_machine.system() == 'openbsd'
-  a3_c_flags += '-D_BSD_SOURCE'
-  a3_cxx_flags += '-D_BSD_SOURCE'
+  a3_common_flags += '-D_BSD_SOURCE'
 elif host_machine.system() == 'linux'
-  a3_c_flags += '-D_DEFAULT_SOURCE'
-  a3_cxx_flags += '-D_DEFAULT_SOURCE'
+  a3_common_flags += '-D_DEFAULT_SOURCE'
 elif host_machine.system() == 'windows'
-  a3_c_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
-  a3_cxx_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
+  a3_common_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
   add_project_arguments('-D_HAS_EXCEPTIONS=0', language: 'cpp')
+endif
+
+if get_option('profile')
+  a3_common_flags += '-DPROFILE'
 endif
 
 a3_flags_wanted = {
@@ -137,8 +139,8 @@ a3_lib = library(
   a3_src,
   include_directories: a3_include,
   dependencies: libm,
-  c_args: a3_c_flags,
-  cpp_args: a3_cxx_flags,
+  c_args: a3_c_flags + a3_common_flags,
+  cpp_args: a3_cxx_flags + a3_common_flags,
   gnu_symbol_visibility: 'hidden',
   build_by_default: true
 )
