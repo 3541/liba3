@@ -14,6 +14,7 @@
 #pragma once
 
 #include <assert.h>
+#include <string.h>
 
 #include <a3/cpp.h>
 #include <a3/util.h>
