@@ -128,6 +128,7 @@ a3_include = include_directories(['src/include', '.'])
 a3_src = files(
   [
     'src/buffer.c',
+    'src/ll.c',
     'src/log.c',
     'src/pool.c',
     'src/str.c'

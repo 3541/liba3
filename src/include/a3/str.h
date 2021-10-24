@@ -39,14 +39,16 @@ typedef struct A3CString {
 A3_H_END
 
 A3_ALWAYS_INLINE constexpr A3String  A3_STRING(uint8_t* ptr, size_t len) { return { ptr, len }; }
-A3_ALWAYS_INLINE constexpr A3CString A3_CSTRING(const uint8_t* ptr, size_t len) { return { ptr, len }; }
+A3_ALWAYS_INLINE constexpr A3CString A3_CSTRING(const uint8_t* ptr, size_t len) {
+    return { ptr, len };
+}
 
 A3_H_BEGIN
 
 #else
 
 /// Create a string from a given pointer and length.
-#define A3_STRING(PTR, LEN) ((A3String) { .ptr = (PTR), .len = (LEN) })
+#define A3_STRING(PTR, LEN)  ((A3String) { .ptr = (PTR), .len = (LEN) })
 
 /// Create a constant string from a given pointer and length.
 #define A3_CSTRING(PTR, LEN) ((A3CString) { .ptr = (PTR), .len = (LEN) })
@@ -63,13 +65,15 @@ A3_H_BEGIN
 #define A3_S_NULL A3_STRING(NULL, 0)
 
 /// A null string initializer.
-#define A3_S_NULL_INIT { NULL, 0 }
+#define A3_S_NULL_INIT                                                                             \
+    { NULL, 0 }
 
 /// A null constant string.
 #define A3_CS_NULL A3_CSTRING(NULL, 0)
 
 /// A null constant string initializer.
-#define A3_CS_NULL_INIT { NULL, 0 }
+#define A3_CS_NULL_INIT                                                                            \
+    { NULL, 0 }
 
 /// Cast a constant to a mutable one.
 A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return A3_STRING((uint8_t*)s.ptr, s.len); }
@@ -95,7 +99,7 @@ A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
 #define A3_S_CONST(X)                                                                              \
     ({                                                                                             \
         __typeof__((X)) _in_str = (X);                                                             \
-        A3CString _ret          = { .ptr = _in_str.ptr, .len = _in_str.len };                      \
+        A3CString       _ret    = { .ptr = _in_str.ptr, .len = _in_str.len };                      \
         _ret;                                                                                      \
     })
 
