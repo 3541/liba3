@@ -32,7 +32,7 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v2.2.2
       with:
         python-version: '3.x'
 
