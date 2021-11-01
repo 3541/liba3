@@ -1,5 +1,5 @@
 /*
- * LINKED LIST -- A type-generic intrusive doubly-linked list.
+ * LINKED LIST -- An intrusive doubly-linked list.
  *
  * Copyright (c) 2021, Alex O'Brien <3541ax@gmail.com>
  *

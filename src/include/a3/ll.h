@@ -1,5 +1,5 @@
 /*
- * LINKED LIST -- A type-generic intrusive doubly-linked list.
+ * LINKED LIST -- An intrusive doubly-linked list.
  *
  * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
  *
@@ -28,8 +28,7 @@ typedef struct A3LL {
     struct A3LL* prev;
 } A3LL;
 
-/// Initialize a list. NOTE: An empty list is denoted by both pointers pointing to the list head
-/// itself. This means that a list cannot be moved.
+/// Initialize a list.
 A3_ALWAYS_INLINE void a3_ll_init(A3LL* list) {
     assert(list);
     list->next = list->prev = list;
@@ -91,6 +90,6 @@ A3_ALWAYS_INLINE A3LL* a3_ll_dequeue(A3LL* list) {
 /// Iterate over a list.
 #define A3_LL_FOREACH(ITEM, LIST)                                                                  \
     for (A3LL* ITEM = (LIST)->next, *_next = ITEM->next; ITEM != (LIST);                           \
-         ITEM = _next, _next = _next->next)
+         ITEM = _next, _next = _next ? _next->next : NULL)
 
 A3_H_END
