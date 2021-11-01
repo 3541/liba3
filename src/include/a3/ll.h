@@ -38,9 +38,9 @@ A3_ALWAYS_INLINE void a3_ll_init(A3LL* list) {
 #define a3_ll_destroy a3_ll_init
 
 /// Allocate and initalize a new list.
-A3LL* a3_ll_new(void);
+A3_EXPORT A3LL* a3_ll_new(void);
 /// Free an allocated list. Does nothing to the contents.
-void a3_ll_free(A3LL*);
+A3_EXPORT void a3_ll_free(A3LL*);
 
 /// Check whether the list is empty.
 A3_ALWAYS_INLINE bool a3_ll_is_empty(A3LL* list) {
