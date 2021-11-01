@@ -49,6 +49,11 @@
         }                                                                                          \
     } while (0)
 
+// Unwrap a return value and assign it to a new variable of the given type.
+#define A3_UNWRAPNI(TY, T, X)                                                                      \
+    TY T;                                                                                          \
+    A3_UNWRAPN(T, X)
+
 // Unwrap a return value which is negative on error and ignore the result
 // otherwise (i.e., unwrap-sign-discard).
 #define A3_UNWRAPSD(X)                                                                             \
