@@ -131,6 +131,7 @@ a3_src = files(
     'src/ll.c',
     'src/log.c',
     'src/pool.c',
+    'src/sll.c',
     'src/str.c'
   ]
 )
