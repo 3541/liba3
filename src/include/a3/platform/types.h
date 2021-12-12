@@ -11,16 +11,11 @@
 
 #pragma once
 
-#include "features.h"
-
 // Types
-#ifndef a3_HAVE_ssize_t
 #ifdef _MSC_VER
 #include <basetsd.h>
 typedef SSIZE_T A3_SSIZE_T;
-#else
-#warning "ssize_t not found and no known alternative."
-#endif
+#define A3_NO_SSIZE_T
 #else
 #include <sys/types.h>
 typedef ssize_t A3_SSIZE_T;
@@ -52,12 +47,10 @@ typedef ssize_t A3_SSIZE_T;
 #define A3_ALWAYS_INLINE
 #endif
 
-#ifdef a3_HAVE__Thread_local
+#if __STDC_VERSION__ >= 201112L
 #define A3_THREAD_LOCAL _Thread_local
-#else
-#ifdef _MSC_VER
+#elif defined(_MSC_VER)
 #define A3_THREAD_LOCAL __declspec(thread)
-#else // !Thread_local && _MSC_VER
+#else
 #define A3_THREAD_LOCAL __thread
-#endif // !Thread_local && !_MSC_VER
 #endif

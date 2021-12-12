@@ -12,7 +12,7 @@
 #include <a3/platform/types.h>
 
 // Types
-#ifndef a3_HAVE_ssize_t
+#ifdef A3_NO_SSIZE_T
 typedef A3_SSIZE_T ssize_t;
 #endif
 

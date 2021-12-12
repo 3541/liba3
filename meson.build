@@ -72,58 +72,6 @@ if (c.get_id() != 'gcc' or not c.version().startswith('9')) and (cxx.get_id() !=
   a3_cxx_flags += cxx.get_supported_arguments(['-Wconversion'])
 endif
 
-a3_features_wanted = {
-  '_Thread_local': '''
-    _Thread_local int x = 123;
-    int main(void) {
-      return 0;
-    }''',
-  '_Generic': '''
-    #define GEN_MACRO(X) _Generic((X), int: "int", float: "float")
-    int main(void) {
-      int x;
-      const char* res = GEN_MACRO(x);
-      return 0;
-    }'''
-}
-
-a3_features_c = configuration_data()
-a3_features_cxx = configuration_data()
-
-foreach name, code : a3_features_wanted
-  if c.compiles(code, name: 'CC supports ' + name)
-    a3_features_c.set('a3_HAVE_' + name, true)
-  endif
-
-  if cxx.compiles(code, name: 'CXX supports ' + name)
-    a3_features_cxx.set('a3_HAVE_' + name, true)
-  endif
-endforeach
-
-if c.has_header_symbol('sys/types.h', 'ssize_t')
-  a3_features_c.set('a3_HAVE_ssize_t', true)
-  a3_features_cxx.set('a3_HAVE_ssize_t', true)
-endif
-
-a3_functions_wanted = ['memset_s', 'explicit_bzero']
-
-foreach function : a3_functions_wanted
-  if c.has_function(function)
-    a3_features_c.set('a3_HAVE_' + function, true)
-    a3_features_cxx.set('a3_HAVE_' + function, true)
-  endif
-endforeach
-
-if host_machine.system() == 'windows'
-  if c.has_header_symbol('Windows.h', 'SecureZeroMemory')
-    a3_features_c.set('a3_HAVE_SecureZeroMemory', true)
-    a3_features_cxx.set('a3_HAVE_SecureZeroMemory', true)
-  endif
-endif
-
-a3_features_c = configure_file(output: 'features_c.h', configuration: a3_features_c)
-a3_features_cxx = configure_file(output: 'features_cc.hh', configuration: a3_features_cxx)
-
 a3_include = include_directories(['src/include', '.'])
 a3_src = files(
   [

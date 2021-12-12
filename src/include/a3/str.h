@@ -87,13 +87,7 @@ A3_ALWAYS_INLINE A3CString A3_S_CONST(A3CString s) { return s; }
 
 A3_H_BEGIN
 
-#elif defined(a3_HAVE__Generic)
-
-A3_ALWAYS_INLINE A3CString _A3_S_CONST(A3String s) { return A3_CSTRING(s.ptr, s.len); }
-A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
-#define A3_S_CONST(X) _Generic((X), A3String : _A3_S_CONST, A3CString : _A3_S_NOP)(X)
-
-#else
+#elif defined(__GNUC__) || defined(__clang__)
 
 /// Cast a string to a constant string.
 #define A3_S_CONST(X)                                                                              \
@@ -102,6 +96,18 @@ A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
         A3CString       _ret    = { .ptr = _in_str.ptr, .len = _in_str.len };                      \
         _ret;                                                                                      \
     })
+
+#elif __STDC_VERSION__ >= 201112L
+
+A3_ALWAYS_INLINE A3CString _A3_S_CONST(A3String s) { return A3_CSTRING(s.ptr, s.len); }
+A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
+/// Cast a string to a constant string.
+#define A3_S_CONST(X) _Generic((X), A3String : _A3_S_CONST, A3CString : _A3_S_NOP)(X)
+
+#else
+
+#error                                                                                             \
+    "An overload feature of some kind (C++ overloads, compound statements, or _Generic) is required."
 
 #endif
 
