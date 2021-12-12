@@ -23,7 +23,6 @@
 #include <time.h>
 
 #include <a3/cpp.h>
-#include <a3/platform/util.h>
 #include <a3/util.h>
 
 // From highwayhash.h. Forward-declared since the library header causes unused
@@ -315,7 +314,7 @@ A3_H_END
                                                                                                    \
     void A3_HT_INIT(K, V)(A3_HT(K, V) * table, uint8_t * key, bool can_grow) {                     \
         assert(table);                                                                             \
-        A3_STRUCT_ZERO(table);                                                                     \
+        memset(table, 0, sizeof(*table));                                                          \
         table->can_grow = can_grow;                                                                \
         table->size     = 0;                                                                       \
         table->cap      = A3_HT_INITIAL_CAP;                                                       \

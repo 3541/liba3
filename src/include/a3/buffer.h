@@ -49,7 +49,7 @@ A3_EXPORT bool a3_buf_init(A3Buffer*, size_t cap, size_t max_cap);
 /// Allocate and initialize a buffer. See ::a3_buf_init.
 A3_EXPORT A3Buffer* a3_buf_new(size_t cap, size_t max_cap);
 
-/// Destroys a buffer, freeing the underlying data.
+/// Destroy a buffer, freeing the underlying data.
 A3_EXPORT void a3_buf_destroy(A3Buffer*);
 
 /// Free a buffer and destroy it.
