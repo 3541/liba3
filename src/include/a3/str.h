@@ -30,7 +30,7 @@ typedef struct A3String {
 
 /// A constant byte string.
 typedef struct A3CString {
-    const uint8_t* ptr; ///< The actual pointer.
+    uint8_t const* ptr; ///< The actual pointer.
     size_t         len; ///< The string's length.
 } A3CString;
 
@@ -39,7 +39,7 @@ typedef struct A3CString {
 A3_H_END
 
 A3_ALWAYS_INLINE constexpr A3String  A3_STRING(uint8_t* ptr, size_t len) { return { ptr, len }; }
-A3_ALWAYS_INLINE constexpr A3CString A3_CSTRING(const uint8_t* ptr, size_t len) {
+A3_ALWAYS_INLINE constexpr A3CString A3_CSTRING(uint8_t const* ptr, size_t len) {
     return { ptr, len };
 }
 
@@ -56,10 +56,10 @@ A3_H_BEGIN
 #endif
 
 /// Create a constant string from a literal C string.
-#define A3_CS(S) A3_CSTRING((const uint8_t*)(S), sizeof(S) - 1)
+#define A3_CS(S) A3_CSTRING((uint8_t const*)(S), sizeof(S) - 1)
 
 /// Create an A3CString pointing to a struct.
-#define A3_CSS(S) A3_CSTRING((const uint8_t*)&(S), sizeof(S))
+#define A3_CSS(S) A3_CSTRING((uint8_t const*)&(S), sizeof(S))
 
 /// A null string.
 #define A3_S_NULL A3_STRING(NULL, 0)
@@ -128,19 +128,19 @@ A3_ALWAYS_INLINE A3String A3_S_OFFSET(A3String s, size_t offset) {
 #define A3_S_FA(S) ((int)(S).len), ((S).ptr)
 
 /// Create a constant string from a null-terminated `const char*` (warning: uses `strlen`).
-A3_ALWAYS_INLINE A3CString A3_CS_OF(const char* str) { return A3_S_CONST(A3_S_OF((char*)str)); }
+A3_ALWAYS_INLINE A3CString A3_CS_OF(char const* str) { return A3_S_CONST(A3_S_OF((char*)str)); }
 
 /// Get a pointer one byte past the final byte of the given string.
-A3_ALWAYS_INLINE const uint8_t* A3_S_END(A3CString s) { return s.ptr + s.len; }
+A3_ALWAYS_INLINE uint8_t const* A3_S_END(A3CString s) { return s.ptr + s.len; }
 
 /// Get a const string as a `const char*`.
-A3_ALWAYS_INLINE const char* A3_S_AS_C_STR(A3CString s) { return (const char*)s.ptr; }
+A3_ALWAYS_INLINE char const* A3_S_AS_C_STR(A3CString s) { return (char const*)s.ptr; }
 
 /// Get a pointer to the start of a string.
 A3_ALWAYS_INLINE uint8_t* A3_S_PTR(A3String s) { return s.ptr; }
 
 /// Get a `const` pointer to the start of a string.
-A3_ALWAYS_INLINE const uint8_t* A3_CS_PTR(A3CString s) { return s.ptr; }
+A3_ALWAYS_INLINE uint8_t const* A3_CS_PTR(A3CString s) { return s.ptr; }
 
 /// Get the length of a string.
 A3_ALWAYS_INLINE size_t A3_S_LEN(A3CString s) { return s.len; }

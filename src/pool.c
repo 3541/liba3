@@ -78,8 +78,6 @@ void* a3_pool_alloc_block(A3Pool* pool) {
 
     pool->free = slot->next;
     slot->next = NULL;
-    if (pool->zero_blocks)
-        memset(slot, 0, pool->block_size);
 
     return (void*)slot;
 }
@@ -89,6 +87,9 @@ void a3_pool_free_block(A3Pool* pool, void* block) {
     assert(block);
 
     A3PoolSlot* slot = block;
+    if (pool->zero_blocks)
+        memset(slot, 0, pool->block_size);
+
     slot->next       = pool->free;
     pool->free       = slot;
 }
@@ -103,7 +104,7 @@ void a3_pool_free(A3Pool* pool) {
 #ifndef _WIN32
     free(pool->data);
 #else
-    // _aligned_alloced memory cannot be freed with free.
+    // _aligned_malloced memory cannot be freed with free.
     _aligned_free(pool->data);
 #endif
     free(pool);
