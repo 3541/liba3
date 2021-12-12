@@ -20,13 +20,13 @@ A3_H_BEGIN
 
 /// A list link. To make a type usable in a list, simply add a member of this type.
 typedef struct A3SLink {
-    struct A3SLink* next;
+    struct A3SLink* next; ///< The next element in the list.
 } A3SLink;
 
 /// A list. Keeps track of both the head and tail in order to enable the list to be used as a queue.
 typedef struct {
-    A3SLink* head;
-    A3SLink* end;
+    A3SLink* head; ///< The first element of the list.
+    A3SLink* end; ///< The last element of the list.
 } A3SLL;
 
 /// Initialize a list.

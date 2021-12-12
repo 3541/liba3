@@ -9,6 +9,7 @@ pkgs.mkShell {
     # latter package will provide an un-wrapped `clangd`, which is unable to find system headers.
     clang-tools
     llvmPackages_latest.clang
+    doxygen
     meson
     gtest
     pkg-config

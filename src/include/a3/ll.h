@@ -24,8 +24,8 @@ A3_H_BEGIN
 
 /// A list or a list link. To make a type usable in a list, simply add a member of this type.
 typedef struct A3LL {
-    struct A3LL* next;
-    struct A3LL* prev;
+    struct A3LL* next; ///< The next element in the list, or the head.
+    struct A3LL* prev; ///< The previous element in the list, or the end.
 } A3LL;
 
 /// Initialize a list.
