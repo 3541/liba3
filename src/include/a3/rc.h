@@ -19,7 +19,6 @@
 #include <stdint.h>
 
 #include <a3/cpp.h>
-#include <a3/macro.h>
 #include <a3/platform/types.h>
 
 #ifdef __cplusplus
