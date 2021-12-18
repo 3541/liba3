@@ -21,7 +21,7 @@ protected:
     A3Pool* pool { nullptr };
 
     void SetUp() override {
-        pool = A3_POOL_OF(TestObject, POOL_SIZE, A3_POOL_ZERO_BLOCKS, nullptr);
+        pool = A3_POOL_OF(TestObject, POOL_SIZE, A3_POOL_ZERO_BLOCKS, nullptr, nullptr);
     }
 
     void TearDown() override { a3_pool_free(pool); }
@@ -34,7 +34,7 @@ protected:
 
     void* pool_end() const {
         return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(pool_start()) +
-                                       POOL_SIZE * sizeof(TestObject));
+                                       POOL_SIZE * (sizeof(TestObject) + sizeof(void*)));
     }
 };
 
@@ -71,7 +71,7 @@ TEST_F(PoolTest, free) {
     free(block);
 
     // Now, the block should have a next pointer to another block somewhere.
-    auto next = *reinterpret_cast<void**>(block);
+    auto next = *reinterpret_cast<void**>(block + 1);
     EXPECT_LE(pool_start(), next);
     EXPECT_LT(next, pool_end());
 }
