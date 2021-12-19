@@ -67,7 +67,7 @@ a3_c_flags += c.get_supported_arguments(a3_warnings_wanted[c_arg_syntax])
 a3_cxx_flags += cxx.get_supported_arguments(a3_warnings_wanted[cxx_arg_syntax])
 
 if (c.get_id() != 'gcc' or not c.version().startswith('9')) and (cxx.get_id() != 'gcc' or not cxx.version().startswith('9'))
-  # -Wconversion is too aggressive on GCC <= 9.
+  # -Wconversion is too aggressive on GCC 9. Earlier versions don't have the warning.
   a3_c_flags += c.get_supported_arguments(['-Wconversion'])
   a3_cxx_flags += cxx.get_supported_arguments(['-Wconversion'])
 endif
@@ -104,13 +104,16 @@ endif
 
 a3 = declare_dependency(
   link_with: a3_lib,
-  include_directories: a3_include,
+  include_directories: include_directories(['src/include']),
   compile_args: a3_compile_args
 )
 a3_dep = a3
 
 highwayhash_c = dependency('highwayhash_c', fallback: ['highwayhash', 'highwayhash_c_dep'])
-a3_hash = declare_dependency(dependencies: [a3, highwayhash_c], include_directories: a3_include)
+a3_hash = declare_dependency(
+  dependencies: [a3, highwayhash_c],
+  include_directories: include_directories(['src/include'])
+)
 a3_hash_dep = a3_hash
 
 subdir('test')

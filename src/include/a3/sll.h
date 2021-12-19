@@ -13,7 +13,7 @@
 #include <stdbool.h>
 
 #include <a3/cpp.h>
-#include <a3/platform/types.h>
+#include <a3/types.h>
 #include <a3/util.h>
 
 A3_H_BEGIN
@@ -26,7 +26,7 @@ typedef struct A3SLink {
 /// A list. Keeps track of both the head and tail in order to enable the list to be used as a queue.
 typedef struct {
     A3SLink* head; ///< The first element of the list.
-    A3SLink* end; ///< The last element of the list.
+    A3SLink* end;  ///< The last element of the list.
 } A3SLL;
 
 /// Initialize a list.

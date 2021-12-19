@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <a3/platform/types.h>
+#include <a3/types.h>
 
 // Types
 #ifdef A3_NO_SSIZE_T

@@ -19,7 +19,7 @@
 #include <stdint.h>
 
 #include <a3/cpp.h>
-#include <a3/platform/types.h>
+#include <a3/types.h>
 
 #ifdef __cplusplus
 #define A3_REFCOUNTED_T(T)                                                                         \

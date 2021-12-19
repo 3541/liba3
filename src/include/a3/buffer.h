@@ -21,8 +21,8 @@
 #include <string.h>
 
 #include <a3/cpp.h>
-#include <a3/platform/types.h>
 #include <a3/str.h>
+#include <a3/types.h>
 #include <a3/util.h>
 
 A3_H_BEGIN

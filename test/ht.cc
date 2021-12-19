@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 
 #include <a3/ht.h>
-#include <a3/platform/types_private.h>
 #include <a3/str.h>
 
 using std::vector;
@@ -68,7 +67,7 @@ TEST_F(HTTest, grow) {
     all_present();
 
     while (keys.size()) {
-        auto key = keys.begin() + rand() % (ssize_t)keys.size();
+        auto key = keys.begin() + rand() % static_cast<int>(keys.size());
         A3_HT_DELETE(A3CString, A3CString)(&table, *key);
         A3String tmp = A3_CS_MUT(*key);
         a3_string_free(&tmp);

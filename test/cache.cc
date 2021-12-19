@@ -4,7 +4,6 @@
 
 #include <a3/cache.h>
 #include <a3/log.h>
-#include <a3/platform/types_private.h>
 #include <a3/str.h>
 
 using std::vector;
@@ -42,7 +41,7 @@ TEST_F(CacheTest, insert) {
     auto* found = A3_CACHE_FIND(A3CString, A3CString)(&cache, A3_CS("Key"));
     ASSERT_TRUE(found);
 
-    ssize_t index = A3_HT_FIND_INDEX(A3CString, A3CString)(&cache.table, A3_CS("Key"));
+    A3_SSIZE_T index = A3_HT_FIND_INDEX(A3CString, A3CString)(&cache.table, A3_CS("Key"));
     ASSERT_GE(index, 0LL);
     ASSERT_EQ(found, &cache.table.entries[(size_t)index].value);
     EXPECT_TRUE(A3_CACHE_ACCESSED(A3CString, A3CString)(&cache, (size_t)index));
