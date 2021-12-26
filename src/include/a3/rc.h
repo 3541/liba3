@@ -37,8 +37,8 @@
 /// specific type for the reference count is required, use ::A3_REFCOUNTED_T instead (the default is
 /// uint32_t). Then, call ::A3_REF_INIT in the constructor to initialize the refcount to 1.
 /// Increment the refcount as appropriate using ::A3_REF, and decrement it using ::A3_UNREF.
-/// ::A3_UNREF allows a second argument which is a destructor, called if the reference count reaches
-/// 0.
+/// ::A3_UNREF_D allows a second argument which is a destructor, called if the reference count
+/// reaches 0.
 #define A3_REFCOUNTED A3_REFCOUNTED_T(uint32_t)
 
 /// Get the current reference count of the object `O`.

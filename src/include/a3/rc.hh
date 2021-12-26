@@ -1,5 +1,5 @@
 /*
- * RC -- Reference counting.
+ * RC -- Reference counting (C++).
  *
  * Copyright (c) 2021, Alex O'Brien <3541ax@gmail.com>
  *
@@ -31,20 +31,21 @@ class Rc;
 template <typename T, typename C = uint32_t>
 class RefCounted {
 private:
+    friend class Rc<T, C>;
     A3_REFCOUNTED_T(C);
 
     static void destroy(RefCounted* o) { delete static_cast<T*>(o); }
-
-protected:
-    RefCounted() { A3_REF_INIT(this); }
-
-    ~RefCounted() { assert(A3_REF_COUNT(this) == 0); }
 
     /// Increment the reference count.
     void ref() { A3_REF(this); }
 
     /// Decrement the reference count, and destroy if it reaches zero.
     void unref() { A3_UNREF_D(this, destroy); }
+
+protected:
+    RefCounted() { A3_REF_INIT(this); }
+
+    ~RefCounted() { assert(A3_REF_COUNT(this) == 0); }
 
 public:
     /// Get the current reference count.

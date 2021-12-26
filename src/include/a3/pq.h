@@ -5,6 +5,9 @@
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
+ *
+ * The priority queue implemented here is as yet untested, and should be considered a sketch, rather
+ * than an actual implementation.
  */
 
 #pragma once

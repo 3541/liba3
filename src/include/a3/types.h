@@ -54,12 +54,3 @@ typedef ssize_t A3_SSIZE_T;
 #else
 #define A3_THREAD_LOCAL __thread
 #endif
-
-#ifdef __cplusplus
-#define A3_CONSTEXPR constexpr
-#define A3_EMPTY_INIT                                                                              \
-    {}
-#else
-#define A3_CONSTEXPR
-#define A3_EMPTY_INIT
-#endif
