@@ -60,6 +60,9 @@ Most objects (buffer, hash table, linked list, etc...) provide the following fun
 
 This vaguely mirrors the C++ object lifecycle, where `X_new` and `X_free` mimic `new` and `delete`, and `X_init` and `X_destroy` are the constructor and destructor.
 
+For objects with value semantics (`A3String`), there is no `init` or `destroy`, and `new` returns a
+value, not a pointer. `free` still takes a pointer so that it can invalidate internal pointers.
+
 ## Licensing
 
 `liba3` is licensed under the 3-clause BSD license, the terms of which are

@@ -107,7 +107,7 @@ TEST_F(BufferTest, tokenization) {
 
     A3String s = a3_buf_token_next(&buf, A3_CS(" "), A3_PRES_END_NO);
     EXPECT_TRUE(s.ptr);
-    EXPECT_STREQ(A3_S_AS_C_STR(A3_S_CONST(s)), "A");
+    EXPECT_STREQ(a3_string_cstr(A3_S_CONST(s)), "A");
     EXPECT_EQ(buf.head, 2ULL);
     EXPECT_EQ(s.ptr[s.len], '\0');
 
@@ -119,7 +119,7 @@ TEST_F(BufferTest, tokenization) {
     A3String scmp = a3_string_alloc(s.len + 1);
     a3_string_copy(scmp, A3_S_CONST(s));
     scmp.ptr[scmp.len - 1] = '\0';
-    EXPECT_STREQ(A3_S_AS_C_STR(A3_S_CONST(scmp)), "string");
+    EXPECT_STREQ(a3_string_cstr(A3_S_CONST(scmp)), "string");
     a3_string_free(&scmp);
 
     s = a3_buf_token_next_copy(&buf, A3_CS(" "), A3_PRES_END_NO);

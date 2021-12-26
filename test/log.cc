@@ -52,7 +52,7 @@ TEST_F(LogTest, format) {
 }
 
 TEST_F(LogTest, format_string) {
-    a3_log_fmt(LOG_DEBUG, "Some formatting: " A3_S_F, A3_S_FA(A3_CS("test string")));
+    a3_log_fmt(LOG_DEBUG, "Some formatting: " A3_S_F, A3_S_FORMAT(A3_CS("test string")));
     ASSERT_EQ(read_written(), "Some formatting: test string\n");
 }
 

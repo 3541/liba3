@@ -4,14 +4,14 @@
 
 TEST(String, construct) {
     A3CString lit = A3_CS("test");
-    EXPECT_STREQ(A3_S_AS_C_STR(lit), "test");
+    EXPECT_STREQ(a3_string_cstr(lit), "test");
     EXPECT_EQ(lit.len, 4ULL);
 
-    A3CString s = A3_CS_OF("test");
-    EXPECT_STREQ(A3_S_AS_C_STR(s), "test");
+    A3CString s = A3_CS("test");
+    EXPECT_STREQ(a3_string_cstr(s), "test");
     EXPECT_EQ(s.len, 4ULL);
 
-    EXPECT_FALSE(A3_S_AS_C_STR(A3_CS_NULL));
+    EXPECT_FALSE(a3_string_cstr(A3_CS_NULL));
 }
 
 TEST(String, alloc) {
@@ -33,7 +33,7 @@ TEST(String, realloc) {
     EXPECT_FALSE(orig.ptr);
     EXPECT_EQ(orig.len, 0ULL);
     next.ptr[next.len - 2] = '\0';
-    EXPECT_STREQ(A3_S_AS_C_STR(A3_S_CONST(next)), "str123");
+    EXPECT_STREQ(a3_string_cstr(A3_S_CONST(next)), "str123");
     EXPECT_EQ(next.len, 8ULL);
 
     a3_string_free(&next);
@@ -66,7 +66,7 @@ TEST(String, copy) {
     a3_string_copy(s2, s1);
     s2.ptr[s1.len] = '\0'; // So string comparison works.
     EXPECT_EQ(s2.len, sizeof("Longer test string.") - 1);
-    EXPECT_STREQ(A3_S_AS_C_STR(A3_S_CONST(s2)), "test str1");
+    EXPECT_STREQ(a3_string_cstr(A3_S_CONST(s2)), "test str1");
     a3_string_free(&s2);
     s2 = a3_string_clone(A3_CS("An even longer string."));
 
@@ -74,7 +74,7 @@ TEST(String, copy) {
     // Copy of a larger string into a smaller one is truncated.
     a3_string_copy(s3, A3_S_CONST(s2));
     s3.ptr[s3.len - 1] = '\0';
-    EXPECT_STREQ(A3_S_AS_C_STR(A3_S_CONST(s3)), "An even l");
+    EXPECT_STREQ(a3_string_cstr(A3_S_CONST(s3)), "An even l");
 
     a3_string_free(&s2);
     a3_string_free(&s3);
@@ -85,7 +85,7 @@ TEST(String, concat) {
 
     a3_string_concat(dst, 5, A3_CS("01"), A3_CS("23"), A3_CS("45"), A3_CS("67"), A3_CS("89"));
     dst.ptr[dst.len - 1] = '\0';
-    EXPECT_STREQ(A3_S_AS_C_STR(A3_S_CONST(dst)), "0123456789");
+    EXPECT_STREQ(a3_string_cstr(A3_S_CONST(dst)), "0123456789");
 
     a3_string_free(&dst);
 }

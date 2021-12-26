@@ -232,6 +232,6 @@ A3_EXPORT inline bool a3_buf_write_str(A3Buffer* buf, A3CString str) {
 }
 
 /// Copy a struct into the buffer.
-#define A3_BUF_WRITE_STRUCT(BUF, S) a3_buf_write_str((BUF), A3_CSS((S)))
+#define A3_BUF_WRITE_STRUCT(BUF, S) a3_buf_write_str((BUF), A3_CS_OBJ((S)))
 
 A3_H_END

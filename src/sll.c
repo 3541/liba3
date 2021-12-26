@@ -22,18 +22,17 @@ void a3_sll_free(A3SLL* list) {
 }
 
 void a3_sll_remove(A3SLL* list, A3SLink* item) {
- assert(list && item);
+    assert(list && item);
     A3SLink** it = &list->head;
     while (*it && (*it)->next != item)
         it = &(*it)->next;
     assert(*it && (*it)->next);
-    *it = item->next;
+    *it        = item->next;
     item->next = NULL;
     // Defer fixup of ->end to when it's actually needed.
     if (list->end == item)
         list->end = NULL;
 }
-
 
 void a3_sll_enqueue(A3SLL* list, A3SLink* item) {
     assert(list && item);

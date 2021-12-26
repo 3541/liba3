@@ -34,55 +34,40 @@ typedef struct A3CString {
     size_t         len; ///< The string's length.
 } A3CString;
 
-#ifdef __cplusplus
-
-A3_H_END
-
-A3_ALWAYS_INLINE constexpr A3String  A3_STRING(uint8_t* ptr, size_t len) { return { ptr, len }; }
-A3_ALWAYS_INLINE constexpr A3CString A3_CSTRING(uint8_t const* ptr, size_t len) {
-    return { ptr, len };
+A3_ALWAYS_INLINE A3_CONSTEXPR A3String a3_string_new(uint8_t* ptr, size_t len) {
+    A3String ret A3_EMPTY_INIT;
+    ret.ptr = ptr;
+    ret.len = len;
+    return ret;
 }
 
-A3_H_BEGIN
-
-#else
-
-/// Create a string from a given pointer and length.
-#define A3_STRING(PTR, LEN)  ((A3String) { .ptr = (PTR), .len = (LEN) })
-
-/// Create a constant string from a given pointer and length.
-#define A3_CSTRING(PTR, LEN) ((A3CString) { .ptr = (PTR), .len = (LEN) })
-
-#endif
+A3_ALWAYS_INLINE A3_CONSTEXPR A3CString a3_cstring_new(uint8_t const* ptr, size_t len) {
+    A3CString ret A3_EMPTY_INIT;
+    ret.ptr = ptr;
+    ret.len = len;
+    return ret;
+}
 
 /// Create a constant string from a literal C string.
-#define A3_CS(S) A3_CSTRING((uint8_t const*)(S), sizeof(S) - 1)
+#define A3_CS(S) a3_cstring_new((uint8_t const*)(S), sizeof(S) - 1)
 
 /// Create an A3CString pointing to a struct.
-#define A3_CSS(S) A3_CSTRING((uint8_t const*)&(S), sizeof(S))
+#define A3_CS_OBJ(S) a3_cstring_new((uint8_t const*)&(S), sizeof(S))
 
 /// A null string.
-#define A3_S_NULL A3_STRING(NULL, 0)
-
-/// A null string initializer.
-#define A3_S_NULL_INIT                                                                             \
-    { NULL, 0 }
+#define A3_S_NULL a3_string_new(NULL, 0)
 
 /// A null constant string.
-#define A3_CS_NULL A3_CSTRING(NULL, 0)
-
-/// A null constant string initializer.
-#define A3_CS_NULL_INIT                                                                            \
-    { NULL, 0 }
+#define A3_CS_NULL a3_cstring_new(NULL, 0)
 
 /// Cast a constant to a mutable one.
-A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return A3_STRING((uint8_t*)s.ptr, s.len); }
+A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return a3_string_new((uint8_t*)s.ptr, s.len); }
 
 #ifdef __cplusplus
 
 A3_H_END
 
-A3_ALWAYS_INLINE A3CString A3_S_CONST(A3String s) { return A3_CSTRING(s.ptr, s.len); }
+A3_ALWAYS_INLINE A3CString A3_S_CONST(A3String s) { return a3_cstring_new(s.ptr, s.len); }
 A3_ALWAYS_INLINE A3CString A3_S_CONST(A3CString s) { return s; }
 
 A3_H_BEGIN
@@ -99,7 +84,7 @@ A3_H_BEGIN
 
 #elif __STDC_VERSION__ >= 201112L
 
-A3_ALWAYS_INLINE A3CString _A3_S_CONST(A3String s) { return A3_CSTRING(s.ptr, s.len); }
+A3_ALWAYS_INLINE A3CString _A3_S_CONST(A3String s) { return a3_cstring_new(s.ptr, s.len); }
 A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
 /// Cast a string to a constant string.
 #define A3_S_CONST(X) _Generic((X), A3String : _A3_S_CONST, A3CString : _A3_S_NOP)(X)
@@ -112,18 +97,23 @@ A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
 #endif
 
 /// Create a string from a null-terminated `char*` (warning: uses `strlen`).
-A3_ALWAYS_INLINE A3String A3_S_OF(char* str) {
+A3_ALWAYS_INLINE A3String a3_string_from(char* str) {
     if (!str)
         return A3_S_NULL;
-    return A3_STRING((uint8_t*)str, strlen(str));
+    return a3_string_new((uint8_t*)str, strlen(str));
+}
+
+/// Create a constant string from a null-terminated `const char*` (warning: uses `strlen`).
+A3_ALWAYS_INLINE A3CString a3_cstring_from(char const* str) {
+    return A3_S_CONST(a3_string_from((char*)str));
 }
 
 /// Get a string at the given offset into the given string.
-A3_ALWAYS_INLINE A3String A3_S_OFFSET(A3String s, size_t offset) {
-    return A3_STRING(s.ptr + offset, s.len - offset);
+A3_ALWAYS_INLINE A3String a3_string_offset(A3String s, size_t offset) {
+    return a3_string_new(s.ptr + offset, s.len - offset);
 }
 
-/// The format specifier to use to print a string. See ::A3_S_FA.
+/// The format specifier to use to print a string. See ::A3_S_FORMAT.
 #define A3_S_F "%.*s"
 
 /// \brief The format argument to use to print a string.
@@ -131,25 +121,22 @@ A3_ALWAYS_INLINE A3String A3_S_OFFSET(A3String s, size_t offset) {
 /// For example:
 ///
 ///     printf("A string: " S_F ".\n", S_FA(a_string));
-#define A3_S_FA(S) ((int)(S).len), ((S).ptr)
-
-/// Create a constant string from a null-terminated `const char*` (warning: uses `strlen`).
-A3_ALWAYS_INLINE A3CString A3_CS_OF(char const* str) { return A3_S_CONST(A3_S_OF((char*)str)); }
+#define A3_S_FORMAT(S) ((int)(S).len), ((S).ptr)
 
 /// Get a pointer one byte past the final byte of the given string.
-A3_ALWAYS_INLINE uint8_t const* A3_S_END(A3CString s) { return s.ptr + s.len; }
+A3_ALWAYS_INLINE uint8_t const* a3_string_end(A3CString s) { return s.ptr + s.len; }
 
 /// Get a const string as a `const char*`.
-A3_ALWAYS_INLINE char const* A3_S_AS_C_STR(A3CString s) { return (char const*)s.ptr; }
+A3_ALWAYS_INLINE char const* a3_string_cstr(A3CString s) { return (char const*)s.ptr; }
 
 /// Get a pointer to the start of a string.
-A3_ALWAYS_INLINE uint8_t* A3_S_PTR(A3String s) { return s.ptr; }
+A3_ALWAYS_INLINE uint8_t* a3_string_ptr(A3String s) { return s.ptr; }
 
 /// Get a `const` pointer to the start of a string.
-A3_ALWAYS_INLINE uint8_t const* A3_CS_PTR(A3CString s) { return s.ptr; }
+A3_ALWAYS_INLINE uint8_t const* a3_string_cptr(A3CString s) { return s.ptr; }
 
 /// Get the length of a string.
-A3_ALWAYS_INLINE size_t A3_S_LEN(A3CString s) { return s.len; }
+A3_ALWAYS_INLINE size_t a3_string_len(A3CString s) { return s.len; }
 
 /// Allocate a new string of the given size.
 A3_EXPORT A3String a3_string_alloc(size_t len);

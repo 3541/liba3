@@ -23,7 +23,7 @@
 #include <a3/util.h>
 
 #define SLOT_OBJ(POOL, SLOT) ((void*)((uintptr_t)(SLOT) - (POOL)->obj_size))
-#define OBJ_SLOT(POOL, OBJ) ((A3PoolSlot*)((uintptr_t)(OBJ) + (POOL)->obj_size))
+#define OBJ_SLOT(POOL, OBJ)  ((A3PoolSlot*)((uintptr_t)(OBJ) + (POOL)->obj_size))
 
 struct A3PoolSlot {
     struct A3PoolSlot* next;
@@ -92,8 +92,8 @@ void a3_pool_free_block(A3Pool* pool, void* block) {
         memset(block, 0, pool->obj_size);
 
     A3PoolSlot* slot = OBJ_SLOT(pool, block);
-    slot->next = pool->free;
-    pool->free = slot;
+    slot->next       = pool->free;
+    pool->free       = slot;
 }
 
 void a3_pool_free(A3Pool* pool) {
