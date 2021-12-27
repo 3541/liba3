@@ -47,7 +47,9 @@ typedef ssize_t A3_SSIZE_T;
 #define A3_ALWAYS_INLINE
 #endif
 
-#if __STDC_VERSION__ >= 201112L
+#ifdef __cplusplus
+#define A3_THREAD_LOCAL thread_local
+#elif __STDC_VERSION__ >= 201112L
 #define A3_THREAD_LOCAL _Thread_local
 #elif defined(_MSC_VER)
 #define A3_THREAD_LOCAL __declspec(thread)
