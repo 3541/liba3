@@ -115,4 +115,4 @@
 #define A3_FORMAT_FN(FMT_INDEX, VARG_INDEX)
 #endif
 
-#define A3_CONTAINER_OF(PTR, TY, FIELD) ((TY*)((uintptr_t)PTR - offsetof(TY, FIELD)))
+#define A3_CONTAINER_OF(PTR, TY, FIELD) ((TY*)((uintptr_t)(void*)PTR - offsetof(TY, FIELD)))
