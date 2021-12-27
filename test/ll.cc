@@ -5,7 +5,7 @@
 
 struct LLNode {
     size_t data;
-    A3LL link;
+    A3LL   link;
 
     explicit LLNode(size_t d) : data { d } {}
 };
@@ -54,8 +54,8 @@ TEST_F(LLTest, many_insertions) {
     a3_ll_insert_after(&mid_node->link, &(new LLNode { 128 })->link);
 
     size_t i = 0;
-    A3_LL_FOREACH(node, &list)  {
-        auto data = A3_CONTAINER_OF(node, LLNode, link)->data;
+    A3_LL_FOR_EACH(LLNode, node, &list, link) {
+        auto data = node->data;
         EXPECT_EQ(data, i);
         if (data != i)
             break;
@@ -64,6 +64,5 @@ TEST_F(LLTest, many_insertions) {
 
     EXPECT_EQ(i, 513ULL);
 
-    A3_LL_FOREACH(node, &list)
-        delete A3_CONTAINER_OF(node, LLNode, link);
+    A3_LL_FOR_EACH(LLNode, node, &list, link) { delete node; }
 }

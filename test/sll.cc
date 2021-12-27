@@ -4,12 +4,11 @@
 #include <a3/util.h>
 
 struct SLLNode {
-    size_t data;
+    size_t  data;
     A3SLink link { NULL };
 
     explicit SLLNode(size_t d) : data { d } {}
 };
-
 
 class SLLTest : public ::testing::Test {
 protected:
@@ -42,8 +41,7 @@ TEST_F(SLLTest, many_insertions) {
         a3_sll_push(&list, &(new SLLNode { i })->link);
 
     size_t i = 128;
-    A3_SLL_FOREACH(node, &list)
-        EXPECT_EQ(A3_CONTAINER_OF(node, SLLNode, link)->data, i--);
+    A3_SLL_FOR_EACH(SLLNode, node, &list, link) { EXPECT_EQ(node->data, i--); }
 
     EXPECT_EQ(i, 0ULL);
 
@@ -54,8 +52,7 @@ TEST_F(SLLTest, many_insertions) {
         a3_sll_enqueue(&list, &(new SLLNode { i })->link);
 
     i = 1;
-    A3_SLL_FOREACH(node, &list)
-        EXPECT_EQ(A3_CONTAINER_OF(node, SLLNode, link)->data, i++);
+    A3_SLL_FOR_EACH(SLLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
 
     EXPECT_EQ(i, 129ULL);
 
