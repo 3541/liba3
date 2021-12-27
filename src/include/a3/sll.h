@@ -24,7 +24,7 @@ typedef struct A3SLink {
 } A3SLink;
 
 /// A list. Keeps track of both the head and tail in order to enable the list to be used as a queue.
-typedef struct {
+typedef struct A3SLL {
     A3SLink* head; ///< The first element of the list.
     A3SLink* end;  ///< The last element of the list.
 } A3SLL;
