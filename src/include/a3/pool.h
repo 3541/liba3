@@ -53,7 +53,7 @@ A3_H_END
 // - Invoke one of the macros A3_POOL_ALLOCATED* at the start of the class.
 // - Invoke A3_POOL_STORAGE in _one_ translation unit.
 
-#define A3_POOL_STORAGE(T, COUNT, ZB, CB) A3Pool* T::_POOL = A3_POOL_OF(T, COUNT, ZB, CB)
+#define A3_POOL_STORAGE(T, COUNT, ZB, CB) A3Pool* T::_POOL = A3_POOL_OF(T, COUNT, ZB, CB, nullptr)
 
 #define A3_POOL_MEMBER static A3Pool* _POOL;
 
