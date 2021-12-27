@@ -48,18 +48,6 @@ A3_ALWAYS_INLINE A3_CONSTEXPR A3CString a3_cstring_new(uint8_t const* ptr, size_
     return ret;
 }
 
-/// Create a constant string from a literal C string.
-#define A3_CS(S) a3_cstring_new((uint8_t const*)(S), sizeof(S) - 1)
-
-/// Create an A3CString pointing to a struct.
-#define A3_CS_OBJ(S) a3_cstring_new((uint8_t const*)&(S), sizeof(S))
-
-/// A null string.
-#define A3_S_NULL a3_string_new(NULL, 0)
-
-/// A null constant string.
-#define A3_CS_NULL a3_cstring_new(NULL, 0)
-
 /// Cast a constant to a mutable one.
 A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return a3_string_new((uint8_t*)s.ptr, s.len); }
 
@@ -67,12 +55,34 @@ A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return a3_string_new((uint8_t
 
 A3_H_END
 
+#define A3_CS(S)     (A3CString { reinterpret_cast<uint8_t const*>(&S[0]), sizeof(S) - 1 })
+#define A3_CS_OBJ(S) (A3CString { reinterpret_cast<uint8_t const*>(&(S)), sizeof(S) })
+#define A3_S_NULL    (A3String { nullptr, 0 })
+#define A3_CS_NULL   (A3CString { nullptr, 0 })
+
 A3_ALWAYS_INLINE A3CString A3_S_CONST(A3String s) { return a3_cstring_new(s.ptr, s.len); }
 A3_ALWAYS_INLINE A3CString A3_S_CONST(A3CString s) { return s; }
 
 A3_H_BEGIN
 
-#elif defined(__GNUC__) || defined(__clang__)
+#else
+
+/// Create a constant string from a literal C string.
+#define A3_CS(S)     ((A3CString) { .ptr = (uint8_t const*)(S), .len = sizeof(S) - 1 })
+
+/// Create an A3CString pointing to a struct.
+#define A3_CS_OBJ(S) ((A3CString) { .ptr = (uint8_t const*)&(S), .len = sizeof(S) })
+
+/// A null string.
+#define A3_S_NULL    ((A3String) { .ptr = NULL, .len = 0 })
+
+/// A null constant string.
+#define A3_CS_NULL   ((A3CString) { .ptr = NULL, .len = 0 })
+
+#endif
+
+#ifndef __cplusplus
+#if defined(__GNUC__) || defined(__clang__)
 
 /// Cast a string to a constant string.
 #define A3_S_CONST(X)                                                                              \
@@ -94,6 +104,7 @@ A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
 #error                                                                                             \
     "An overload feature of some kind (C++ overloads, compound statements, or _Generic) is required."
 
+#endif
 #endif
 
 /// Create a string from a null-terminated `char*` (warning: uses `strlen`).
