@@ -17,7 +17,7 @@ protected:
     void SetUp() override { a3_sll_init(&list); }
 };
 
-TEST_F(SLLTest, init) { EXPECT_FALSE(list.head); }
+TEST_F(SLLTest, init) { EXPECT_TRUE(a3_sll_is_empty(&list)); }
 
 TEST_F(SLLTest, push_pop) {
     auto* t = new SLLNode { 1234 };
@@ -26,12 +26,12 @@ TEST_F(SLLTest, push_pop) {
     auto* p = A3_CONTAINER_OF(a3_sll_peek(&list), SLLNode, link);
     EXPECT_EQ(p->data, 1234ULL);
     EXPECT_FALSE(p->link.next);
-    EXPECT_EQ(list.head, &p->link);
+    EXPECT_EQ(a3_sll_peek(&list), &p->link);
     EXPECT_EQ(p, t);
 
     p = A3_CONTAINER_OF(a3_sll_pop(&list), SLLNode, link);
     EXPECT_EQ(p, t);
-    EXPECT_FALSE(list.head);
+    EXPECT_TRUE(a3_sll_is_empty(&list));
 
     delete p;
 }

@@ -23,10 +23,11 @@ void a3_sll_free(A3SLL* list) {
 
 void a3_sll_remove(A3SLL* list, A3SLink* item) {
     assert(list && item);
-    A3SLink** it = &list->head;
-    while (*it && (*it)->next != item)
+    A3SLink*  head = &list->head;
+    A3SLink** it   = &head;
+    while (*it && *it != item)
         it = &(*it)->next;
-    assert(*it && (*it)->next);
+    assert(*it);
     *it        = item->next;
     item->next = NULL;
     // Defer fixup of ->end to when it's actually needed.
@@ -40,14 +41,14 @@ void a3_sll_enqueue(A3SLL* list, A3SLink* item) {
     // If the end isn't present, or isn't up to date, find it.
     if (!a3_sll_is_empty(list) && (!end || end->next)) {
         if (!end)
-            end = list->head;
+            end = list->head.next;
         while (end->next)
             end = end->next;
     }
 
     if (end)
         end->next = item;
-    if (!list->head)
-        list->head = item;
+    if (!list->head.next)
+        list->head.next = item;
     list->end = item;
 }

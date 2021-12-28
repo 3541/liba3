@@ -25,14 +25,14 @@ typedef struct A3SLink {
 
 /// A list. Keeps track of both the head and tail in order to enable the list to be used as a queue.
 typedef struct A3SLL {
-    A3SLink* head; ///< The first element of the list.
+    A3SLink  head; ///< The first element of the list.
     A3SLink* end;  ///< The last element of the list.
 } A3SLL;
 
 /// Initialize a list.
 A3_ALWAYS_INLINE void a3_sll_init(A3SLL* list) {
     assert(list);
-    list->head = list->end = NULL;
+    list->head.next = list->end = NULL;
 }
 /// Destroy a list. Does nothing to the contents.
 #define a3_sll_destroy a3_sll_init
@@ -45,13 +45,13 @@ A3_EXPORT void a3_sll_free(A3SLL*);
 /// Check whether the list is empty.
 A3_ALWAYS_INLINE bool a3_sll_is_empty(A3SLL* list) {
     assert(list);
-    return !list->head;
+    return !list->head.next;
 }
 
 /// Get the first element of the list. Otherwise, returns `NULL`.
 A3_ALWAYS_INLINE A3SLink* a3_sll_peek(A3SLL* list) {
     assert(list);
-    return list->head;
+    return list->head.next;
 }
 
 /// Insert the given element after the link. An element may only be inserted after the last element
@@ -69,18 +69,18 @@ A3_EXPORT void a3_sll_remove(A3SLL*, A3SLink*);
 A3_ALWAYS_INLINE void a3_sll_push(A3SLL* list, A3SLink* item) {
     assert(list && item);
     assert(!item->next);
-    item->next = list->head;
+    item->next = list->head.next;
     if (a3_sll_is_empty(list))
         list->end = item;
-    list->head = item;
+    list->head.next = item;
 }
 
 /// Remove an item from the head of the list. See also ::a3_sll_push.
 A3_ALWAYS_INLINE A3SLink* a3_sll_pop(A3SLL* list) {
     assert(list);
-    A3SLink* ret = list->head;
+    A3SLink* ret = list->head.next;
     if (ret) {
-        list->head = ret->next;
+        list->head.next = ret->next;
         if (list->end == ret)
             list->end = NULL;
     }
@@ -95,7 +95,7 @@ A3_EXPORT void a3_sll_enqueue(A3SLL*, A3SLink*);
 
 /// Iterate over a list.
 #define A3_SLL_FOR_EACH(TY, ITEM, LIST, FIELD)                                                     \
-    for (TY* ITEM   = A3_CONTAINER_OF((LIST)->head, TY, FIELD),                                    \
+    for (TY* ITEM   = A3_CONTAINER_OF((LIST)->head.next, TY, FIELD),                               \
              *_next = ITEM->FIELD.next ? A3_CONTAINER_OF(ITEM->FIELD.next, TY, FIELD) : NULL;      \
          ITEM; ITEM = _next, _next = _next && _next->FIELD.next                                    \
                                          ? A3_CONTAINER_OF(_next->FIELD.next, TY, FIELD)           \
