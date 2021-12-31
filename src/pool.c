@@ -22,8 +22,12 @@
 
 #include <a3/util.h>
 
-#define SLOT_OBJ(POOL, SLOT) ((void*)((uintptr_t)(SLOT) - (POOL)->obj_size))
-#define OBJ_SLOT(POOL, OBJ)  ((A3PoolSlot*)((uintptr_t)(OBJ) + (POOL)->obj_size))
+static inline size_t align_down(size_t v, size_t align) { return v & ~(align - 1); }
+static inline size_t align_up(size_t v, size_t align) { return align_down(v + align - 1, align); }
+
+#define SLOT_OFFSET(POOL)    (align_up((POOL)->obj_size, alignof(A3PoolSlot)))
+#define SLOT_OBJ(POOL, SLOT) ((void*)((uintptr_t)(SLOT)-SLOT_OFFSET(POOL)))
+#define OBJ_SLOT(POOL, OBJ)  ((A3PoolSlot*)((uintptr_t)(OBJ) + SLOT_OFFSET(POOL)))
 
 struct A3PoolSlot {
     struct A3PoolSlot* next;
@@ -38,14 +42,10 @@ struct A3Pool {
     A3PoolCallback free_cb;
 };
 
-static inline size_t align_down(size_t v, size_t align) { return v & ~(align - 1); }
-
-static inline size_t align_up(size_t v, size_t align) { return align_down(v + align - 1, align); }
-
 A3Pool* a3_pool_new(size_t obj_size, size_t blocks, size_t align, bool zero_blocks,
                     A3PoolCallback init_cb, A3PoolCallback free_cb) {
-    align             = MAX(align, alignof(A3PoolSlot));
-    size_t block_size = align_up(obj_size + sizeof(A3PoolSlot), align);
+    size_t slot_offset = align_up(obj_size, alignof(A3PoolSlot));
+    size_t block_size  = align_up(slot_offset + sizeof(A3PoolSlot), align);
 
     A3Pool* ret;
     A3_UNWRAPN(ret, calloc(1, sizeof(A3Pool)));
@@ -59,12 +59,12 @@ A3Pool* a3_pool_new(size_t obj_size, size_t blocks, size_t align, bool zero_bloc
     A3_UNWRAPN(ret->data, _aligned_malloc(ret->cap, align));
 #endif
     memset(ret->data, 0, ret->cap);
-    ret->free = (A3PoolSlot*)((uintptr_t)ret->data + obj_size);
+    ret->free = OBJ_SLOT(ret, ret->data);
 
     uintptr_t base = (uintptr_t)ret->data;
     for (size_t i = 0; i < blocks - 1; i++) {
-        A3PoolSlot* slot = (A3PoolSlot*)(base + block_size * i + obj_size);
-        slot->next       = (A3PoolSlot*)(base + (i + 1) * block_size + obj_size);
+        A3PoolSlot* slot = (A3PoolSlot*)(base + block_size * i + SLOT_OFFSET(ret));
+        slot->next       = (A3PoolSlot*)(base + (i + 1) * block_size + SLOT_OFFSET(ret));
         if (init_cb)
             init_cb(SLOT_OBJ(ret, slot));
     }
