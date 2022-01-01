@@ -10,7 +10,8 @@ a3_test_src = files(
     'pool.cc',
     'rc.cc',
     'sll.cc',
-    'str.cc'
+    'str.cc',
+    'try.cc'
   ]
 )
 
