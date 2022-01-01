@@ -79,13 +79,25 @@
         }                                                                                          \
     } while (0)
 
-// Bubble up an error condition. Requires the caller to return a boolean and the
-// callee to return a falsy value on failure.
-#define A3_TRYB(T)                                                                                 \
+/// Bubble up an error condition, mapping the error to the given value.
+#define A3_TRYB_MAP(T, E)                                                                          \
     do {                                                                                           \
         if (!(T))                                                                                  \
-            return false;                                                                          \
+            return E;                                                                              \
     } while (0)
+
+/// Similar to ::A3_TRYB_MAP, but with a custom condition. For example, `A3_TRY_COND(x, < 0, false)`
+/// will return false if `x < 0`.
+#define A3_TRY_COND(T, C, E)                                                                       \
+    do {                                                                                           \
+        if ((T)C) {                                                                                \
+            return E;                                                                              \
+        }                                                                                          \
+    } while (0)
+
+/// Bubble up an error condition. Requires the caller to return a boolean and the callee to return a
+/// falsy value on failure.
+#define A3_TRYB(T) A3_TRYB_MAP(T, false)
 
 // Bubble up an error condition, printing a message on failure at the specified log level.
 #define A3_TRYB_MSG(T, L, M)                                                                       \
@@ -96,26 +108,10 @@
         }                                                                                          \
     } while (0)
 
-// Bubble up an error condition, mapping the error to the given value.
-#define A3_TRYB_MAP(T, E)                                                                          \
-    do {                                                                                           \
-        if (!(T))                                                                                  \
-            return E;                                                                              \
-    } while (0)
-
 // Map a truthy/falsy return to something else.
 #define A3_RET_MAP(F, T, E)                                                                        \
     do {                                                                                           \
         return F ? T : E;                                                                          \
-    } while (0)
-
-/// Similar to ::A3_TRYB_MAP, but with a custom condition. For example, `A3_TRY_COND(x, < 0, false)`
-/// will return false if `x < 0`.
-#define A3_TRY_COND(T, C, E)                                                                       \
-    do {                                                                                           \
-        if ((T)C) {                                                                                \
-            return E;                                                                              \
-        }                                                                                          \
     } while (0)
 
 // NOTE: The extra comma is necessary to prevent a warning when compiling as C++.
