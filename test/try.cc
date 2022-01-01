@@ -2,6 +2,11 @@
 
 #include <a3/util.h>
 
+#ifdef _MSC_VER
+// Disable warning about constant arguments to conditional expressions.
+#pragma warning(disable : 4127)
+#endif
+
 TEST(Try, TRYB) {
     EXPECT_FALSE([]() {
         A3_TRYB(false);

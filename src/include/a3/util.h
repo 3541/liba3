@@ -114,13 +114,12 @@
         return F ? T : E;                                                                          \
     } while (0)
 
-// NOTE: The extra comma is necessary to prevent a warning when compiling as C++.
-#define _A3_TRY_DISPATCH(...) A3_M_ARG4(__VA_ARGS__, A3_TRY_COND, A3_TRYB_MAP, A3_TRYB, )
 /// A nicer interface to ::A3_TRY_COND, ::A3_TRYB_MAP, and ::A3_TRYB. When invoked with a single
 /// argument, it is equivalent to ::A3_TRYB. Two arguments invokes ::A3_TRYB_MAP, and three
 /// arguments invokes ::A3_TRY_COND. Note that the argument order of ::A3_TRY_COND is not consistent
 /// with ::A3_TRYB_MAP — the condition comes before the return value.
-#define A3_TRY(...) A3_M_MSVC_VA_HACK(_A3_TRY_DISPATCH(__VA_ARGS__)(__VA_ARGS__))
+#define A3_TRY(...)                                                                                \
+    A3_M_MSVC_VA_HACK(A3_M_ARG4(__VA_ARGS__, A3_TRY_COND, A3_TRYB_MAP, A3_TRYB, )(__VA_ARGS__))
 
 #if defined(__GNUC__) || defined(__clang__)
 #define A3_FORMAT_FN(FMT_INDEX, VARG_INDEX)                                                        \

@@ -30,7 +30,7 @@ notice.
 ## Building and Usage
 Build dependencies:
 - A C compiler supporting C11 or later.
-- Meson 0.55 or later.
+- Meson 0.55 or later (note: 0.56 or later is required on Windows).
 - Ninja.
 
 Test suite dependencies:
