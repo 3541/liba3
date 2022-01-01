@@ -6,9 +6,9 @@ My personal C library. All the little things I keep rewriting for every
 nontrivial C project. This was largely born out of frustration while working on
 [Short Circuit](https://github.com/3541/short-circuit).
 
-Note: This library is absolutely neither stable nor mature, and not ready for any kind of external
+_Note: This library is absolutely neither stable nor mature, and not ready for any kind of external
 use at this time. Show-stopping bugs probably exist, and the API may change drastically without any
-notice.
+notice._
 
 ## Provides
 - Growable byte buffer.
@@ -29,9 +29,12 @@ notice.
 
 ## Building and Usage
 Build dependencies:
-- A C compiler supporting C11 or later.
-- Meson 0.55 or later (note: 0.56 or later is required on Windows).
-- Ninja.
+- A C compiler supporting C11.
+- Meson 0.55 or later.
+
+_Note: C11 support means genuine standard-compliant C11 support. For MSVC, this means VS2019 or
+newer is required. Additionally, Meson 0.55 is not aware of the `/std:c11` flag, so Meson 0.56 or
+later is required to build on Windows._
 
 Test suite dependencies:
 - A C++ compiler supporting C++14.
