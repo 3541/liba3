@@ -41,11 +41,22 @@
 #pragma warning(disable : 4706)
 #endif
 
+#if defined(__GNUC__) || defined(__clang__)
+#define A3_LIKELY(E)   (__builtin_expect(!!(E), 1))
+#define A3_UNLIKELY(E) (__builtin_expect(!!(E), 0))
+#elif defined(__cplusplus) && __cplusplus >= 202002L
+#define A3_LIKELY(E)   (E) [[likely]]
+#define A3_UNLIKELY(E) (E) [[unlikely]]
+#else
+#define A3_LIKELY(E)   (E)
+#define A3_UNLIKELY(E) (E)
+#endif
+
 // "unwrap" a return value which is falsy on error, and assign to T on success.
 // This is useful for fatal errors (e.g., allocation failures).
 #define A3_UNWRAPN(T, X)                                                                           \
     do {                                                                                           \
-        if (!(T = X)) {                                                                            \
+        if A3_UNLIKELY (!(T = X)) {                                                                \
             A3_PANIC_FMT("UNWRAP(%s)", #X);                                                        \
         }                                                                                          \
     } while (0)
@@ -59,14 +70,14 @@
 // otherwise (i.e., unwrap-sign-discard).
 #define A3_UNWRAPSD(X)                                                                             \
     do {                                                                                           \
-        if ((X) < 0) {                                                                             \
+        if A3_UNLIKELY ((X) < 0) {                                                                 \
             A3_PANIC_FMT("UNWRAP(%s)", #X);                                                        \
         }                                                                                          \
     } while (0)
 
 #define A3_UNWRAPND(X)                                                                             \
     do {                                                                                           \
-        if (!(X)) {                                                                                \
+        if A3_UNLIKELY (!(X)) {                                                                    \
             A3_PANIC_FMT("UNWRAP(%s)", #X);                                                        \
         }                                                                                          \
     } while (0)
@@ -74,7 +85,7 @@
 // Unwrap a signed return value and keep the result.
 #define A3_UNWRAPS(T, X)                                                                           \
     do {                                                                                           \
-        if ((T = X) < 0) {                                                                         \
+        if A3_UNLIKELY ((T = X) < 0) {                                                             \
             A3_PANIC_FMT("UNWRAP(%s)", #X);                                                        \
         }                                                                                          \
     } while (0)
@@ -82,7 +93,7 @@
 /// Bubble up an error condition, mapping the error to the given value.
 #define A3_TRYB_MAP(T, E)                                                                          \
     do {                                                                                           \
-        if (!(T))                                                                                  \
+        if A3_UNLIKELY (!(T))                                                                      \
             return E;                                                                              \
     } while (0)
 
@@ -90,7 +101,7 @@
 /// will return false if `x < 0`.
 #define A3_TRY_COND(T, C, E)                                                                       \
     do {                                                                                           \
-        if ((T)C) {                                                                                \
+        if A3_UNLIKELY ((T)C) {                                                                    \
             return E;                                                                              \
         }                                                                                          \
     } while (0)
@@ -102,7 +113,7 @@
 // Bubble up an error condition, printing a message on failure at the specified log level.
 #define A3_TRYB_MSG(T, L, M)                                                                       \
     do {                                                                                           \
-        if (!(T)) {                                                                                \
+        if A3_UNLIKELY (!(T)) {                                                                    \
             a3_log_msg((L), (M));                                                                  \
             return false;                                                                          \
         }                                                                                          \
