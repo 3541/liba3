@@ -26,7 +26,7 @@
 // Abort with a message.
 #define A3_PANIC_FMT(fmt, ...)                                                                     \
     do {                                                                                           \
-        A3_ERR_FMT(fmt, __VA_ARGS__);                                                              \
+        A3_ERROR_F(fmt, __VA_ARGS__);                                                              \
         assert(false);                                                                             \
         exit(EXIT_FAILURE);                                                                        \
     } while (0)

@@ -2,12 +2,16 @@
 #include <cstdio>
 #include <sstream>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#define A3_LOG_LEVEL A3_LOG_DEBUG
 #include <a3/log.h>
 #include <a3/str.h>
 
-class LogTest : public ::testing::Test {
+using namespace testing;
+
+class LogTest : public Test {
     static constexpr size_t READ_BUF_SIZE = 512;
 
 protected:
@@ -15,7 +19,7 @@ protected:
 
     void SetUp() override {
         stream = tmpfile();
-        a3_log_init(stream, LOG_DEBUG);
+        a3_log_init(stream);
     }
 
     void TearDown() override { fclose(stream); }
@@ -33,37 +37,37 @@ protected:
 TEST_F(LogTest, init) {
     ASSERT_TRUE(stream);
     fputc('c', stream);
-    ASSERT_EQ(read_written(), "c");
+    EXPECT_EQ(read_written(), "c");
 }
 
 TEST_F(LogTest, msg) {
-    a3_log_msg(LOG_DEBUG, "A test message.");
-    ASSERT_EQ(read_written(), "A test message.\n");
+    A3_DEBUG("A test message.");
+    EXPECT_THAT(read_written(), HasSubstr("A test message.\n"));
 }
 
 TEST_F(LogTest, filter) {
-    a3_log_msg(LOG_TRACE, "This shouldn't appear.");
-    ASSERT_EQ(read_written(), "");
+    A3_TRACE("This shouldn't appear.");
+    EXPECT_THAT(read_written(), IsEmpty());
 }
 
 TEST_F(LogTest, format) {
-    a3_log_fmt(LOG_DEBUG, "%d, %0.1f, %s", 123, 1.2, "string");
-    ASSERT_EQ(read_written(), "123, 1.2, string\n");
+    A3_DEBUG_F("%d, %0.1f, %s", 123, 1.2, "string");
+    EXPECT_THAT(read_written(), HasSubstr("123, 1.2, string\n"));
 }
 
 TEST_F(LogTest, format_string) {
-    a3_log_fmt(LOG_DEBUG, "Some formatting: " A3_S_F, A3_S_FORMAT(A3_CS("test string")));
-    ASSERT_EQ(read_written(), "Some formatting: test string\n");
+    A3_DEBUG_F("Some formatting: " A3_S_F, A3_S_FORMAT(A3_CS("test string")));
+    EXPECT_THAT(read_written(), HasSubstr("Some formatting: test string\n"));
 }
 
 TEST_F(LogTest, error) {
-    a3_log_error(EINVAL, "An error");
-    ASSERT_EQ(read_written(), "Error: An error (Invalid argument).\n");
+    A3_ERRNO(EINVAL, "An error");
+    EXPECT_THAT(read_written(), HasSubstr(strerror(EINVAL)));
 }
 
 TEST_F(LogTest, macros) {
     int expected_line = __LINE__ + 1;
-    A3_ERR("TEST");
+    A3_ERROR("TEST");
 
     std::stringstream expected;
     expected << __FILE__ << " (" << expected_line << "): TEST\n";

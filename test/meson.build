@@ -1,4 +1,4 @@
-gtest_main = dependency('gtest_main', fallback: ['gtest', 'gtest_main_dep'])
+gmock_main = dependency('gmock_main', fallback: ['gtest', 'gmock_main_dep'])
 
 a3_test_src = files(
   [
@@ -27,7 +27,7 @@ a3_test = executable(
   a3_test_src,
   c_args: a3_test_c_args,
   cpp_args: a3_test_cxx_args,
-  dependencies: [gtest_main, a3, a3_hash],
+  dependencies: [gmock_main, a3, a3_hash],
   build_by_default: false
 )
 
