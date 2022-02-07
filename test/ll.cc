@@ -4,15 +4,15 @@
 #include <a3/util.h>
 
 struct LLNode {
-    size_t data;
-    A3LL   link;
+    size_t data;    // NOLINT(misc-non-private-member-variables-in-classes)
+    A3LL   link {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
     explicit LLNode(size_t d) : data { d } {}
 };
 
 class LLTest : public ::testing::Test {
 protected:
-    A3LL list;
+    A3LL list {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
     void SetUp() override { a3_ll_init(&list); }
 };
@@ -39,7 +39,7 @@ TEST_F(LLTest, enqueue_dequeue) {
     EXPECT_EQ(list.next, list.prev);
     EXPECT_EQ(list.next, &list);
 
-    delete p;
+    delete p; // NOLINT(clang-analyzer-cplusplus.NewDelete)
 }
 
 TEST_F(LLTest, many_insertions) {

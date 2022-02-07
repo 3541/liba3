@@ -222,6 +222,7 @@ A3_H_END
         assert(hash);                                                                              \
         assert(table->cap > 0ULL);                                                                 \
                                                                                                    \
+        /* NOLINTNEXTLINE(clang-analyzer-core.UndefinedBinaryOperatorResult) */                    \
         for (size_t i = hash % table->cap, probe_count = 0;;                                       \
              i = (i + 1) % table->cap, probe_count++) {                                            \
             A3_HT_ENTRY(K, V)* current_entry = &table->entries[i];                                 \
@@ -323,6 +324,7 @@ A3_H_END
         } else {                                                                                   \
             uint8_t* key_bytes = (uint8_t*)&table->hash_key[0];                                    \
             for (size_t i = 0; i < A3_HT_HASH_KEY_SIZE * sizeof(table->hash_key[0]); i++)          \
+                /* NOLINTNEXTLINE(concurrency-mt-unsafe, cert-msc30-c, cert-msc50-cpp) */          \
                 key_bytes[i] = (uint8_t)rand();                                                    \
         }                                                                                          \
         table->entries = (A3_HT_ENTRY(K, V)*)calloc(table->cap, sizeof(A3_HT_ENTRY(K, V)));        \

@@ -17,7 +17,7 @@ A3_CACHE_DEFINE_METHODS_NOHT(A3CString, A3CString)
 
 class CacheTest : public ::testing::Test {
 protected:
-    A3_CACHE(A3CString, A3CString) cache {};
+    A3_CACHE(A3CString, A3CString) cache {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
     void SetUp() override {
         a3_log_init(stderr);
@@ -65,7 +65,8 @@ TEST_F(CacheTest, eviction) {
 }
 
 static size_t evicted = 0;
-static void   eviction_callback(void* ctx, A3CString* key, A3CString* value) {
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+static void eviction_callback(void* ctx, A3CString* key, A3CString* value) {
     (void)ctx;
     (void)value;
     evicted++;

@@ -27,8 +27,7 @@
 #define A3_PANIC_FMT(fmt, ...)                                                                     \
     do {                                                                                           \
         A3_ERROR_F(fmt, __VA_ARGS__);                                                              \
-        assert(false);                                                                             \
-        exit(EXIT_FAILURE);                                                                        \
+        abort();                                                                                   \
     } while (0)
 
 #define A3_PANIC(msg) A3_PANIC_FMT("%s", (msg))
@@ -56,7 +55,7 @@
 // This is useful for fatal errors (e.g., allocation failures).
 #define A3_UNWRAPN(T, X)                                                                           \
     do {                                                                                           \
-        if A3_UNLIKELY (!(T = X)) {                                                                \
+        if A3_UNLIKELY (!((T) = (X))) {                                                            \
             A3_PANIC_FMT("UNWRAP(%s)", #X);                                                        \
         }                                                                                          \
     } while (0)
@@ -85,7 +84,7 @@
 // Unwrap a signed return value and keep the result.
 #define A3_UNWRAPS(T, X)                                                                           \
     do {                                                                                           \
-        if A3_UNLIKELY ((T = X) < 0) {                                                             \
+        if A3_UNLIKELY (((T) = (X)) < 0) {                                                         \
             A3_PANIC_FMT("UNWRAP(%s)", #X);                                                        \
         }                                                                                          \
     } while (0)
@@ -122,7 +121,7 @@
 // Map a truthy/falsy return to something else.
 #define A3_RET_MAP(F, T, E)                                                                        \
     do {                                                                                           \
-        return F ? T : E;                                                                          \
+        return (F) ? (T) : (E);                                                                    \
     } while (0)
 
 /// A nicer interface to ::A3_TRY_COND, ::A3_TRYB_MAP, and ::A3_TRYB. When invoked with a single
@@ -139,4 +138,4 @@
 #define A3_FORMAT_FN(FMT_INDEX, VARG_INDEX)
 #endif
 
-#define A3_CONTAINER_OF(PTR, TY, FIELD) ((TY*)((uintptr_t)(void*)PTR - offsetof(TY, FIELD)))
+#define A3_CONTAINER_OF(PTR, TY, FIELD) ((TY*)((uintptr_t)(void*)(PTR)-offsetof(TY, FIELD)))

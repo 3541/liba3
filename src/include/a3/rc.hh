@@ -18,6 +18,7 @@
 #include <utility>
 
 #include <a3/rc.h>
+#include <a3/util.hh>
 
 namespace a3 {
 
@@ -30,12 +31,17 @@ class Rc;
 /// the type should override `operator delete`.
 template <typename T, typename C = uint32_t>
 class RefCounted {
+    A3_PINNED(RefCounted);
+
 private:
     friend class Rc<T, C>;
     A3_REFCOUNTED_T(C);
 
     static void destroy(RefCounted* o) { delete static_cast<T*>(o); }
 
+#ifdef A3_REF_PUBLIC
+public:
+#endif
     /// Increment the reference count.
     void ref() { A3_REF(this); }
 
@@ -74,11 +80,13 @@ public:
     }
 
     /// Move an Rc. Nulls out the other's pointer and does not change the reference count.
-    Rc(Rc&& other) : ptr { other.ptr } { other.ptr = nullptr; }
+    Rc(Rc&& other) noexcept : ptr { other.ptr } { other.ptr = nullptr; }
 
     /// Copy another Rc into this one. Decrements the reference count of the existing target, if
     /// any, and increments the reference count of the new target.
     Rc& operator=(const Rc& other) {
+        if (&other == this)
+            return *this;
         if (ptr)
             ptr->unref();
         ptr = other.ptr;
@@ -89,7 +97,7 @@ public:
 
     /// Move another Rc into this one. Nulls out the other pointer, and decrements the reference
     /// count of the existing target, if any.
-    Rc& operator=(Rc&& other) {
+    Rc& operator=(Rc&& other) noexcept {
         if (ptr)
             ptr->unref();
         ptr       = other.ptr;
@@ -128,6 +136,9 @@ public:
         assert(ptr);
         return static_cast<T*>(ptr);
     }
+
+    /// Check whether the pointer is initialized.
+    operator bool() const { return ptr; }
 };
 
 } // namespace a3

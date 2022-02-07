@@ -2,13 +2,9 @@
 
 #include <gtest/gtest.h>
 
-#define class struct // Make visible private members.
-#define protected public
-#define private public
+#define A3_REF_PUBLIC
 #include <a3/rc.hh>
-#undef class
-#undef protected
-#undef private
+#include <a3/util.hh>
 
 using std::move;
 
@@ -16,6 +12,9 @@ using a3::Rc;
 using a3::RefCounted;
 
 class TestObject : public RefCounted<TestObject> {
+    A3_PINNED(TestObject);
+
+private:
     size_t  value { 0 };
     size_t& construct_count;
     size_t& destruct_count;
@@ -59,7 +58,8 @@ TEST(Rc, c_interface) {
 }
 
 TEST(Rc, basic) {
-    size_t c_count = 0, d_count = 0;
+    size_t c_count = 0;
+    size_t d_count = 0;
 
     auto* o = new TestObject { 42, c_count, d_count };
     EXPECT_EQ(o->get_value(), 42ULL);
@@ -79,7 +79,8 @@ TEST(Rc, basic) {
 }
 
 TEST(Rc, wrapper_adopt) {
-    size_t c_count = 0, d_count = 0;
+    size_t c_count = 0;
+    size_t d_count = 0;
 
     {
         auto* o = new TestObject { 42, c_count, d_count };
@@ -98,7 +99,8 @@ TEST(Rc, wrapper_adopt) {
 }
 
 TEST(Rc, wrapper_construct) {
-    size_t c_count = 0, d_count = 0;
+    size_t c_count = 0;
+    size_t d_count = 0;
 
     {
         auto r = Rc<TestObject>::create(42U, c_count, d_count);
@@ -112,7 +114,8 @@ TEST(Rc, wrapper_construct) {
 }
 
 TEST(Rc, wrapper_clone_and_move) {
-    size_t c_count = 0, d_count = 0;
+    size_t c_count = 0;
+    size_t d_count = 0;
 
     {
         auto r = Rc<TestObject>::create(42U, c_count, d_count);
@@ -133,7 +136,7 @@ TEST(Rc, wrapper_clone_and_move) {
             EXPECT_EQ(r->ref_count(), 3U);
 
             auto r3 = std::move(r2);
-            EXPECT_FALSE(r2.ptr);
+            EXPECT_FALSE(r2); // NOLINT(bugprone-use-after-move, clang-analyzer-cplusplus.Move)
             EXPECT_EQ(r3->get_value(), 42U);
             EXPECT_EQ(r->ref_count(), r3->ref_count());
             EXPECT_EQ(r->ref_count(), 3U);

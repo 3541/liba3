@@ -55,7 +55,7 @@ A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return a3_string_new((uint8_t
 
 A3_H_END
 
-#define A3_CS(S)     (A3CString { reinterpret_cast<uint8_t const*>(&S[0]), sizeof(S) - 1 })
+#define A3_CS(S)     (A3CString { reinterpret_cast<uint8_t const*>(&(S)[0]), sizeof(S) - 1 })
 #define A3_CS_OBJ(S) (A3CString { reinterpret_cast<uint8_t const*>(&(S)), sizeof(S) })
 #define A3_S_NULL    (A3String { nullptr, 0 })
 #define A3_CS_NULL   (A3CString { nullptr, 0 })

@@ -4,15 +4,15 @@
 #include <a3/util.h>
 
 struct SLLNode {
-    size_t  data;
-    A3SLink link { NULL };
+    size_t  data;             // NOLINT(misc-non-private-member-variables-in-classes)
+    A3SLink link { nullptr }; // NOLINT(misc-non-private-member-variables-in-classes)
 
     explicit SLLNode(size_t d) : data { d } {}
 };
 
 class SLLTest : public ::testing::Test {
 protected:
-    A3SLL list;
+    A3SLL list {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
     void SetUp() override { a3_sll_init(&list); }
 };

@@ -4,6 +4,7 @@
 
 #include <a3/ht.h>
 #include <a3/str.h>
+#include <a3/util.hh>
 
 using std::vector;
 
@@ -13,14 +14,13 @@ A3_HT_DECLARE_METHODS(A3CString, A3CString)
 A3_HT_DEFINE_METHODS(A3CString, A3CString, a3_string_cptr, a3_string_len, a3_string_cmp)
 
 class HTTest : public ::testing::Test {
+    A3_PINNED(HTTest);
+
 protected:
-    A3_HT(A3CString, A3CString) table {};
+    A3_HT(A3CString, A3CString) table {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
-    void SetUp() override {
-        A3_HT_INIT(A3CString, A3CString)(&table, A3_HT_NO_HASH_KEY, A3_HT_ALLOW_GROWTH);
-    }
-
-    void TearDown() override { A3_HT_DESTROY(A3CString, A3CString)(&table); }
+    HTTest() { A3_HT_INIT(A3CString, A3CString)(&table, A3_HT_NO_HASH_KEY, A3_HT_ALLOW_GROWTH); }
+    ~HTTest() { A3_HT_DESTROY(A3CString, A3CString)(&table); }
 };
 
 TEST_F(HTTest, init) {
@@ -66,7 +66,8 @@ TEST_F(HTTest, grow) {
     EXPECT_GE(table.cap, A3_HT_INITIAL_CAP * 4);
     all_present();
 
-    while (keys.size()) {
+    while (!keys.empty()) {
+        // NOLINTNEXTLINE(concurrency-mt-unsafe, cert-msc30-c, cert-msc50-cpp)
         auto key = keys.begin() + rand() % static_cast<int>(keys.size());
         A3_HT_DELETE(A3CString, A3CString)(&table, *key);
         A3String tmp = A3_CS_MUT(*key);
@@ -146,5 +147,5 @@ TEST_F(HTTest, duplicate_combine) {
     A3CString* combined_value = A3_HT_FIND(A3CString, A3CString)(&table, A3_CS("key"));
     EXPECT_EQ(a3_string_cmp(*combined_value, A3_CS("val1, val2")), 0);
 
-    a3_string_free((A3String*)combined_value);
+    a3_string_free(reinterpret_cast<A3String*>(combined_value));
 }

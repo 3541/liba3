@@ -13,3 +13,6 @@
 #define A3_M_MSVC_VA_HACK(E) E
 /// Expands to its fourth argument.
 #define A3_M_ARG4(A1, A2, A3, A4, ...) A4
+#define A3_M_PASTE_INNER(A, B)         A##B
+/// Paste together two tokens. Useful for line-dependent variable names.
+#define A3_M_PASTE(A, B) A3_M_PASTE_INNER(A, B)

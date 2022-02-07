@@ -9,7 +9,7 @@
 
 class BufferTest : public ::testing::Test {
 protected:
-    A3Buffer buf { A3_S_NULL, 0, 0, 0 };
+    A3Buffer buf { A3_S_NULL, 0, 0, 0 }; // NOLINT(misc-non-private-member-variables-in-classes)
 
     void SetUp() override { a3_buf_init(&buf, BUF_INITIAL_CAP, BUF_MAX_CAP); }
 

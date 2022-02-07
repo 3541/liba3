@@ -15,7 +15,7 @@ class LogTest : public Test {
     static constexpr size_t READ_BUF_SIZE = 512;
 
 protected:
-    FILE* stream { nullptr };
+    FILE* stream { nullptr }; // NOLINT(misc-non-private-member-variables-in-classes)
 
     void SetUp() override {
         stream = tmpfile();
@@ -62,7 +62,8 @@ TEST_F(LogTest, format_string) {
 
 TEST_F(LogTest, error) {
     A3_ERRNO(EINVAL, "An error");
-    EXPECT_THAT(read_written(), HasSubstr(strerror(EINVAL)));
+
+    EXPECT_THAT(read_written(), HasSubstr(strerror(EINVAL))); // NOLINT(concurrency-mt-unsafe)
 }
 
 TEST_F(LogTest, macros) {

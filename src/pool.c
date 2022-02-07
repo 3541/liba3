@@ -42,6 +42,7 @@ struct A3Pool {
     A3PoolCallback free_cb;
 };
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 A3Pool* a3_pool_new(size_t obj_size, size_t blocks, size_t align, bool zero_blocks,
                     A3PoolCallback init_cb, A3PoolCallback free_cb) {
     size_t slot_offset = align_up(obj_size, alignof(A3PoolSlot));

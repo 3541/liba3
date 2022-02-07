@@ -18,7 +18,7 @@ class PoolTest : public ::testing::Test {
     static constexpr size_t POOL_SIZE = 1024;
 
 protected:
-    A3Pool* pool { nullptr };
+    A3Pool* pool { nullptr }; // NOLINT(misc-non-private-member-variables-in-classes)
 
     void SetUp() override {
         pool = A3_POOL_OF(TestObject, POOL_SIZE, A3_POOL_ZERO_BLOCKS, nullptr, nullptr);
@@ -44,7 +44,7 @@ TEST_F(PoolTest, init) {
 }
 
 TEST_F(PoolTest, alloc) {
-    auto block = alloc();
+    auto* block = alloc();
     ASSERT_TRUE(block);
 
     void* block_ptr = static_cast<void*>(block);
@@ -65,13 +65,13 @@ TEST_F(PoolTest, alloc) {
 }
 
 TEST_F(PoolTest, free) {
-    auto block = alloc();
+    auto* block = alloc();
     ASSERT_TRUE(block);
 
     free(block);
 
     // Now, the block should have a next pointer to another block somewhere.
-    auto next = *reinterpret_cast<void**>(block + 1);
+    auto* next = *reinterpret_cast<void**>(block + 1);
     EXPECT_LE(pool_start(), next);
     EXPECT_LT(next, pool_end());
 }
@@ -80,7 +80,7 @@ TEST_F(PoolTest, alloc_all) {
     vector<TestObject*> allocations;
 
     // Alloc the entire pool.
-    while (auto a = alloc()) {
+    while (auto* a = alloc()) {
         // There should be no duplicate pointers.
         EXPECT_EQ(std::find(allocations.begin(), allocations.end(), a), allocations.end());
         allocations.push_back(a);
@@ -90,13 +90,13 @@ TEST_F(PoolTest, alloc_all) {
     EXPECT_FALSE(alloc());
 
     size_t count = allocations.size();
-    for (auto a : allocations) {
+    for (auto* a : allocations) {
         free(a);
     }
     allocations.clear();
 
     // Now, it should be possible to reallocate that many objects.
-    while (auto a = alloc()) {
+    while (auto* a = alloc()) {
         allocations.push_back(a);
     }
     EXPECT_EQ(allocations.size(), count);
