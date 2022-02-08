@@ -5,9 +5,13 @@
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
+ *
+ * To set a non-default log level, define A3_LOG_LEVEL before including this file. To avoid
+ * confusion, this file should not be included multiple times, or in any header.
  */
 
-#pragma once
+#ifndef A3_LOG_H
+#define A3_LOG_H
 
 #include <stdio.h>
 
@@ -96,3 +100,9 @@ A3_EXPORT void a3_log(char const*, ...);
 #endif
 
 A3_H_END
+
+#else
+#ifndef A3_LOG_IGNORE_MULTIPLE_INCLUSION
+#warn "a3/log.h included multiple times. Log level settings may be confused."
+#endif
+#endif

@@ -46,8 +46,6 @@ A3_H_END
 
 #include <cassert>
 
-#include <a3/log.h>
-
 // The following are macros which can be used to override `new` and `delete` on a C++ class so that
 // is allocated from a pool.
 // - Invoke one of the macros A3_POOL_ALLOCATED* at the start of the class.
@@ -62,10 +60,8 @@ A3_H_END
         assert(size == sizeof(T));                                                                 \
         (void)size;                                                                                \
         void* ret = a3_pool_alloc_block(_POOL);                                                    \
-        if (!ret) {                                                                                \
-            a3_log_msg(LOG_ERROR, #T " pool exhausted.");                                          \
+        if (!ret)                                                                                  \
             return nullptr;                                                                        \
-        }                                                                                          \
         return ret;                                                                                \
     }
 
