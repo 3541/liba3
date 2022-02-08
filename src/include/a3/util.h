@@ -19,12 +19,13 @@
 
 #include <a3/cpp.h>
 #include <a3/macro.h>
+#include <a3/types.h>
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 A3_H_BEGIN
-extern void a3_log(char const*, ...);
+A3_EXPORT void a3_log(char const*, ...);
 A3_H_END
 
 // Abort with a message.
