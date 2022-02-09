@@ -9,6 +9,7 @@ a3_test_src = files(
     'log.cc',
     'pool.cc',
     'rc.cc',
+    'result.cc',
     'sll.cc',
     'str.cc',
     'try.cc'
@@ -16,16 +17,13 @@ a3_test_src = files(
 )
 
 a3_test_args = ['-DGTEST_HAS_EXCEPTIONS=0']
-a3_test_c_args = a3_test_args
 a3_test_cxx_args = a3_test_args
 
-a3_test_c_args += c.get_supported_arguments(['-Wno-keyword-macro'])
-a3_test_cxx_args += cxx.get_supported_arguments(['-Wno-keyword-macro'])
+a3_test_cxx_args += cxx.get_supported_arguments(['-Wno-keyword-macro', '-Wno-pedantic'])
 
 a3_test = executable(
   'a3_test',
   a3_test_src,
-  c_args: a3_test_c_args,
   cpp_args: a3_test_cxx_args,
   dependencies: [gmock_main, a3, a3_hash],
   build_by_default: false
