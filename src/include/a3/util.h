@@ -48,9 +48,14 @@ A3_H_END
 #if defined(__GNUC__) || defined(__clang__)
 #define A3_LIKELY(E)   (__builtin_expect(!!(E), 1))
 #define A3_UNLIKELY(E) (__builtin_expect(!!(E), 0))
-#elif defined(__has_cpp_attribute) && __has_cpp_attribute(likely) && __has_cpp_attribute(unlikely)
+#elif defined(__has_cpp_attribute)
+#if __has_cpp_attribute(likely) && __has_cpp_attribute(unlikely)
 #define A3_LIKELY(E)   (E) [[likely]]
 #define A3_UNLIKELY(E) (E) [[unlikely]]
+#else
+#define A3_LIKELY(E)   (E)
+#define A3_UNLIKELY(E) (E)
+#endif
 #else
 #define A3_LIKELY(E)   (E)
 #define A3_UNLIKELY(E) (E)
