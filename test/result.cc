@@ -103,6 +103,7 @@ TEST(Result, returnErr) {
     EXPECT_THAT(victim.unwrap_err(), Eq("Bad"));
 }
 
+#ifdef A3_RTRY
 TEST(Result, try) {
     auto fallible = [](bool fail) -> Result<int, std::string> {
         if (fail)
@@ -123,5 +124,6 @@ TEST(Result, try) {
     EXPECT_THAT(result1.is_err(), IsTrue());
     EXPECT_THAT(result1.unwrap_err(), StrEq("o no"));
 }
+#endif
 
 #endif
