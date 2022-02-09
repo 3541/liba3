@@ -25,7 +25,7 @@
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 A3_H_BEGIN
-A3_EXPORT void a3_log(char const*, ...);
+A3_EXPORT void a3_log(char const*, ...); // NOLINT(readability-redundant-declaration)
 A3_H_END
 
 // Abort with a message.

@@ -33,7 +33,7 @@ typedef int A3LogLevel;
 #endif
 
 A3_EXPORT void a3_log_init(FILE*);
-A3_EXPORT void a3_log(char const*, ...);
+A3_EXPORT void a3_log(char const*, ...); // NOLINT(readability-redundant-declaration)
 
 #define A3_LOG_F(FMT, ...) a3_log("%s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__)
 #define A3_LOG(MSG)        A3_LOG_F("%s", MSG)
