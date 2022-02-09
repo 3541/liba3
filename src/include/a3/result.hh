@@ -198,7 +198,7 @@ public:
         auto _tmp = (R);                                                                           \
         if (_tmp.is_err())                                                                         \
             return Err { std::move(_tmp).unwrap_err() };                                           \
-        else if (!_tmp.is_ok())                                                                    \
+        if (!_tmp.is_ok())                                                                         \
             A3_PANIC("A3_RTRY on moved-from Result.");                                             \
         std::move(_tmp).unwrap();                                                                  \
     })

@@ -78,8 +78,8 @@ TEST(Result, moveConstructible) {
     EXPECT_THAT(victim.is_ok(), IsTrue());
 
     Result victim1 { std::move(victim) };
-    EXPECT_THAT(victim.is_ok(), IsFalse());
-    EXPECT_THAT(victim.is_err(), IsFalse());
+    EXPECT_THAT(victim.is_ok(), IsFalse());  // NOLINT(bugprone-use-after-move)
+    EXPECT_THAT(victim.is_err(), IsFalse()); // NOLINT(bugprone-use-after-move)
     EXPECT_THAT(victim1.is_ok(), IsTrue());
     EXPECT_THAT(victim1.unwrap(), StrEq("Hello"));
 
@@ -87,8 +87,8 @@ TEST(Result, moveConstructible) {
     EXPECT_THAT(victim2.is_err(), IsTrue());
 
     Result victim3 { std::move(victim2) };
-    EXPECT_THAT(victim2.is_ok(), IsFalse());
-    EXPECT_THAT(victim2.is_err(), IsFalse());
+    EXPECT_THAT(victim2.is_ok(), IsFalse());  // NOLINT(bugprone-use-after-move)
+    EXPECT_THAT(victim2.is_err(), IsFalse()); // NOLINT(bugprone-use-after-move)
     EXPECT_THAT(victim3.is_err(), IsTrue());
     EXPECT_THAT(victim3.unwrap_err(), StrEq("o no"));
 }
