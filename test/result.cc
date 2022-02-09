@@ -1,10 +1,8 @@
 #ifdef __cpp_concepts
-#include <a3/result.hh>
-
-#endif
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <a3/result.hh>
 
 using namespace a3;
 using namespace testing;
@@ -125,3 +123,5 @@ TEST(Result, try) {
     EXPECT_THAT(result1.is_err(), IsTrue());
     EXPECT_THAT(result1.unwrap_err(), StrEq("o no"));
 }
+
+#endif
