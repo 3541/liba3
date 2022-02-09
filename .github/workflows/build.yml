@@ -47,14 +47,14 @@ jobs:
       env:
         CC: ${{ matrix.c_compiler }}
         CXX: ${{ matrix.cxx_compiler }}
-      run: meson setup --buildtype debug --werror -Db_sanitize=address,undefined build
+      run: meson setup --buildtype debug --werror -Db_sanitize=address,undefined -Dcpp_std=c++20 build
 
     - name: Configure (Windows)
       if: runner.os == 'Windows'
       env:
         CC: ${{ matrix.c_compiler }}
         CXX: ${{ matrix.cxx_compiler }}
-      run: meson setup --buildtype debug --werror -Db_sanitize=address build
+      run: meson setup --buildtype debug --werror -Db_sanitize=address -Dcpp_std=c++20 build
 
 
     - name: Build
