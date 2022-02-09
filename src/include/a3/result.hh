@@ -24,6 +24,19 @@
 
 namespace a3 {
 
+namespace detail {
+
+#ifndef __APPLE__
+template <typename T, typename... Args>
+concept constructible_from = std::constructible_from<T, Args...>;
+#else
+// Apple Clang purports to support concepts, but does not implement std::constructible_from.
+template <typename T, typename... Args>
+concept constructible_from = std::destructible<T> && std::is_constructible_v<T, Args...>;
+#endif
+
+} // namespace detail
+
 template <typename E>
 class Err {
 private:
@@ -32,11 +45,11 @@ private:
 public:
     template <typename F>
     // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
-    requires(std::constructible_from<E, F>) explicit Err(F&& err) :
+    requires(detail::constructible_from<E, F>) explicit Err(F&& err) :
         m_err { std::forward<F>(err) } {}
 
     template <typename F>
-    requires(std::constructible_from<E, F>) explicit Err(Err<F>&& err) :
+    requires(detail::constructible_from<E, F>) explicit Err(Err<F>&& err) :
         m_err { std::forward<Err<F>>(err).err() } {}
 
     E err() const& { return m_err; }
@@ -60,13 +73,13 @@ private:
 
 public:
     template <typename U>
-    requires(std::constructible_from<T, U> && !std::same_as<Err<E>, U> &&
+    requires(detail::constructible_from<T, U> && !std::same_as<Err<E>, U> &&
              // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
              !std::same_as<Result<T, E>, U>) Result(U&& value) :
         m_ok { std::forward<U>(value) }, m_state { State::Ok } {}
 
     template <typename F>
-    requires(std::constructible_from<E, F>) Result(Err<F>&& err) :
+    requires(detail::constructible_from<E, F>) Result(Err<F>&& err) :
         m_err { std::forward<Err<F>>(err) }, m_state { State::Err } {}
 
     // TODO: Add variants of copy and move constructors and assignment operators for trivial types.
