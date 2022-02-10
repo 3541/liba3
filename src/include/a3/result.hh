@@ -29,10 +29,20 @@ namespace detail {
 #ifndef __APPLE__
 template <typename T, typename... Args>
 concept constructible_from = std::constructible_from<T, Args...>;
+
+template <typename Fn, typename... Args>
+concept invocable = std::invocable<Fn, Args...>;
 #else
-// Apple Clang purports to support concepts, but does not implement std::constructible_from.
+// Apple Clang purports to support concepts, but does not implement many of the standard library
+// concepts.
+
 template <typename T, typename... Args>
 concept constructible_from = std::destructible<T> && std::is_constructible_v<T, Args...>;
+
+template <typename Fn, typename... Args>
+concept invocable = requires(Fn&& f, Args&&... args) {
+    std::invoke(std::forward<Fn>(f), std::forward<Args>(args)...);
+};
 #endif
 
 template <typename I>
@@ -312,7 +322,7 @@ public:
         return m_err.err();
     }
 
-    template <std::invocable<T> Fn>
+    template <detail::invocable<T> Fn>
         Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && requires(!detail::IS_REF<T>) {
         switch (m_state) {
         case State::Ok:
@@ -326,7 +336,7 @@ public:
         A3_UNREACHABLE();
     }
 
-    template <std::invocable<T> Fn>
+    template <detail::invocable<T> Fn>
         Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && requires(detail::IS_REF<T>) {
         switch (m_state) {
         case State::Ok:
