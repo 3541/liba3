@@ -135,4 +135,15 @@ TEST(Result, try) {
 }
 #endif
 
+TEST(Result, map) {
+    auto fallible = [](bool fail) -> Result<int, std::string> {
+        if (fail)
+            return Err { "o no" };
+        return 42;
+    };
+
+    EXPECT_THAT(fallible(false).map([](auto v) { return v * 2; }).unwrap(), Eq(84));
+    EXPECT_THAT(fallible(true).map([](auto v) { return v * 2; }).unwrap_err(), StrEq("o no"));
+}
+
 #endif

@@ -293,6 +293,20 @@ public:
 
     Result<T&, E&>             as_ref() & { return *this; }
     Result<T const&, E const&> as_ref() const& { return *this; }
+
+    template <std::invocable<T> Fn>
+    Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && {
+        switch (m_state) {
+        case State::Ok:
+            return f(std::move(m_ok));
+        case State::Err:
+            return std::move(m_err);
+        case State::MovedFrom:
+            A3_PANIC("Result::map on moved-from Result.");
+        }
+
+        A3_UNREACHABLE();
+    }
 };
 
 #if defined(__GNUC__) || defined(__clang__)
