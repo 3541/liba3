@@ -90,6 +90,8 @@ requires(!Deref<D>) struct DerefTargetImpl<D> {
 template <typename D>
 using DerefTarget = typename DerefTargetImpl<D>::T;
 
+enum class State : uint8_t { Ok, Err, MovedFrom };
+
 } // namespace detail
 
 template <typename E>
@@ -139,8 +141,7 @@ template <typename T, typename E>
 class [[nodiscard]] Result {
 private:
     using Inner = detail::InnerType<T>;
-
-    enum class State : uint8_t { Ok, Err, MovedFrom };
+    using State = detail::State;
 
     template <typename U, typename F>
     friend class Result;
