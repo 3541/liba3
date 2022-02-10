@@ -13,7 +13,7 @@
 #pragma once
 
 #ifndef __cpp_concepts
-#warn "Result requires C++20 concepts"
+#warning "Result requires C++20 concepts"
 #else
 
 #include <concepts>
@@ -33,8 +33,8 @@ concept constructible_from = std::constructible_from<T, Args...>;
 template <typename Fn, typename... Args>
 concept invocable = std::invocable<Fn, Args...>;
 #else
-// Apple Clang purports to support concepts, but does not implement many of the standard library
-// concepts.
+// Apple Clang purports to support concepts, but does not implement these ones from the standard
+// library.
 
 template <typename T, typename... Args>
 concept constructible_from = std::destructible<T> && std::is_constructible_v<T, Args...>;

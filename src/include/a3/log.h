@@ -103,6 +103,6 @@ A3_H_END
 
 #else
 #ifndef A3_LOG_IGNORE_MULTIPLE_INCLUSION
-#warn "a3/log.h included multiple times. Log level settings may be confused."
+#warning "a3/log.h included multiple times. Log level settings may be confused."
 #endif
 #endif
