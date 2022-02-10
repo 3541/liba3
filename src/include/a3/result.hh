@@ -147,8 +147,8 @@ private:
     friend class Result;
 
     union {
-        detail::InnerType<T> m_ok;
-        Err<E>               m_err;
+        Inner  m_ok;
+        Err<E> m_err;
     };
     State m_state;
 
@@ -173,7 +173,7 @@ public:
             new (&m_ok) Inner { other.m_ok };
             break;
         case State::Err:
-            new (&m_err) Err { other.m_err };
+            new (&m_err) Err<E> { other.m_err };
             break;
         case State::MovedFrom:
             break;
@@ -202,6 +202,7 @@ public:
                  detail::constructible_from<E, F> &&
              !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F>&& other) :
         m_state { other.m_state } {
+        other.m_state = State::MovedFrom;
         switch (m_state) {
         case State::Ok:
             new (&m_ok) Inner { other.m_ok };
