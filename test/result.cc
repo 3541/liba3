@@ -146,4 +146,13 @@ TEST(Result, map) {
     EXPECT_THAT(fallible(true).map([](auto v) { return v * 2; }).unwrap_err(), StrEq("o no"));
 }
 
+TEST(Result, as_deref) {
+    Result<std::unique_ptr<int>, size_t> victim { std::make_unique<int>(1234) };
+    auto                                 victim_deref = victim.as_deref();
+
+    EXPECT_THAT(victim_deref.is_ok(), IsTrue());
+    EXPECT_THAT(victim.is_ok(), IsTrue());
+    EXPECT_THAT(victim_deref.unwrap(), Eq(*victim.as_ref().unwrap()));
+}
+
 #endif

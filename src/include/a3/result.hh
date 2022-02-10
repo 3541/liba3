@@ -59,6 +59,27 @@ using InnerType = typename InnerTypeImpl<I>::T;
 template <typename I>
 static constexpr bool IS_REF = InnerTypeImpl<I>::IS_REF;
 
+template <typename T>
+concept Deref = requires(T t) {
+    *t;
+};
+
+template <typename D>
+struct DerefTargetImpl;
+
+template <Deref D>
+struct DerefTargetImpl<D> {
+    using T = decltype(*std::declval<D>());
+};
+
+template <typename D>
+requires(!Deref<D>) struct DerefTargetImpl<D> {
+    using T = std::nullptr_t;
+};
+
+template <typename D>
+using DerefTarget = typename DerefTargetImpl<D>::T;
+
 } // namespace detail
 
 template <typename E>
@@ -133,7 +154,7 @@ public:
 
     template <typename U, typename F>
     requires(detail::constructible_from<Inner, typename Result<U, F>::Inner const&>&&
-                 std::constructible_from<E, F const&> &&
+                 detail::constructible_from<E, F const&> &&
              !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F> const& other) :
         m_state { other.m_state } {
         switch (m_state) {
@@ -150,7 +171,7 @@ public:
 
     template <typename U, typename F>
     requires(detail::constructible_from<Inner, typename Result<U, F>::Inner&>&&
-                 std::constructible_from<E, F&> &&
+                 detail::constructible_from<E, F&> &&
              !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F>& other) :
         m_state { other.m_state } {
         switch (m_state) {
@@ -167,7 +188,7 @@ public:
 
     template <typename U, typename F>
     requires(detail::constructible_from<Inner, typename Result<U, F>::Inner>&&
-                 std::constructible_from<E, F> &&
+                 detail::constructible_from<E, F> &&
              !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F>&& other) :
         m_state { other.m_state } {
         switch (m_state) {
@@ -291,14 +312,11 @@ public:
         return m_err.err();
     }
 
-    Result<T&, E&>             as_ref() & { return *this; }
-    Result<T const&, E const&> as_ref() const& { return *this; }
-
     template <std::invocable<T> Fn>
-    Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && {
+        Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && requires(!detail::IS_REF<T>) {
         switch (m_state) {
         case State::Ok:
-            return f(std::move(m_ok));
+            return std::forward<Fn>(f)(std::move(m_ok));
         case State::Err:
             return std::move(m_err);
         case State::MovedFrom:
@@ -306,6 +324,31 @@ public:
         }
 
         A3_UNREACHABLE();
+    }
+
+    template <std::invocable<T> Fn>
+        Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && requires(detail::IS_REF<T>) {
+        switch (m_state) {
+        case State::Ok:
+            return std::forward<Fn>(f)(m_ok.get());
+        case State::Err:
+            return std::move(m_err);
+        case State::MovedFrom:
+            A3_PANIC("Result::map on moved-from Result.");
+        }
+
+        A3_UNREACHABLE();
+    }
+
+    Result<T&, E&>             as_ref() & { return *this; }
+    Result<T const&, E const&> as_ref() const& { return *this; }
+
+    Result<detail::DerefTarget<T>&, E&> as_deref() & requires detail::Deref<T&> {
+        return as_ref().map([](auto& v) -> auto& { return *v; });
+    }
+    Result<detail::DerefTarget<T> const&, E const&>
+    as_deref() const& requires detail::Deref<T const&> {
+        return as_ref().map([](auto const& v) -> auto const& { return *v; });
     }
 };
 
