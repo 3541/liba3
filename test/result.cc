@@ -163,4 +163,12 @@ TEST(Result, unwrap_or) {
     EXPECT_THAT(victim.unwrap_or(32), Eq(32));
 }
 
+TEST(Result, unwrap_or_else) {
+    Result<std::string, int> victim { "Hello" };
+    EXPECT_THAT(std::move(victim).unwrap_or_else([] { return "o no"; }), StrEq("Hello"));
+
+    Result<std::string, int> victim1 { Err { 42 } };
+    EXPECT_THAT(std::move(victim1).unwrap_or_else([] { return "o no"; }), StrEq("o no"));
+}
+
 #endif
