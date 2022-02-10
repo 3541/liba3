@@ -183,4 +183,19 @@ TEST(Result, map_err) {
                 StrEq("o no!"));
 }
 
+TEST(Result, optional_conversion) {
+    Result<std::string, std::string> victim { Err { "o no" } };
+    auto                             opt = victim.as_ref().err();
+
+    EXPECT_THAT(opt.has_value(), IsTrue());
+    EXPECT_THAT(opt.value().get(), StrEq("o no"));
+    EXPECT_THAT(victim.as_ref().ok().has_value(), IsFalse());
+
+    victim = "Great success";
+    opt    = victim.as_ref().ok();
+    EXPECT_THAT(opt.has_value(), IsTrue());
+    EXPECT_THAT(opt.value().get(), StrEq("Great success"));
+    EXPECT_THAT(victim.as_ref().err().has_value(), IsFalse());
+}
+
 #endif

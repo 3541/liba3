@@ -18,6 +18,7 @@
 
 #include <concepts>
 #include <cstdint>
+#include <optional>
 #include <utility>
 
 #include <a3/util.h>
@@ -94,6 +95,9 @@ enum class State : uint8_t { Ok, Err, MovedFrom };
 
 } // namespace detail
 
+template <typename T, typename E>
+class Result;
+
 template <typename E>
 class Err {
 private:
@@ -103,6 +107,9 @@ private:
 
     template <typename F>
     friend class Err;
+
+    template <typename T, typename F>
+    friend class Result;
 
 public:
     template <typename F>
@@ -418,6 +425,18 @@ public:
     Result<detail::DerefTarget<T> const&, E const&>
     as_deref() const& requires detail::Deref<T const&> {
         return as_ref().map([](auto const& v) -> auto const& { return *v; });
+    }
+
+    std::optional<typename Err<E>::Inner> err() && {
+        if (!is_err())
+            return {};
+        return std::move(m_err).err();
+    }
+
+    std::optional<Inner> ok() && {
+        if (!is_ok())
+            return {};
+        return std::move(m_ok);
     }
 };
 
