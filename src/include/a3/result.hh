@@ -381,6 +381,34 @@ public:
         A3_UNREACHABLE();
     }
 
+    template <detail::invocable<E> Fn>
+        Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) && requires(!detail::IS_REF<E>) {
+        switch (m_state) {
+        case State::Ok:
+            return std::move(m_ok);
+        case State::Err:
+            return Err { std::forward<Fn>(f)(std::move(m_err).err()) };
+        case State::MovedFrom:
+            A3_PANIC("Result::map_err on moved-from Result.");
+        }
+
+        A3_UNREACHABLE();
+    }
+
+    template <detail::invocable<E> Fn>
+        Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) && requires(detail::IS_REF<E>) {
+        switch (m_state) {
+        case State::Ok:
+            return std::move(m_ok);
+        case State::Err:
+            return Err { std::forward<Fn>(f)(m_err.err()) };
+        case State::MovedFrom:
+            A3_PANIC("Result::map_err on moved-from Result.");
+        }
+
+        A3_UNREACHABLE();
+    }
+
     Result<T&, E&>             as_ref() & { return *this; }
     Result<T const&, E const&> as_ref() const& { return *this; }
 

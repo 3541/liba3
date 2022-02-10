@@ -171,4 +171,16 @@ TEST(Result, unwrap_or_else) {
     EXPECT_THAT(std::move(victim1).unwrap_or_else([] { return "o no"; }), StrEq("o no"));
 }
 
+TEST(Result, map_err) {
+    auto fallible = [](bool fail) -> Result<int, std::string> {
+        if (fail)
+            return Err { "o no" };
+        return 42;
+    };
+
+    EXPECT_THAT(fallible(false).map_err([](auto e) { return e + "!"; }).unwrap(), Eq(42));
+    EXPECT_THAT(fallible(true).map_err([](auto e) { return e + "!"; }).unwrap_err(),
+                StrEq("o no!"));
+}
+
 #endif
