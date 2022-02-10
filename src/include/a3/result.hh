@@ -35,22 +35,66 @@ template <typename T, typename... Args>
 concept constructible_from = std::destructible<T> && std::is_constructible_v<T, Args...>;
 #endif
 
+template <typename I>
+struct InnerTypeImpl {
+    using T                      = I;
+    static constexpr bool IS_REF = false;
+};
+
+template <typename I>
+struct InnerTypeImpl<I&> {
+    using T                      = std::reference_wrapper<I>;
+    static constexpr bool IS_REF = true;
+};
+
+template <typename I>
+struct InnerTypeImpl<I const&> {
+    using T                      = std::reference_wrapper<I const>;
+    static constexpr bool IS_REF = true;
+};
+
+template <typename I>
+using InnerType = typename InnerTypeImpl<I>::T;
+
+template <typename I>
+static constexpr bool IS_REF = InnerTypeImpl<I>::IS_REF;
+
 } // namespace detail
 
 template <typename E>
 class Err {
 private:
-    E m_err;
+    using Inner = detail::InnerType<E>;
+
+    Inner m_err;
+
+    template <typename F>
+    friend class Err;
 
 public:
     template <typename F>
     // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
-    requires(detail::constructible_from<E, F>) explicit Err(F&& err) :
+    requires(detail::constructible_from<Inner, F>) explicit Err(F&& err) :
         m_err { std::forward<F>(err) } {}
 
     template <typename F>
-    requires(detail::constructible_from<E, F>) explicit Err(Err<F>&& err) :
-        m_err { std::forward<Err<F>>(err).err() } {}
+    requires(detail::constructible_from<Inner, typename Err<F>::Inner>) explicit Err(Err<F>&& err) :
+        m_err { std::move(err.m_err) } {}
+
+    template <typename F>
+    requires(detail::constructible_from<Inner, typename Err<F>::Inner>) explicit Err(
+        Err<F> const& err) :
+        m_err { err.m_err } {}
+
+    template <typename F>
+    requires(detail::IS_REF<E>&& detail::constructible_from<
+             Inner, typename Err<F>::Inner const&>) explicit Err(Err<F> const& err) :
+        m_err { err.m_err } {}
+
+    template <typename F>
+    requires(detail::IS_REF<E>&& detail::constructible_from<
+             Inner, typename Err<F>::Inner&>) explicit Err(Err<F>& err) :
+        m_err { err.m_err } {}
 
     E err() const& { return m_err; }
 
@@ -61,32 +105,88 @@ template <typename E>
 Err(E&&) -> Err<E>;
 
 template <typename T, typename E>
-class Result {
+class [[nodiscard]] Result {
 private:
+    using Inner = detail::InnerType<T>;
+
     enum class State : uint8_t { Ok, Err, MovedFrom };
 
+    template <typename U, typename F>
+    friend class Result;
+
     union {
-        T      m_ok;
-        Err<E> m_err;
+        detail::InnerType<T> m_ok;
+        Err<E>               m_err;
     };
     State m_state;
 
 public:
-    template <typename U>
-    requires(detail::constructible_from<T, U> && !std::same_as<Err<E>, U> &&
+    template <typename U = T>
+    requires(detail::constructible_from<Inner, U> && !std::same_as<Err<E>, U> &&
              // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
              !std::same_as<Result<T, E>, U>) Result(U&& value) :
         m_ok { std::forward<U>(value) }, m_state { State::Ok } {}
 
-    template <typename F>
+    template <typename F = E>
     requires(detail::constructible_from<E, F>) Result(Err<F>&& err) :
         m_err { std::forward<Err<F>>(err) }, m_state { State::Err } {}
+
+    template <typename U, typename F>
+    requires(detail::constructible_from<Inner, typename Result<U, F>::Inner const&>&&
+                 std::constructible_from<E, F const&> &&
+             !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F> const& other) :
+        m_state { other.m_state } {
+        switch (m_state) {
+        case State::Ok:
+            new (&m_ok) Inner { other.m_ok };
+            break;
+        case State::Err:
+            new (&m_err) Err { other.m_err };
+            break;
+        case State::MovedFrom:
+            break;
+        }
+    }
+
+    template <typename U, typename F>
+    requires(detail::constructible_from<Inner, typename Result<U, F>::Inner&>&&
+                 std::constructible_from<E, F&> &&
+             !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F>& other) :
+        m_state { other.m_state } {
+        switch (m_state) {
+        case State::Ok:
+            new (&m_ok) Inner { other.m_ok };
+            break;
+        case State::Err:
+            new (&m_err) Err<E> { other.m_err };
+            break;
+        case State::MovedFrom:
+            break;
+        }
+    }
+
+    template <typename U, typename F>
+    requires(detail::constructible_from<Inner, typename Result<U, F>::Inner>&&
+                 std::constructible_from<E, F> &&
+             !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F>&& other) :
+        m_state { other.m_state } {
+        switch (m_state) {
+        case State::Ok:
+            new (&m_ok) Inner { other.m_ok };
+            break;
+        case State::Err:
+            new (&m_err) Err<E> { other.m_err };
+            break;
+        case State::MovedFrom:
+            break;
+        }
+    }
 
     // TODO: Add variants of copy and move constructors and assignment operators for trivial types.
     Result(Result const& other) : m_state { other.m_state } {
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) T { other.m_ok };
+            new (&m_ok) Inner { other.m_ok };
             break;
         case State::Err:
             new (&m_err) Err { other.m_err };
@@ -105,7 +205,7 @@ public:
         m_state = other.m_state;
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) T { other.m_ok };
+            new (&m_ok) Inner { other.m_ok };
             break;
         case State::Err:
             new (&m_err) Err { other.m_err };
@@ -121,7 +221,7 @@ public:
         other.m_state = State::MovedFrom;
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) T { std::move(other.m_ok) };
+            new (&m_ok) Inner { std::move(other.m_ok) };
             break;
         case State::Err:
             new (&m_err) Err { std::move(other.m_err) };
@@ -138,7 +238,7 @@ public:
         other.m_state = State::MovedFrom;
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) T { std::move(other.m_ok) };
+            new (&m_ok) Inner { std::move(other.m_ok) };
             break;
         case State::Err:
             new (&m_err) Err { std::move(other.m_err) };
@@ -154,8 +254,8 @@ public:
     ~Result() {
         switch (m_state) {
         case State::Ok:
-            if constexpr (!std::is_trivially_destructible_v<T>)
-                m_ok.~T();
+            if constexpr (!std::is_trivially_destructible_v<Inner>)
+                m_ok.~Inner();
             break;
         case State::Err:
             if constexpr (!std::is_trivially_destructible_v<Err<E>>)
@@ -169,20 +269,15 @@ public:
     bool is_ok() const { return m_state == State::Ok; }
     bool is_err() const { return m_state == State::Err; }
 
-    T unwrap() const& {
-        A3_UNWRAPND(is_ok());
-        return m_ok;
-    }
-
     T unwrap() && {
         A3_UNWRAPND(is_ok());
         m_state = State::MovedFrom;
         return std::move(m_ok);
     }
 
-    E unwrap_err() const& {
-        A3_UNWRAPND(!is_ok());
-        return m_err.err();
+    T unwrap() const& requires(std::is_trivially_copyable_v<Inner>) {
+        A3_UNWRAPND(is_ok());
+        return m_ok;
     }
 
     E unwrap_err() && {
@@ -190,6 +285,14 @@ public:
         m_state = State::MovedFrom;
         return std::move(m_err).err();
     }
+
+    E unwrap_err() const& requires(std::is_trivially_copyable_v<Err<E>>) {
+        A3_UNWRAPND(!is_ok());
+        return m_err.err();
+    }
+
+    Result<T&, E&>             as_ref() & { return *this; }
+    Result<T const&, E const&> as_ref() const& { return *this; }
 };
 
 #if defined(__GNUC__) || defined(__clang__)
