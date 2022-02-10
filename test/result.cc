@@ -155,4 +155,12 @@ TEST(Result, as_deref) {
     EXPECT_THAT(victim_deref.unwrap(), Eq(*victim.as_ref().unwrap()));
 }
 
+TEST(Result, unwrap_or) {
+    Result<int, int> victim { 42 };
+    EXPECT_THAT(victim.unwrap_or(32), Eq(42));
+
+    victim = Err { 26 };
+    EXPECT_THAT(victim.unwrap_or(32), Eq(32));
+}
+
 #endif

@@ -324,6 +324,18 @@ public:
         return m_err.err();
     }
 
+    T unwrap_or(T fallback) && {
+        if (is_ok())
+            return std::move(m_ok);
+        return std::move(fallback);
+    }
+
+    T unwrap_or(T fallback) const& requires(std::is_trivially_copyable_v<Inner>) {
+        if (is_ok())
+            return m_ok;
+        return fallback;
+    }
+
     template <detail::invocable<T> Fn>
         Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && requires(!detail::IS_REF<T>) {
         switch (m_state) {
