@@ -172,8 +172,8 @@ TEST(Result, map_err) {
 }
 
 TEST(Result, map_or) {
-    EXPECT_THAT(fallible(false).map_or([](auto v) { return v * 2; }, 1234), Eq(84));
-    EXPECT_THAT(fallible(true).map_or([](auto v) { return v * 2; }, 1234), Eq(1234));
+    EXPECT_THAT(fallible(false).map_or(1234, [](auto v) { return v * 2; }), Eq(84));
+    EXPECT_THAT(fallible(true).map_or(1234, [](auto v) { return v * 2; }), Eq(1234));
 }
 
 TEST(Result, optional_conversion) {

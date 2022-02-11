@@ -389,8 +389,8 @@ public:
     }
 
     template <detail::invocable<T> Fn, typename U = std::invoke_result_t<Fn, T>>
-    U map_or(Fn&& f,
-             U&&  fallback) requires(std::constructible_from<U, std::invoke_result_t<Fn, T>>) {
+    U map_or(U&&  fallback,
+             Fn&& f) requires(std::constructible_from<U, std::invoke_result_t<Fn, T>>) {
         if (is_err())
             return std::forward<U>(fallback);
         return std::move(*this).map(std::forward<Fn>(f)).m_ok;
