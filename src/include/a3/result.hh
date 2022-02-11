@@ -341,8 +341,10 @@ public:
     }
 
     T unwrap_or(T fallback) && {
-        if (is_ok())
+        if (is_ok()) {
+            m_state = State::MovedFrom;
             return std::move(m_ok);
+        }
         return std::move(fallback);
     }
 
@@ -355,8 +357,10 @@ public:
     template <detail::invocable<> Fn>
         T unwrap_or_else(Fn&& f) &&
         requires(detail::constructible_from<T, std::invoke_result_t<Fn>>) {
-        if (is_ok())
+        if (is_ok()) {
+            m_state = State::MovedFrom;
             return std::move(m_ok);
+        }
         return std::forward<Fn>(f)();
     }
 
@@ -371,7 +375,8 @@ public:
 
     template <detail::invocable<T> Fn>
         Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && requires(!detail::IS_REF<T>) {
-        switch (m_state) {
+        auto state = std::exchange(m_state, State::MovedFrom);
+        switch (state) {
         case State::Ok:
             return std::forward<Fn>(f)(std::move(m_ok));
         case State::Err:
@@ -385,7 +390,8 @@ public:
 
     template <detail::invocable<T> Fn>
         Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && requires(detail::IS_REF<T>) {
-        switch (m_state) {
+        auto state = std::exchange(m_state, State::MovedFrom);
+        switch (state) {
         case State::Ok:
             return std::forward<Fn>(f)(m_ok.get());
         case State::Err:
@@ -411,14 +417,17 @@ public:
     U map_or_else(FFn&& ff, Fn&& f) requires(
         detail::constructible_from<U, std::invoke_result_t<Fn, T>>&&
             detail::constructible_from<U, std::invoke_result_t<FFn, E>>) {
-        if (is_err())
+        if (is_err()) {
+            m_state = State::MovedFrom;
             return std::forward<FFn>(ff)(std::move(m_err).err());
+        }
         return std::move(*this).map(std::forward<Fn>(f)).m_ok;
     }
 
     template <detail::invocable<E> Fn>
         Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) && requires(!detail::IS_REF<E>) {
-        switch (m_state) {
+        auto state = std::exchange(m_state, State::MovedFrom);
+        switch (state) {
         case State::Ok:
             return std::move(m_ok);
         case State::Err:
@@ -432,7 +441,8 @@ public:
 
     template <detail::invocable<E> Fn>
         Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) && requires(detail::IS_REF<E>) {
-        switch (m_state) {
+        auto state = std::exchange(m_state, State::MovedFrom);
+        switch (state) {
         case State::Ok:
             return std::move(m_ok);
         case State::Err:
@@ -458,12 +468,14 @@ public:
     std::optional<typename Err<E>::Inner> err() && {
         if (!is_err())
             return {};
+        m_state = State::MovedFrom;
         return std::move(m_err).err();
     }
 
     std::optional<Inner> ok() && {
         if (!is_ok())
             return {};
+        m_state = State::MovedFrom;
         return std::move(m_ok);
     }
 };
