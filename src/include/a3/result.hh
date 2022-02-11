@@ -388,6 +388,14 @@ public:
         A3_UNREACHABLE();
     }
 
+    template <detail::invocable<T> Fn, typename U = std::invoke_result_t<Fn, T>>
+    U map_or(Fn&& f,
+             U&&  fallback) requires(std::constructible_from<U, std::invoke_result_t<Fn, T>>) {
+        if (is_err())
+            return std::forward<U>(fallback);
+        return std::move(*this).map(std::forward<Fn>(f)).m_ok;
+    }
+
     template <detail::invocable<E> Fn>
         Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) && requires(!detail::IS_REF<E>) {
         switch (m_state) {

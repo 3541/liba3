@@ -7,6 +7,12 @@
 using namespace a3;
 using namespace testing;
 
+static Result<int, std::string> fallible(bool fail) {
+    if (fail)
+        return Err { "o no" };
+    return 42;
+}
+
 TEST(Result, constructible_from_t) {
     Result<int, int> victim { 42 };
     EXPECT_THAT(std::move(victim).unwrap(), Eq(42));
@@ -114,13 +120,7 @@ TEST(Result, return_err) {
 
 #ifdef A3_RTRY
 TEST(Result, try) {
-    auto fallible = [](bool fail) -> Result<int, std::string> {
-        if (fail)
-            return Err { "o no" };
-        return 42;
-    };
-
-    auto process = [&fallible](bool fail) -> Result<std::string, std::string> {
+    auto process = [](bool fail) -> Result<std::string, std::string> {
         auto n = A3_RTRY(fallible(fail));
         return std::to_string(n) + "42";
     };
@@ -136,12 +136,6 @@ TEST(Result, try) {
 #endif
 
 TEST(Result, map) {
-    auto fallible = [](bool fail) -> Result<int, std::string> {
-        if (fail)
-            return Err { "o no" };
-        return 42;
-    };
-
     EXPECT_THAT(fallible(false).map([](auto v) { return v * 2; }).unwrap(), Eq(84));
     EXPECT_THAT(fallible(true).map([](auto v) { return v * 2; }).unwrap_err(), StrEq("o no"));
 }
@@ -172,15 +166,14 @@ TEST(Result, unwrap_or_else) {
 }
 
 TEST(Result, map_err) {
-    auto fallible = [](bool fail) -> Result<int, std::string> {
-        if (fail)
-            return Err { "o no" };
-        return 42;
-    };
-
     EXPECT_THAT(fallible(false).map_err([](auto e) { return e + "!"; }).unwrap(), Eq(42));
     EXPECT_THAT(fallible(true).map_err([](auto e) { return e + "!"; }).unwrap_err(),
                 StrEq("o no!"));
+}
+
+TEST(Result, map_or) {
+    EXPECT_THAT(fallible(false).map_or([](auto v) { return v * 2; }, 1234), Eq(84));
+    EXPECT_THAT(fallible(true).map_or([](auto v) { return v * 2; }, 1234), Eq(1234));
 }
 
 TEST(Result, optional_conversion) {
