@@ -290,8 +290,17 @@ public:
         return *this;
     }
 
-    // TODO: Add trivial destructor.
-    ~Result() {
+    // TODO: Turn these into Clang version checks once it supports prospective destructors.
+#ifndef __clang__
+    ~Result() = default;
+#endif
+
+    ~Result()
+#ifndef __clang__
+        requires(!std::is_trivially_destructible_v<Inner> ||
+                 !std::is_trivially_destructible_v<Err<E>>)
+#endif
+    {
         switch (m_state) {
         case State::Ok:
             if constexpr (!std::is_trivially_destructible_v<Inner>)
