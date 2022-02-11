@@ -396,6 +396,17 @@ public:
         return std::move(*this).map(std::forward<Fn>(f)).m_ok;
     }
 
+    template <
+        detail::invocable<T> Fn, detail::invocable<E> FFn,
+        typename U = std::common_type_t<std::invoke_result_t<Fn, T>, std::invoke_result_t<FFn, E>>>
+    U map_or_else(FFn&& ff,
+                  Fn&&  f) requires(std::constructible_from<U, std::invoke_result_t<Fn, T>>&&
+                                       std::constructible_from<U, std::invoke_result_t<FFn, E>>) {
+        if (is_err())
+            return std::forward<FFn>(ff)(std::move(m_err).err());
+        return std::move(*this).map(std::forward<Fn>(f)).m_ok;
+    }
+
     template <detail::invocable<E> Fn>
         Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) && requires(!detail::IS_REF<E>) {
         switch (m_state) {

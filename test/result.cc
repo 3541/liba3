@@ -191,4 +191,12 @@ TEST(Result, optional_conversion) {
     EXPECT_THAT(victim.as_ref().err().has_value(), IsFalse());
 }
 
+TEST(Result, map_or_else) {
+    EXPECT_THAT(
+        fallible(false).map_or_else([](auto) { return 1234; }, [](auto v) { return v * 2; }),
+        Eq(84));
+    EXPECT_THAT(fallible(true).map_or_else([](auto) { return 1234; }, [](auto v) { return v * 2; }),
+                Eq(1234));
+}
+
 #endif
