@@ -8,6 +8,9 @@
  *
  * To set a non-default log level, define A3_LOG_LEVEL before including this file. To avoid
  * confusion, this file should not be included multiple times, or in any header.
+ *
+ * A runtime log level may also be set at initialization time. This will not, however, cause
+ * messages logged at a level below the compile-time filter to appear.
  */
 
 #ifndef A3_LOG_H
@@ -26,8 +29,8 @@ A3_H_BEGIN
 #define A3_LOG_LEVEL A3_LOG_INFO
 #endif
 
-#define A3_LOG_F(FMT, ...) a3_log("%s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__)
-#define A3_LOG(MSG)        A3_LOG_F("%s", MSG)
+#define A3_LOG_F(LV, FMT, ...) a3_log((LV), "%s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__)
+#define A3_LOG(LV, MSG)        A3_LOG_F((LV), "%s", MSG)
 #define A3_TRACE_F(...)
 #define A3_DEBUG_F(...)
 #define A3_INFO_F(...)
@@ -44,29 +47,29 @@ A3_H_BEGIN
 #if A3_LOG_LEVEL <= A3_LOG_TRACE
 #undef A3_TRACE_F
 #undef A3_TRACE
-#define A3_TRACE_F A3_LOG_F
-#define A3_TRACE   A3_LOG
+#define A3_TRACE_F(FMT, ...) A3_LOG_F(A3_LOG_TRACE, FMT, __VA_ARGS__)
+#define A3_TRACE(MSG)        A3_LOG(A3_LOG_TRACE, (MSG))
 #endif
 
 #if A3_LOG_LEVEL <= A3_LOG_DEBUG
 #undef A3_DEBUG_F
 #undef A3_DEBUG
-#define A3_DEBUG_F A3_LOG_F
-#define A3_DEBUG   A3_LOG
+#define A3_DEBUG_F(FMT, ...) A3_LOG_F(A3_LOG_DEBUG, FMT, __VA_ARGS__)
+#define A3_DEBUG(MSG)        A3_LOG(A3_LOG_DEBUG, (MSG))
 #endif
 
 #if A3_LOG_LEVEL <= A3_LOG_INFO
 #undef A3_INFO_F
 #undef A3_INFO
-#define A3_INFO_F A3_LOG_F
-#define A3_INFO   A3_LOG
+#define A3_INFO_F(FMT, ...) A3_LOG_F(A3_LOG_INFO, FMT, __VA_ARGS__)
+#define A3_INFO(MSG)        A3_LOG(A3_LOG_INFO, (MSG))
 #endif
 
 #if A3_LOG_LEVEL <= A3_LOG_WARN
 #undef A3_WARN_F
 #undef A3_WARN
-#define A3_WARN_F A3_LOG_F
-#define A3_WARN   A3_LOG
+#define A3_WARN_F(FMT, ...) A3_LOG_F(A3_LOG_WARN, FMT, __VA_ARGS__)
+#define A3_WARN(MSG)        A3_LOG(A3_LOG_WARN, (MSG))
 #endif
 
 #if A3_LOG_LEVEL <= A3_LOG_ERROR
@@ -74,7 +77,8 @@ A3_H_BEGIN
 #undef A3_ERRNO_F
 #undef A3_ERROR
 #undef A3_ERRNO
-#define A3_ERROR_F A3_LOG_F
+#define A3_ERROR_F(FMT, ...) A3_LOG_F(A3_LOG_ERROR, FMT, __VA_ARGS__)
+#define A3_ERROR(MSG)        A3_LOG(A3_LOG_ERROR, (MSG))
 #ifndef _GNU_SOURCE
 #ifdef _MSC_VER
 #define strerror_r(CODE, BUF, LEN) strerror_s((BUF), (LEN), (CODE))
@@ -83,19 +87,18 @@ A3_H_BEGIN
     do {                                                                                           \
         char A3_M_PASTE(buf_, __LINE__)[32] = { 0 };                                               \
         strerror_r((CODE), A3_M_PASTE(buf_, __LINE__), sizeof(A3_M_PASTE(buf_, __LINE__)));        \
-        A3_LOG_F("%s (%d) " FMT, A3_M_PASTE(buf_, __LINE__), (CODE), __VA_ARGS__);                 \
+        A3_LOG_F(A3_LOG_ERROR, "%s (%d) " FMT, A3_M_PASTE(buf_, __LINE__), (CODE), __VA_ARGS__);   \
     } while (0)
 #else
 #define A3_ERRNO_F(CODE, FMT, ...)                                                                 \
     do {                                                                                           \
         char A3_M_PASTE(buf_, __LINE__)[32] = { 0 };                                               \
         A3_LOG_F(                                                                                  \
-            "%s (%d) " FMT,                                                                        \
+            A3_LOG_ERROR, "%s (%d) " FMT,                                                          \
             strerror_r((CODE), A3_M_PASTE(buf_, __LINE__), sizeof(A3_M_PASTE(buf_, __LINE__))),    \
             (CODE), __VA_ARGS__);                                                                  \
     } while (0)
 #endif
-#define A3_ERROR            A3_LOG
 #define A3_ERRNO(CODE, MSG) A3_ERRNO_F((CODE), "%s", (MSG))
 #endif
 

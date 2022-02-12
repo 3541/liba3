@@ -28,7 +28,7 @@
 // Abort with a message.
 #define A3_PANIC_FMT(FMT, ...)                                                                     \
     do {                                                                                           \
-        a3_log("PANIC %s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__);                            \
+        a3_log(A3_LOG_ERROR, "PANIC %s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__);              \
         abort();                                                                                   \
     } while (0)
 

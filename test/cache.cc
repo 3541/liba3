@@ -20,7 +20,7 @@ protected:
     A3_CACHE(A3CString, A3CString) cache {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
     void SetUp() override {
-        a3_log_init(stderr);
+        a3_log_init(stderr, A3_LOG_TRACE);
         A3_CACHE_INIT(A3CString, A3CString)(&cache, CACHE_CAPACITY, nullptr);
     }
 

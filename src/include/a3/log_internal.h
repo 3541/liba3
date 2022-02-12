@@ -26,7 +26,7 @@ typedef int A3LogLevel;
 #define A3_LOG_WARN  3
 #define A3_LOG_ERROR 4
 
-A3_EXPORT void a3_log_init(FILE*);
-A3_EXPORT void a3_log(char const*, ...); // NOLINT(readability-redundant-declaration)
+A3_EXPORT void a3_log_init(FILE*, A3LogLevel);
+A3_EXPORT void a3_log(A3LogLevel, char const*, ...); // NOLINT(readability-redundant-declaration)
 
 A3_H_END
