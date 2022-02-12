@@ -16,24 +16,15 @@
 #include <stdio.h>
 
 #include <a3/cpp.h>
+#include <a3/log_internal.h>
 #include <a3/macro.h>
 #include <a3/types.h>
 
 A3_H_BEGIN
 
-typedef int A3LogLevel;
-#define A3_LOG_TRACE 0
-#define A3_LOG_DEBUG 1
-#define A3_LOG_INFO  2
-#define A3_LOG_WARN  3
-#define A3_LOG_ERROR 4
-
 #ifndef A3_LOG_LEVEL
 #define A3_LOG_LEVEL A3_LOG_INFO
 #endif
-
-A3_EXPORT void a3_log_init(FILE*);
-A3_EXPORT void a3_log(char const*, ...); // NOLINT(readability-redundant-declaration)
 
 #define A3_LOG_F(FMT, ...) a3_log("%s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__)
 #define A3_LOG(MSG)        A3_LOG_F("%s", MSG)

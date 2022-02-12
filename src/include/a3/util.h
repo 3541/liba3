@@ -18,15 +18,12 @@
 #include <stdlib.h>
 
 #include <a3/cpp.h>
+#include <a3/log_internal.h>
 #include <a3/macro.h>
 #include <a3/types.h>
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
-
-A3_H_BEGIN
-A3_EXPORT void a3_log(char const*, ...); // NOLINT(readability-redundant-declaration)
-A3_H_END
 
 // Abort with a message.
 #define A3_PANIC_FMT(FMT, ...)                                                                     \
