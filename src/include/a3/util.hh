@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <cstdlib>
+
 #define A3_NO_COPY(T)                                                                              \
 public:                                                                                            \
     T(T const&) = delete;                                                                          \
@@ -23,14 +25,10 @@ public:                                                                         
     A3_NO_COPY(T);                                                                                 \
     A3_NO_MOVE(T)
 
-#define A3_DEFAULT_COPY(T)                                                                         \
-    T(T const&) = default;                                                                         \
-    T& operator=(T const&) = default
+namespace a3 {
 
-#define A3_DEFAULT_MOVE(T)                                                                         \
-    T(T&&)     = default;                                                                          \
-    T& operator=(T&&) = default
+struct MallocDeleter {
+    void operator()(void* ptr) { free(ptr); }
+};
 
-#define A3_DEFAULTS(T)                                                                             \
-    A3_DEFAULT_COPY(T);                                                                            \
-    A3_DEFAULT_MOVE(T)
+} // namespace a3
