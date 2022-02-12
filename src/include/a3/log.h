@@ -39,11 +39,13 @@ A3_EXPORT void a3_log(char const*, ...); // NOLINT(readability-redundant-declara
 #define A3_LOG(MSG)        A3_LOG_F("%s", MSG)
 #define A3_TRACE_F(...)
 #define A3_DEBUG_F(...)
+#define A3_INFO_F(...)
 #define A3_WARN_F(...)
 #define A3_ERROR_F(...)
 #define A3_ERRNO_F(...)
 #define A3_TRACE(MSG)
 #define A3_DEBUG(MSG)
+#define A3_INFO(MSG)
 #define A3_WARN(MSG)
 #define A3_ERROR(MSG)
 #define A3_ERRNO(CODE, MSG)
@@ -60,6 +62,13 @@ A3_EXPORT void a3_log(char const*, ...); // NOLINT(readability-redundant-declara
 #undef A3_DEBUG
 #define A3_DEBUG_F A3_LOG_F
 #define A3_DEBUG   A3_LOG
+#endif
+
+#if A3_LOG_LEVEL <= A3_LOG_INFO
+#undef A3_INFO_F
+#undef A3_INFO
+#define A3_INFO_F A3_LOG_F
+#define A3_INFO   A3_LOG
 #endif
 
 #if A3_LOG_LEVEL <= A3_LOG_WARN
