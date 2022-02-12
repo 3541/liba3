@@ -354,23 +354,23 @@ public:
         return fallback;
     }
 
-    template <detail::invocable<> Fn>
+    template <detail::invocable<E> Fn>
         T unwrap_or_else(Fn&& f) &&
-        requires(detail::constructible_from<T, std::invoke_result_t<Fn>>) {
-        if (is_ok()) {
-            m_state = State::MovedFrom;
+        requires(detail::constructible_from<T, std::invoke_result_t<Fn, E>>) {
+        auto state = std::exchange(m_state, State::MovedFrom);
+        if (state == State::Ok) {
             return std::move(m_ok);
         }
-        return std::forward<Fn>(f)();
+        return std::forward<Fn>(f)(std::move(m_err));
     }
 
-    template <detail::invocable<> Fn>
+    template <detail::invocable<E> Fn>
     T unwrap_or_else(Fn&& f) const& requires(
-        detail::constructible_from<T, std::invoke_result_t<Fn>>&&
+        detail::constructible_from<T, std::invoke_result_t<Fn, E>>&&
             std::is_trivially_copyable_v<Inner>) {
         if (is_ok())
             return m_ok;
-        return std::forward<Fn>(f)();
+        return std::forward<Fn>(f)(m_err);
     }
 
     template <detail::invocable<T> Fn>
