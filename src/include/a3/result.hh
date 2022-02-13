@@ -19,6 +19,7 @@
 #include <concepts>
 #include <cstdint>
 #include <optional>
+#include <system_error>
 #include <utility>
 
 #include <a3/util.h>
@@ -491,6 +492,10 @@ public:
         std::move(_tmp).unwrap();                                                                  \
     })
 #endif
+
+inline Err<std::error_code> error_code(int code) {
+    return Err { std::error_code { code, std::system_category() } };
+}
 
 } // namespace a3
 

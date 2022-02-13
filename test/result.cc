@@ -199,4 +199,10 @@ TEST(Result, map_or_else) {
                 Eq(1234));
 }
 
+TEST(Result, from_errno) {
+    Result<int, std::system_error> victim { error_code(EINVAL) };
+    EXPECT_THAT(victim.is_err(), IsTrue());
+    EXPECT_THAT(victim.as_ref().unwrap_err().code().value(), Eq(EINVAL));
+}
+
 #endif
