@@ -161,6 +161,8 @@ private:
     State m_state;
 
 public:
+    Result() requires std::default_initializable<Inner> : m_ok {}, m_state { State::Ok } {}
+
     template <typename U = T>
     requires(detail::constructible_from<Inner, U> && !std::same_as<Err<E>, U> &&
              // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)

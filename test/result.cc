@@ -220,4 +220,11 @@ TEST(Result, from_errno) {
     EXPECT_THAT(victim1.unwrap(), Eq(42));
 }
 
+TEST(Result, default_initialization) {
+    Result<int, int> victim;
+
+    EXPECT_THAT(victim.is_ok(), IsTrue());
+    EXPECT_THAT(victim.unwrap(), Eq(0));
+}
+
 #endif
