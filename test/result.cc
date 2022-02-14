@@ -209,7 +209,7 @@ TEST(Result, from_errno) {
     EXPECT_THAT(victim1.unwrap_err().value(), Eq(EINVAL));
     victim1 = signed_result(42);
     EXPECT_THAT(victim1.is_ok(), IsTrue());
-    EXPECT_THAT(victim1.unwrap(), Eq(42));
+    EXPECT_THAT(victim1.unwrap(), Eq(42U));
 
     errno   = EINVAL;
     victim1 = errno_result(-1);
@@ -217,7 +217,7 @@ TEST(Result, from_errno) {
     EXPECT_THAT(victim1.unwrap_err().value(), Eq(EINVAL));
     victim1 = errno_result(42);
     EXPECT_THAT(victim1.is_ok(), IsTrue());
-    EXPECT_THAT(victim1.unwrap(), Eq(42));
+    EXPECT_THAT(victim1.unwrap(), Eq(42U));
 }
 
 TEST(Result, default_initialization) {
