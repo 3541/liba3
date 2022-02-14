@@ -200,9 +200,24 @@ TEST(Result, map_or_else) {
 }
 
 TEST(Result, from_errno) {
-    Result<int, std::system_error> victim { error_code(EINVAL) };
+    Result<int, std::error_code> victim { error_code(EINVAL) };
     EXPECT_THAT(victim.is_err(), IsTrue());
-    EXPECT_THAT(victim.as_ref().unwrap_err().code().value(), Eq(EINVAL));
+    EXPECT_THAT(victim.unwrap_err().value(), Eq(EINVAL));
+
+    auto victim1 = signed_result(-EINVAL);
+    EXPECT_THAT(victim1.is_err(), IsTrue());
+    EXPECT_THAT(victim1.unwrap_err().value(), Eq(EINVAL));
+    victim1 = signed_result(42);
+    EXPECT_THAT(victim1.is_ok(), IsTrue());
+    EXPECT_THAT(victim1.unwrap(), Eq(42));
+
+    errno   = EINVAL;
+    victim1 = errno_result(-1);
+    EXPECT_THAT(victim1.is_err(), IsTrue());
+    EXPECT_THAT(victim1.unwrap_err().value(), Eq(EINVAL));
+    victim1 = errno_result(42);
+    EXPECT_THAT(victim1.is_ok(), IsTrue());
+    EXPECT_THAT(victim1.unwrap(), Eq(42));
 }
 
 #endif

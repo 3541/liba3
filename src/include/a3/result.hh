@@ -497,6 +497,20 @@ inline Err<std::error_code> error_code(int code) {
     return Err { std::error_code { code, std::system_category() } };
 }
 
+template <std::signed_integral R>
+Result<std::make_unsigned_t<R>, std::error_code> signed_result(R val) {
+    if (val < R { 0 })
+        return error_code(static_cast<int>(-val));
+    return static_cast<std::make_unsigned_t<R>>(val);
+}
+
+template <std::signed_integral R>
+Result<std::make_unsigned_t<R>, std::error_code> errno_result(R val) {
+    if (val < R { 0 })
+        return error_code(errno);
+    return static_cast<std::make_unsigned_t<R>>(val);
+}
+
 } // namespace a3
 
 #endif
