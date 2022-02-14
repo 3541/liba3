@@ -34,6 +34,9 @@ concept constructible_from = std::constructible_from<T, Args...>;
 
 template <typename Fn, typename... Args>
 concept invocable = std::invocable<Fn, Args...>;
+
+template <typename T>
+concept default_initializable = std::default_initializable<T>;
 #else
 // Apple Clang purports to support concepts, but does not implement these ones from the standard
 // library.
@@ -44,6 +47,12 @@ concept constructible_from = std::destructible<T> && std::is_constructible_v<T, 
 template <typename Fn, typename... Args>
 concept invocable = requires(Fn&& f, Args&&... args) {
     std::invoke(std::forward<Fn>(f), std::forward<Args>(args)...);
+};
+
+template <typename T>
+concept default_initializable = constructible_from<T> && requires {
+    { T{} };
+    { ::new (static_cast<void*>(nullptr)) T };
 };
 #endif
 
@@ -161,7 +170,7 @@ private:
     State m_state;
 
 public:
-    Result() requires std::default_initializable<Inner> : m_ok {}, m_state { State::Ok } {}
+    Result() requires detail::default_initializable<Inner> : m_ok {}, m_state { State::Ok } {}
 
     template <typename U = T>
     requires(detail::constructible_from<Inner, U> && !std::same_as<Err<E>, U> &&
