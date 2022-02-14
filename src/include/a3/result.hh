@@ -37,6 +37,9 @@ concept invocable = std::invocable<Fn, Args...>;
 
 template <typename T>
 concept default_initializable = std::default_initializable<T>;
+
+template <typename T>
+concept signed_integral = std::signed_integral<T>;
 #else
 // Apple Clang purports to support concepts, but does not implement these ones from the standard
 // library.
@@ -54,6 +57,9 @@ concept default_initializable = constructible_from<T> && requires {
     { T{} };
     { ::new (static_cast<void*>(nullptr)) T };
 };
+
+template <typename T>
+concept signed_integral = std::is_integral_v<T> && std::is_signed_v<T>;
 #endif
 
 template <typename I>
@@ -508,14 +514,14 @@ inline Err<std::error_code> error_code(int code) {
     return Err { std::error_code { code, std::system_category() } };
 }
 
-template <std::signed_integral R>
+template <detail::signed_integral R>
 Result<std::make_unsigned_t<R>, std::error_code> signed_result(R val) {
     if (val < R { 0 })
         return error_code(static_cast<int>(-val));
     return static_cast<std::make_unsigned_t<R>>(val);
 }
 
-template <std::signed_integral R>
+template <detail::signed_integral R>
 Result<std::make_unsigned_t<R>, std::error_code> errno_result(R val) {
     if (val < R { 0 })
         return error_code(errno);
