@@ -25,6 +25,20 @@ public:                                                                         
     A3_NO_COPY(T);                                                                                 \
     A3_NO_MOVE(T)
 
+#define A3_DEFAULT_COPY(T)                                                                         \
+public:                                                                                            \
+    T(T const&) = default;                                                                         \
+    T& operator=(T const&) = default
+
+#define A3_DEFAULT_MOVE(T)                                                                         \
+public:                                                                                            \
+    T(T&&) noexcept = default;                                                                     \
+    T& operator=(T&&) noexcept = default
+
+#define A3_DEFAULTS(T)                                                                             \
+    A3_DEFAULT_COPY(T);                                                                            \
+    A3_DEFAULT_MOVE(T)
+
 namespace a3 {
 
 struct MallocDeleter {
