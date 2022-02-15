@@ -7,6 +7,7 @@ a3_test_src = files(
     'ht.cc',
     'll.cc',
     'log.cc',
+    'option.cc',
     'pool.cc',
     'rc.cc',
     'result.cc',
