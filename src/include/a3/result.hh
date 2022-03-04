@@ -54,7 +54,7 @@ concept invocable = requires(Fn&& f, Args&&... args) {
 
 template <typename T>
 concept default_initializable = constructible_from<T> && requires {
-    { T{} };
+    { T {} };
     { ::new (static_cast<void*>(nullptr)) T };
 };
 
@@ -503,7 +503,7 @@ public:
     ({                                                                                             \
         auto _tmp = (R);                                                                           \
         if (_tmp.is_err())                                                                         \
-            return Err { std::move(_tmp).unwrap_err() };                                           \
+            return a3::Err { std::move(_tmp).unwrap_err() };                                       \
         if (!_tmp.is_ok())                                                                         \
             A3_PANIC("A3_RTRY on moved-from Result.");                                             \
         std::move(_tmp).unwrap();                                                                  \
