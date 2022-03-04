@@ -63,6 +63,9 @@ class Option : public detail::OptionBase<T> {
 public:
     using detail::OptionBase<T>::OptionBase;
 
+    template <typename U>
+    Option(std::optional<U>&& o) : detail::OptionBase<T> { std::forward<std::optional<U>>(o) } {}
+
 #if !defined(__cpp_lib_optional) || __cpp_lib_optional < 202110L
     template <typename Fn, typename U = std::invoke_result_t<Fn, T>>
     Option<U> map(Fn&& f) && {
