@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <a3/buffer.h>
-
 #include <a3/str.h>
 
 #define BUF_INITIAL_CAP (128ULL)
@@ -59,6 +58,8 @@ TEST_F(BufferTest, write_struct) {
     static_assert(sizeof(TestStruct) == 8ULL, "Unexpected size.");
 
     TestStruct t = { 42, 43 };
+    ASSERT_EQ(t.a, 42);
+    ASSERT_EQ(t.b, 43);
     A3_BUF_WRITE_STRUCT(&buf, t);
 
     EXPECT_EQ(*buf.data.ptr, 42);
