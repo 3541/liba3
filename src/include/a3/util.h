@@ -120,7 +120,7 @@
 #define A3_TRYB_MSG(T, L, M)                                                                       \
     do {                                                                                           \
         if A3_UNLIKELY (!(T)) {                                                                    \
-            a3_log_msg((L), (M));                                                                  \
+            a3_log((L), "%s (%d): %s", __FILE__, __LINE__, (M));                                   \
             return false;                                                                          \
         }                                                                                          \
     } while (0)
