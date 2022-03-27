@@ -126,6 +126,7 @@ TEST(String, lowercase) {
     a3_string_free(&s);
 }
 
+#if __cplusplus >= 201703L
 TEST(String, string_view_conversion) {
     A3CString        s  = A3_CS("test");
     std::string_view sv = s;
@@ -133,3 +134,4 @@ TEST(String, string_view_conversion) {
     EXPECT_EQ(reinterpret_cast<uint8_t const*>(sv.data()), s.ptr);
     EXPECT_EQ(sv.size(), s.len);
 }
+#endif

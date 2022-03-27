@@ -43,7 +43,7 @@ endif
 
 a3_flags_wanted = {
   'gcc': ['-fstack-protector', '-fstack-clash-protection'],
-  'msvc': ['/GS']
+  'msvc': ['/GS', '/Zc:__cplusplus']
 }
 add_project_arguments(c.get_supported_arguments(a3_flags_wanted[c_arg_syntax]), language: 'c')
 add_project_arguments(cxx.get_supported_arguments(a3_flags_wanted[cxx_arg_syntax]), language: 'cpp')
