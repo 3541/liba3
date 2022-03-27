@@ -20,18 +20,31 @@
 #include <a3/cpp.h>
 #include <a3/types.h>
 
+#if defined(__cplusplus) && __cplusplus >= 201703L
+#include <string_view>
+#define A3_STR_CC_COMPAT
+#endif
+
 A3_H_BEGIN
 
 /// A byte string.
 typedef struct A3String {
     uint8_t* ptr; ///< The actual pointer.
     size_t   len; ///< The string's length.
+
+#ifdef A3_STR_CC_COMPAT
+    operator std::string_view() const { return { reinterpret_cast<char const*>(ptr), len }; }
+#endif
 } A3String;
 
 /// A constant byte string.
 typedef struct A3CString {
     uint8_t const* ptr; ///< The actual pointer.
     size_t         len; ///< The string's length.
+
+#ifdef A3_STR_CC_COMPAT
+    operator std::string_view() const { return { reinterpret_cast<char const*>(ptr), len }; }
+#endif
 } A3CString;
 
 A3_ALWAYS_INLINE A3_CONSTEXPR A3String a3_string_new(uint8_t* ptr, size_t len) {
