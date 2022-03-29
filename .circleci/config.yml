@@ -8,7 +8,7 @@ jobs:
     steps:
       - run:
           name: "Install dependences"
-          command: "pip install meson"
+          command: "pip3 install meson"
       - checkout
       - run:
           name: "Configure"
