@@ -20,7 +20,8 @@ jobs:
       - run:
           name: "Test"
           command: "meson test -C build"
-
+      - store_test_results:
+          path: build/a3_gtest.xml 
 workflows:
   build-and-test:
     jobs:
