@@ -6,9 +6,9 @@ jobs:
       image: ubuntu-2004:202101-01
     resource_class: arm.medium
     steps:
-      - run:
-          name: "Install dependences"
-          command: "pip3 install meson"
+      - run: |
+          pip3 install meson
+          sudo apt-get install -y ninja-build
       - checkout
       - run:
           name: "Configure"
