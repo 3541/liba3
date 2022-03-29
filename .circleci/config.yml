@@ -8,7 +8,7 @@ jobs:
     steps:
       - run:
           name: "Install dependences"
-          command: "sudo apt-get update && sudo apt-get install -y meson ninja"
+          command: "pip install meson"
       - checkout
       - run:
           name: "Configure"
