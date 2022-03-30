@@ -1,7 +1,10 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <a3/ll.h>
 #include <a3/util.h>
+
+using namespace testing;
 
 struct LLNode {
     size_t data;    // NOLINT(misc-non-private-member-variables-in-classes)
@@ -10,7 +13,7 @@ struct LLNode {
     explicit LLNode(size_t d) : data { d } {}
 };
 
-class LLTest : public ::testing::Test {
+class LLTest : public Test {
 protected:
     A3LL list {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
@@ -65,4 +68,10 @@ TEST_F(LLTest, many_insertions) {
     EXPECT_EQ(i, 513ULL);
 
     A3_LL_FOR_EACH(LLNode, node, &list, link) { delete node; }
+}
+
+TEST_F(LLTest, for_each_empty) {
+    A3_LL_FOR_EACH(LLNode, node, &list, link) {
+        EXPECT_THAT(false, IsTrue()) << "foreach should not loop when list is empty.";
+    }
 }

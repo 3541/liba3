@@ -1,7 +1,10 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <a3/sll.h>
 #include <a3/util.h>
+
+using namespace testing;
 
 struct SLLNode {
     size_t  data;             // NOLINT(misc-non-private-member-variables-in-classes)
@@ -10,7 +13,7 @@ struct SLLNode {
     explicit SLLNode(size_t d) : data { d } {}
 };
 
-class SLLTest : public ::testing::Test {
+class SLLTest : public Test {
 protected:
     A3SLL list {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
@@ -58,4 +61,10 @@ TEST_F(SLLTest, many_insertions) {
 
     while (auto* p = a3_sll_dequeue(&list))
         delete A3_CONTAINER_OF(p, SLLNode, link);
+}
+
+TEST_F(SLLTest, for_each_empty) {
+    A3_SLL_FOR_EACH(SLLNode, node, &list, link) {
+        EXPECT_THAT(false, IsTrue()) << "foreach should not loop when list is empty.";
+    }
 }

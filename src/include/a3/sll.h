@@ -95,10 +95,11 @@ A3_EXPORT void a3_sll_enqueue(A3SLL*, A3SLink*);
 
 /// Iterate over a list.
 #define A3_SLL_FOR_EACH(TY, ITEM, LIST, FIELD)                                                     \
-    for (TY* ITEM   = A3_CONTAINER_OF((LIST)->head.next, TY, FIELD),                               \
-             *_next = ITEM->FIELD.next ? A3_CONTAINER_OF(ITEM->FIELD.next, TY, FIELD) : NULL;      \
-         ITEM; ITEM = _next, _next = _next && _next->FIELD.next                                    \
-                                         ? A3_CONTAINER_OF(_next->FIELD.next, TY, FIELD)           \
-                                         : NULL)
+    if ((LIST)->head.next)                                                                         \
+        for (TY* ITEM   = A3_CONTAINER_OF((LIST)->head.next, TY, FIELD),                           \
+                 *_next = ITEM->FIELD.next ? A3_CONTAINER_OF(ITEM->FIELD.next, TY, FIELD) : NULL;  \
+             ITEM; ITEM = _next, _next = _next && _next->FIELD.next                                \
+                                             ? A3_CONTAINER_OF(_next->FIELD.next, TY, FIELD)       \
+                                             : NULL)
 
 A3_H_END

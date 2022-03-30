@@ -89,10 +89,12 @@ A3_ALWAYS_INLINE A3LL* a3_ll_dequeue(A3LL* list) {
 
 /// Iterate over a list.
 #define A3_LL_FOR_EACH(TY, ITEM, LIST, FIELD)                                                      \
-    for (TY* ITEM   = A3_CONTAINER_OF((LIST)->next, TY, FIELD),                                    \
-             *_next = ITEM->FIELD.next ? A3_CONTAINER_OF(ITEM->FIELD.next, TY, FIELD) : NULL;      \
-         &ITEM->FIELD != (LIST); ITEM = _next,                                                     \
-             _next = _next && _next->FIELD.next ? A3_CONTAINER_OF(_next->FIELD.next, TY, FIELD)    \
-                                                : NULL)
+    if ((LIST)->next)                                                                              \
+        for (TY* ITEM   = A3_CONTAINER_OF((LIST)->next, TY, FIELD),                                \
+                 *_next = ITEM->FIELD.next ? A3_CONTAINER_OF(ITEM->FIELD.next, TY, FIELD) : NULL;  \
+             &ITEM->FIELD != (LIST);                                                               \
+             ITEM = _next, _next = _next && _next->FIELD.next                                      \
+                                       ? A3_CONTAINER_OF(_next->FIELD.next, TY, FIELD)             \
+                                       : NULL)
 
 A3_H_END
