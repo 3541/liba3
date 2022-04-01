@@ -62,8 +62,8 @@ TEST_F(BufferTest, write_struct) {
     ASSERT_EQ(t.b, 43);
     A3_BUF_WRITE_STRUCT(&buf, t);
 
-    EXPECT_EQ(*buf.data.ptr, 42);
-    EXPECT_EQ(buf.data.ptr[sizeof(int)], 43);
+    EXPECT_EQ(*reinterpret_cast<int32_t*>(buf.data.ptr), 42);
+    EXPECT_EQ(reinterpret_cast<int32_t*>(buf.data.ptr)[1], 43);
 }
 
 TEST_F(BufferTest, reset) {
