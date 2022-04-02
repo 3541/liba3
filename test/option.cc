@@ -23,7 +23,7 @@ TEST(Option, map) {
     EXPECT_THAT(Option<std::string> {}.map_or("o no", [](auto v) { return v; }), StrEq("o no"));
 }
 
-#if __cplusplus > 201703L
+#ifdef __cpp_concepts
 TEST(Option, result_conversion) {
     Option<std::string> victim { "Hello" };
 

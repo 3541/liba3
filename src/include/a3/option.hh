@@ -19,7 +19,7 @@
 #include <functional>
 #include <optional>
 
-#if __cplusplus > 201703L
+#ifdef __cpp_concepts
 #include <a3/result.hh>
 #endif
 
@@ -93,7 +93,7 @@ public:
                                             std::forward<Fn>(f));
     }
 
-#if __cplusplus > 201703L
+#ifdef __cpp_concepts
     template <typename EFn>
     Result<T, std::invoke_result_t<EFn>> ok_or_else(EFn&& ef) && {
         if (!this->has_value())
