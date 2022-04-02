@@ -55,7 +55,7 @@ a3_warnings_wanted = {
     '-Wmissing-include-dirs', '-Wnull-dereference', '-Wpacked', '-Wshadow', '-Wstack-protector',
     '-Wundef', '-Wcast-align', '-Wbad-function-cast', '-Wimplicit', '-Wmissing-prototypes',
     '-Wnested-externs', '-Wstrict-prototypes', '-Wctor-dtor-privacy', '-Wdelete-non-virtual-dtor',
-    '-Weffc++', '-Wno-pedantic'
+    '-Wconversion', '-Weffc++', '-Wno-pedantic'
   ],
 
   'msvc': [
@@ -65,12 +65,6 @@ a3_warnings_wanted = {
 
 a3_c_flags += c.get_supported_arguments(a3_warnings_wanted[c_arg_syntax])
 a3_cxx_flags += cxx.get_supported_arguments(a3_warnings_wanted[cxx_arg_syntax])
-
-if (c.get_id() != 'gcc' or not c.version().startswith('9')) and (cxx.get_id() != 'gcc' or not cxx.version().startswith('9'))
-  # -Wconversion is too aggressive on GCC 9. Earlier versions don't have the warning.
-  a3_c_flags += c.get_supported_arguments(['-Wconversion'])
-  a3_cxx_flags += cxx.get_supported_arguments(['-Wconversion'])
-endif
 
 a3_include = include_directories(['src/include', '.'])
 a3_src = files(
