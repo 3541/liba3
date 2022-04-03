@@ -79,7 +79,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest' && matrix.architecture != 'amd64'
       run: |
         sudo apt-get update
-        sudo apt-get install -y dpkg-dev qemu-user meson gcc-$CROSS_TRIPLE g++-$CROSS_TRIPLE
+        sudo apt-get install -y dpkg-dev qemu-user meson gcc-$CROSS_TRIPLE g++-$CROSS_TRIPLE pkg-config-$CROSS_TRIPLE
         sudo mkdir /etc/qemu-binfmt
         sudo ln -s /usr/$CROSS_TRIPLE /etc/qemu-binfmt/${{ matrix.architecture }}
         /usr/share/meson/debcrossgen --arch $DEB_ARCH -o ${{ matrix.architecture }}.ini
@@ -105,9 +105,9 @@ jobs:
       id: test
       run: meson test -C build
 
-    - name: Upload failed test logs.
+    - name: Upload failed logs.
       if: failure()
       uses: actions/upload-artifact@v3
       with:
         name: Test logs
-        path: build/meson-logs/testlog.txt
+        path: build/meson-logs/
