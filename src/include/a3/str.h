@@ -204,6 +204,7 @@ A3_EXPORT bool      a3_string_isascii_impl(A3CString);
 A3_EXPORT int       a3_string_cmp_impl(A3CString lhs, A3CString rhs);
 A3_EXPORT int       a3_string_cmpi_impl(A3CString lhs, A3CString rhs);
 A3_EXPORT A3CString a3_string_rchr_impl(A3CString, uint8_t c);
+A3_EXPORT A3CString a3_string_memmem_impl(A3CString haystack, A3CString needle);
 #endif
 
 // Then, create overloaded macros using the type-generic A3_S_CONST.
@@ -246,5 +247,11 @@ A3_EXPORT A3CString a3_string_rchr_impl(A3CString, uint8_t c);
 ///
 /// \brief Find the given byte in the given string, if present.
 #define a3_string_rchr(S, C) a3_string_rchr_impl(A3_S_CONST(S), (C))
+
+///
+///     A3CString a3_string_memmem(A3[C]String haystack, A3[C]String needle);
+///
+/// \brief Find the given substring in the given string, if present.
+#define a3_string_memmem(N, H) a3_string_memmem_impl(A3_S_CONST(N), A3_S_CONST(H))
 
 A3_H_END

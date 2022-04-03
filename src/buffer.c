@@ -1,17 +1,11 @@
 /*
  * BUFFER -- A growable buffer.
  *
- * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2022, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
  */
-
-// For memmem.
-#define _GNU_SOURCE
-#define _DARWIN_C_SOURCE __DARWIN_C_FULL
-
-#include <a3/buffer.h>
 
 #include <assert.h>
 #include <stdarg.h>
@@ -21,15 +15,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
+#include <a3/buffer.h>
 #include <a3/str.h>
 #include <a3/util.h>
 
-// To my future self: This is necessary so that a symbol can be generated for
-// this inline function. On debug builds, the inline hint may be ignored,
-// leading to an "undefined reference" error at link time if these declarations
-// are omittted. The corresponding definitions in the header are marked
-// A3_EXPORT so that these symbols appear in the library.
+#include "types.h"
+
+// To my future self: This is necessary so that a symbol can be generated for this inline function.
+// On debug builds, the inline hint may be ignored, leading to an "undefined reference" error at
+// link time if these declarations are omittted. The corresponding definitions in the header are
+// marked A3_EXPORT so that these symbols appear in the library.
 extern inline bool      a3_buf_initialized(const A3Buffer*);
 extern inline void      a3_buf_reset(A3Buffer*);
 extern inline bool      a3_buf_reset_if_empty(A3Buffer*);
@@ -130,34 +125,12 @@ void a3_buf_read(A3Buffer* this, size_t len) {
     a3_buf_reset_if_empty(this);
 }
 
-#ifdef _WIN32
-// Windows doesn't have memmem.
-static void* memmem(const void* haystack, size_t haystacklen, const void* needle,
-                    size_t needlelen) {
-    if (!haystack || !haystacklen || !needle || !needlelen)
-        return NULL;
-
-    for (const uint8_t* sp = haystack; sp + needlelen < (const uint8_t*)haystack + haystacklen;
-         sp++) {
-        if (memcmp(sp, needle, needlelen) == 0)
-            return (void*)sp;
-    }
-
-    return NULL;
-}
-#endif
-
 A3String a3_buf_memmem(A3Buffer* this, A3CString needle) {
     assert(a3_buf_initialized(this));
     assert(needle.ptr);
     assert(needle.len > 0);
 
-    if (a3_buf_len(this) == 0)
-        return A3_S_NULL;
-
-    uint8_t* ret_ptr =
-        memmem(&this->data.ptr[this->head], a3_buf_len(this), needle.ptr, needle.len);
-    return (A3String) { .ptr = ret_ptr, .len = needle.len };
+    return A3_CS_MUT(a3_string_memmem(a3_buf_read_ptr(this), needle));
 }
 
 // Get a token from the buffer. NOTE: This updates the head of the buffer, so
