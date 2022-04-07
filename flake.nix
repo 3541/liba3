@@ -47,8 +47,10 @@
                   chmod +w subprojects/highwayhash
                   cp subprojects/packagefiles/highwayhash/meson.build subprojects/highwayhash/
                 '';
-                configurePhase =
-                  "CC=${compiler}/bin/cc CXX=${compiler}/bin/c++ meson setup --prefix $out --buildtype ${buildType} --wrap-mode nodownload -Dcpp_std=c++20 build";
+                configurePhase = ''
+                  CC=${compiler}/bin/cc CXX=${compiler}/bin/c++ meson setup --prefix $out \
+                      --buildtype ${buildType} --wrap-mode nodownload -Dcpp_std=c++20 build
+                '';
                 buildPhase = "meson compile -C build";
                 checkPhase = "meson test -C build";
                 doCheck = true;
@@ -76,7 +78,8 @@
         defaultPackage = packages."a3/release";
 
         devShell = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [ gdb rr clang-tools ];
+          nativeBuildInputs = with pkgs;
+            [ gdb rr clang-tools ] ++ packages."a3/debug".nativeBuildInputs;
         };
       });
 }
