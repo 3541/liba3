@@ -86,8 +86,10 @@ a3_lib = library(
   c_args: a3_c_flags + a3_common_flags,
   cpp_args: a3_cxx_flags + a3_common_flags,
   gnu_symbol_visibility: 'hidden',
-  build_by_default: true
+  build_by_default: true,
+  install: true
 )
+install_subdir('src/include', install_dir: 'include', strip_directory: true)
 
 a3_compile_args = ['-D__STDC_WANT_LIB_EXT1__=1']
 if host_machine.system() == 'windows'
