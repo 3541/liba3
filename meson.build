@@ -90,6 +90,8 @@ a3_lib = library(
   install: true
 )
 install_subdir('src/include', install_dir: 'include', strip_directory: true)
+pkg = import('pkgconfig')
+pkg.generate(a3_lib)
 
 a3_compile_args = ['-D__STDC_WANT_LIB_EXT1__=1']
 if host_machine.system() == 'windows'
