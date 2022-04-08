@@ -79,7 +79,8 @@
 
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
-            [ gdb rr clang-tools ] ++ packages."a3/debug".nativeBuildInputs;
+            [ gdb rr clang-tools texlive.combined.scheme-medium ]
+            ++ packages."a3/debug".nativeBuildInputs;
         };
       });
 }
