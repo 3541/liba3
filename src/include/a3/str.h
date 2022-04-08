@@ -8,6 +8,7 @@
  */
 
 /// \file str.h
+/// # String
 /// Byte strings using fat pointers.
 
 #pragma once
@@ -47,6 +48,7 @@ typedef struct A3CString {
 #endif
 } A3CString;
 
+/// Create a string from the given pointer and length.
 A3_ALWAYS_INLINE A3_CONSTEXPR A3String a3_string_new(uint8_t* ptr, size_t len) {
     A3String ret A3_EMPTY_INIT;
     ret.ptr = ptr;
@@ -54,6 +56,7 @@ A3_ALWAYS_INLINE A3_CONSTEXPR A3String a3_string_new(uint8_t* ptr, size_t len) {
     return ret;
 }
 
+/// Create a constant string from the given pointer and length.
 A3_ALWAYS_INLINE A3_CONSTEXPR A3CString a3_cstring_new(uint8_t const* ptr, size_t len) {
     A3CString ret A3_EMPTY_INIT;
     ret.ptr = ptr;

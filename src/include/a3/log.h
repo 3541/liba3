@@ -13,6 +13,10 @@
  * messages logged at a level below the compile-time filter to appear.
  */
 
+/// \file log.h
+/// # Logging
+/// Simple logging to an output stream.
+
 #ifndef A3_LOG_H
 #define A3_LOG_H
 
@@ -26,24 +30,40 @@
 A3_H_BEGIN
 
 #ifndef A3_LOG_LEVEL
+/// The compile-time log level. Anything less severe is compiled out.
 #define A3_LOG_LEVEL A3_LOG_INFO
 #endif
 
+/// Log a formatted message at the given level.
 #define A3_LOG_F(LV, FMT, ...) a3_log((LV), "%s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__)
-#define A3_LOG(LV, MSG)        A3_LOG_F((LV), "%s", MSG)
+/// Log a message at the given level.
+#define A3_LOG(LV, MSG) A3_LOG_F((LV), "%s", MSG)
+/// Log a formatted message at the A3_LOG_TRACE level.
 #define A3_TRACE_F(...)
+/// Log a formatted message at the A3_LOG_DEBUG level.
 #define A3_DEBUG_F(...)
+/// Log a formatted message at the A3_LOG_INFO level.
 #define A3_INFO_F(...)
+/// Log a formatted message at the A3_LOG_WARN level.
 #define A3_WARN_F(...)
+/// Log a formatted message at the A3_LOG_ERROR level.
 #define A3_ERROR_F(...)
+/// Log a formatted message, plus errno string, at the A3_LOG_ERROR level.
 #define A3_ERRNO_F(...)
+/// Log a message at the A3_LOG_TRACE level.
 #define A3_TRACE(MSG)
+/// Log a message at the A3_LOG_DEBUG level.
 #define A3_DEBUG(MSG)
+/// Log a message at the A3_LOG_INFO level.
 #define A3_INFO(MSG)
+/// Log a message at the A3_LOG_WARN level.
 #define A3_WARN(MSG)
+/// Log a message at the A3_LOG_ERROR level.
 #define A3_ERROR(MSG)
+/// Log a message, plus errno string, at the A3_LOG_ERROR level.
 #define A3_ERRNO(CODE, MSG)
 
+#ifndef DOXYGEN
 #if A3_LOG_LEVEL <= A3_LOG_TRACE
 #undef A3_TRACE_F
 #undef A3_TRACE
@@ -100,6 +120,7 @@ A3_H_BEGIN
     } while (0)
 #endif
 #define A3_ERRNO(CODE, MSG) A3_ERRNO_F((CODE), "%s", (MSG))
+#endif
 #endif
 
 A3_H_END
