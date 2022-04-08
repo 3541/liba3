@@ -21,7 +21,7 @@ a3_doc = custom_target(
   'doc',
   command: [doxygen, doxyfile],
   output: ['html', 'latex'],
-  depends: a3_lib,
+  depends: [a3_lib, a3_test],
   depend_files: a3_readme,
   build_by_default: false
 )
