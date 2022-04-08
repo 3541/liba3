@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -137,7 +138,13 @@ A3_ALWAYS_INLINE A3CString a3_cstring_from(char const* str) {
 
 /// Get a string at the given offset into the given string.
 A3_ALWAYS_INLINE A3String a3_string_offset(A3String s, size_t offset) {
+    assert(s.len >= offset);
     return a3_string_new(s.ptr + offset, s.len - offset);
+}
+
+/// Get a string at the given offset backwards.
+A3_ALWAYS_INLINE A3String a3_string_offset_back(A3String s, size_t offset) {
+    return a3_string_new(s.ptr - offset, s.len + offset);
 }
 
 /// The format specifier to use to print a string. See ::A3_S_FORMAT.
