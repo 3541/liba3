@@ -23,6 +23,7 @@
 #include <time.h>
 
 #include <a3/cpp.h>
+#include <a3/types.h>
 #include <a3/util.h>
 
 // From highwayhash.h. Forward-declared since the library header causes unused
@@ -192,7 +193,7 @@ A3_H_END
     bool       A3_HT_DELETE(K, V)(A3_HT(K, V)*, K);                                                \
     A3_SSIZE_T A3_HT_NEXT_ENTRY(K, V)(A3_HT(K, V)*, size_t index);                                 \
                                                                                                    \
-    inline size_t A3_HT_SIZE(K, V)(A3_HT(K, V) * table) {                                          \
+    A3_ALWAYS_INLINE size_t A3_HT_SIZE(K, V)(A3_HT(K, V) * table) {                                \
         assert(table);                                                                             \
         return table->size;                                                                        \
     }                                                                                              \
