@@ -1,7 +1,7 @@
 project(
   'liba3',
   ['c', 'cpp'],
-  version: '0.3.11',
+  version: '0.3.12',
   default_options: [
     'c_std=c11',
 
@@ -24,14 +24,14 @@ cxx_arg_syntax = cxx.get_argument_syntax()
 
 libm = c.find_library('m', required: false)
 
-a3_common_flags = ['-D__STDC_WANT_LIB_EXT1__=1', '-D_XOPEN_SOURCE=600']
+a3_common_flags = []
 a3_c_flags = []
 a3_cxx_flags = []
 
 if host_machine.system() == 'openbsd'
   a3_common_flags += '-D_BSD_SOURCE'
 elif host_machine.system() == 'linux'
-  a3_common_flags += '-D_DEFAULT_SOURCE'
+  a3_common_flags += '-D_POSIX_C_SOURCE=200112L'
 elif host_machine.system() == 'windows'
   a3_common_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
   add_project_arguments('-D_HAS_EXCEPTIONS=0', language: 'cpp')
@@ -93,17 +93,9 @@ install_subdir('src/include', install_dir: 'include', strip_directory: true)
 pkg = import('pkgconfig')
 pkg.generate(a3_lib)
 
-a3_compile_args = ['-D__STDC_WANT_LIB_EXT1__=1']
-if host_machine.system() == 'windows'
-  a3_compile_args += '-D_CRT_SECURE_NO_WARNINGS'
-elif host_machine.system() == 'linux'
-  a3_compile_args += '-D_DEFAULT_SOURCE'
-endif
-
 a3 = declare_dependency(
   link_with: a3_lib,
   include_directories: include_directories(['src/include']),
-  compile_args: a3_compile_args
 )
 a3_dep = a3
 

@@ -18,14 +18,17 @@ a3_test_src = files(
 )
 
 a3_test_args = ['-DGTEST_HAS_EXCEPTIONS=0']
-a3_test_cxx_args = a3_test_args
 
-a3_test_cxx_args += cxx.get_supported_arguments(['-Wno-keyword-macro', '-Wno-pedantic'])
+if host_machine.system() == 'windows'
+  a3_test_args += '-D_CRT_SECURE_NO_WARNINGS'
+endif
+
+a3_test_args += cxx.get_supported_arguments(['-Wno-keyword-macro', '-Wno-pedantic'])
 
 a3_test = executable(
   'a3_test',
   a3_test_src,
-  cpp_args: a3_test_cxx_args,
+  cpp_args: a3_test_args,
   dependencies: [gmock_main, a3, a3_hash],
   build_by_default: false
 )
