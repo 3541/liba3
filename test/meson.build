@@ -25,12 +25,16 @@ endif
 
 a3_test_args += cxx.get_supported_arguments(['-Wno-keyword-macro', '-Wno-pedantic'])
 
-a3_test = executable(
-  'a3_test',
-  a3_test_src,
-  cpp_args: a3_test_args,
-  dependencies: [gmock_main, a3, a3_hash],
-  build_by_default: false
-)
+if cxx.get_id() == 'gcc' and cxx.version().split('.')[0].to_int() < 5
+  warning('gcc ' + cxx.version() + ' not supported by gtest. Tests disabled.')
+else
+  a3_test = executable(
+    'a3_test',
+    a3_test_src,
+    cpp_args: a3_test_args,
+    dependencies: [gmock_main, a3, a3_hash],
+    build_by_default: false
+  )
 
-test('a3_gtest', a3_test, protocol: 'gtest')
+  test('a3_gtest', a3_test, protocol: 'gtest')
+endif
