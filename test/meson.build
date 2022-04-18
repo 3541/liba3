@@ -25,8 +25,8 @@ endif
 
 a3_test_args += cxx.get_supported_arguments(['-Wno-keyword-macro', '-Wno-pedantic'])
 
-if cxx.get_id() == 'gcc' and cxx.version().split('.')[0].to_int() < 5
-  warning('gcc ' + cxx.version() + ' not supported by gtest. Tests disabled.')
+if (cxx.get_id() == 'gcc' or cxx.get_id() == 'clang') and cxx.version().split('.')[0].to_int() < 5
+  warning(cxx.get_id() + ' ' + cxx.version() + ' not supported by gtest. Tests disabled.')
 else
   a3_test = executable(
     'a3_test',
