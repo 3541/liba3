@@ -74,8 +74,23 @@ bool a3_buf_write_vfmt(A3Buffer* this, const char* fmt, va_list args) {
 
     A3String write_ptr = a3_buf_write_ptr(this);
     int      rc        = -1;
-    if ((rc = vsnprintf((char*)write_ptr.ptr, write_ptr.len, fmt, args)) < 0)
-        return false;
+    while (true) {
+        va_list args_copy;
+        va_copy(args_copy, args);
+
+        rc = vsnprintf((char*)write_ptr.ptr, write_ptr.len, fmt, args_copy);
+        va_end(args_copy);
+
+        if (rc < 0)
+            return false;
+
+        if ((size_t)rc < write_ptr.len)
+            break;
+
+        if (!a3_buf_ensure_cap(this, (size_t)rc))
+            break;
+        write_ptr = a3_buf_write_ptr(this);
+    }
 
     a3_buf_wrote(this, MIN(write_ptr.len, (size_t)rc));
 

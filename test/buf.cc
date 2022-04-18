@@ -49,6 +49,14 @@ TEST_F(BufferTest, write_fmt) {
     ASSERT_EQ(a3_string_cmpi(a3_buf_read_ptr(&buf), A3_CS("123 1.2 string")), 0);
 }
 
+TEST_F(BufferTest, write_fmt_grow) {
+    a3_buf_destroy(&buf);
+    a3_buf_init(&buf, 1, 200);
+
+    a3_buf_write_fmt(&buf, "%d %0.1f %s", 123, 1.23, "string");
+    ASSERT_EQ(a3_string_cmpi(a3_buf_read_ptr(&buf), A3_CS("123 1.2 string")), 0);
+}
+
 TEST_F(BufferTest, write_num) {
     a3_buf_write_num(&buf, 1234567);
     ASSERT_EQ(a3_string_cmpi(a3_buf_read_ptr(&buf), A3_CS("1234567")), 0);
