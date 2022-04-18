@@ -4,7 +4,9 @@
 #include <a3/ll.h>
 #include <a3/util.h>
 
-namespace a3::test::ll {
+namespace a3 {
+namespace test {
+namespace ll {
 
 using namespace testing;
 
@@ -78,4 +80,6 @@ TEST_F(LLTest, for_each_empty) {
     }
 }
 
-} // namespace a3::test::ll
+} // namespace ll
+} // namespace test
+} // namespace a3

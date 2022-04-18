@@ -3,7 +3,9 @@
 #include <a3/buffer.h>
 #include <a3/str.h>
 
-namespace a3::test::buf {
+namespace a3 {
+namespace test {
+namespace buf {
 
 #define BUF_INITIAL_CAP (128ULL)
 #define BUF_MAX_CAP     (512ULL)
@@ -149,4 +151,6 @@ TEST_F(BufferTest, grow) {
     EXPECT_EQ(buf.data.len, BUF_MAX_CAP);
 }
 
-} // namespace a3::test::buf
+} // namespace buf
+} // namespace test
+} // namespace a3

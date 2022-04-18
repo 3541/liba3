@@ -5,7 +5,9 @@
 
 #include <a3/pool.h>
 
-namespace a3::test::pool {
+namespace a3 {
+namespace test {
+namespace pool {
 
 using std::vector;
 
@@ -104,4 +106,6 @@ TEST_F(PoolTest, alloc_all) {
     EXPECT_EQ(allocations.size(), count);
 }
 
-} // namespace a3::test::pool
+} // namespace pool
+} // namespace test
+} // namespace a3

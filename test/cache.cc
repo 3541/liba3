@@ -11,7 +11,9 @@ A3_CACHE_DEFINE_STRUCTS(A3CString, A3CString)
 A3_CACHE_DECLARE_METHODS(A3CString, A3CString)
 A3_CACHE_DEFINE_METHODS_NOHT(A3CString, A3CString)
 
-namespace a3::test::cache {
+namespace a3 {
+namespace test {
+namespace cache {
 
 using std::vector;
 
@@ -95,4 +97,6 @@ TEST_F(CacheTest, eviction_callback) {
     EXPECT_EQ(cache.table.size, 0ULL);
 }
 
-} // namespace a3::test::cache
+} // namespace cache
+} // namespace test
+} // namespace a3

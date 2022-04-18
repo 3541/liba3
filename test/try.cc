@@ -7,7 +7,9 @@
 #pragma warning(disable : 4127)
 #endif
 
-namespace a3::test::a3try {
+namespace a3 {
+namespace test {
+namespace try_macros {
 
 TEST(Try, TRYB) {
     EXPECT_FALSE([]() {
@@ -85,4 +87,6 @@ TEST(Try, TRY) {
     }());
 }
 
-} // namespace a3::test::a3try
+} // namespace try_macros
+} // namespace test
+} // namespace a3

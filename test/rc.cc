@@ -6,7 +6,9 @@
 #include <a3/rc.hh>
 #include <a3/util.hh>
 
-namespace a3::test::rc {
+namespace a3 {
+namespace test {
+namespace rc {
 
 using std::move;
 
@@ -151,4 +153,6 @@ TEST(Rc, wrapper_clone_and_move) {
     EXPECT_EQ(d_count, 1U);
 }
 
-} // namespace a3::test::rc
+} // namespace rc
+} // namespace test
+} // namespace a3

@@ -9,7 +9,9 @@
 #include <a3/log.h>
 #include <a3/str.h>
 
-namespace a3::test::log {
+namespace a3 {
+namespace test {
+namespace log {
 
 using namespace testing;
 
@@ -81,4 +83,6 @@ TEST_F(LogTest, macros) {
     ASSERT_EQ(read_written(), expected.str().c_str());
 }
 
-} // namespace a3::test::log
+} // namespace log
+} // namespace test
+} // namespace a3

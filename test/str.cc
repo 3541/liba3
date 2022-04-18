@@ -2,7 +2,9 @@
 
 #include <a3/str.h>
 
-namespace a3::test::str {
+namespace a3 {
+namespace test {
+namespace str {
 
 TEST(String, construct) {
     A3CString lit = A3_CS("test");
@@ -138,4 +140,6 @@ TEST(String, string_view_conversion) {
 }
 #endif
 
-} // namespace a3::test::str
+} // namespace str
+} // namespace test
+} // namespace a3
