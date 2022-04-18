@@ -72,7 +72,8 @@
               };
             });
           in (buildTypes pkgs.gcc) // {
-            clang = buildTypes pkgs.llvmPackages_latest.clang;
+            clang = pkgs.lib.recurseIntoAttrs
+              (buildTypes pkgs.llvmPackages_latest.clang);
           });
         };
         defaultPackage = packages."a3/release";
@@ -80,6 +81,7 @@
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
             [ gdb rr clang-tools texlive.combined.scheme-medium ]
+            ++ packages."a3/clang/debug".nativeBuildInputs
             ++ packages."a3/debug".nativeBuildInputs;
         };
       });
