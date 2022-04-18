@@ -5,6 +5,8 @@
 
 #include <a3/pool.h>
 
+namespace a3::test::pool {
+
 using std::vector;
 
 // An object to store in the pool.
@@ -101,3 +103,5 @@ TEST_F(PoolTest, alloc_all) {
     }
     EXPECT_EQ(allocations.size(), count);
 }
+
+} // namespace a3::test::pool

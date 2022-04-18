@@ -9,6 +9,8 @@
 #include <a3/log.h>
 #include <a3/str.h>
 
+namespace a3::test::log {
+
 using namespace testing;
 
 class LogTest : public Test {
@@ -78,3 +80,5 @@ TEST_F(LogTest, macros) {
 
     ASSERT_EQ(read_written(), expected.str().c_str());
 }
+
+} // namespace a3::test::log

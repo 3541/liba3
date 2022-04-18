@@ -5,6 +5,8 @@
 
 #include <a3/option.hh>
 
+namespace a3::test::option {
+
 using namespace a3;
 using namespace testing;
 
@@ -37,5 +39,7 @@ TEST(Option, result_conversion) {
     EXPECT_THAT(res1.unwrap_err(), Eq(-1));
 }
 #endif
+
+} // namespace a3::test::option
 
 #endif

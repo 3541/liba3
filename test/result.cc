@@ -4,6 +4,8 @@
 
 #include <a3/result.hh>
 
+namespace a3::test::result {
+
 using namespace a3;
 using namespace testing;
 
@@ -226,5 +228,7 @@ TEST(Result, default_initialization) {
     EXPECT_THAT(victim.is_ok(), IsTrue());
     EXPECT_THAT(victim.unwrap(), Eq(0));
 }
+
+} // namespace a3::test::result
 
 #endif

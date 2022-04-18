@@ -7,6 +7,8 @@
 #pragma warning(disable : 4127)
 #endif
 
+namespace a3::test::_try {
+
 TEST(Try, TRYB) {
     EXPECT_FALSE([]() {
         A3_TRYB(false);
@@ -82,3 +84,5 @@ TEST(Try, TRY) {
         return false;
     }());
 }
+
+} // namespace a3::test::_try

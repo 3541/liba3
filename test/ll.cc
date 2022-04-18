@@ -4,6 +4,8 @@
 #include <a3/ll.h>
 #include <a3/util.h>
 
+namespace a3::test::ll {
+
 using namespace testing;
 
 struct LLNode {
@@ -75,3 +77,5 @@ TEST_F(LLTest, for_each_empty) {
         EXPECT_THAT(false, IsTrue()) << "foreach should not loop when list is empty.";
     }
 }
+
+} // namespace a3::test::ll

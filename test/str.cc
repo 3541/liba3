@@ -2,6 +2,8 @@
 
 #include <a3/str.h>
 
+namespace a3::test::str {
+
 TEST(String, construct) {
     A3CString lit = A3_CS("test");
     EXPECT_STREQ(a3_string_cstr(lit), "test");
@@ -135,3 +137,5 @@ TEST(String, string_view_conversion) {
     EXPECT_EQ(sv.size(), s.len);
 }
 #endif
+
+} // namespace a3::test::str

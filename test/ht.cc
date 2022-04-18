@@ -6,12 +6,14 @@
 #include <a3/str.h>
 #include <a3/util.hh>
 
-using std::vector;
-
 A3_HT_DEFINE_STRUCTS(A3CString, A3CString)
 
 A3_HT_DECLARE_METHODS(A3CString, A3CString)
 A3_HT_DEFINE_METHODS(A3CString, A3CString, a3_string_cptr, a3_string_len, a3_string_cmp)
+
+namespace a3::test::ht {
+
+using std::vector;
 
 class HTTest : public ::testing::Test {
     A3_PINNED(HTTest);
@@ -149,3 +151,5 @@ TEST_F(HTTest, duplicate_combine) {
 
     a3_string_free(reinterpret_cast<A3String*>(combined_value));
 }
+
+} // namespace a3::test::ht

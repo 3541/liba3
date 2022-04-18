@@ -6,12 +6,14 @@
 #include <a3/log.h>
 #include <a3/str.h>
 
-using std::vector;
-
 A3_CACHE_DEFINE_STRUCTS(A3CString, A3CString)
 
 A3_CACHE_DECLARE_METHODS(A3CString, A3CString)
 A3_CACHE_DEFINE_METHODS_NOHT(A3CString, A3CString)
+
+namespace a3::test::cache {
+
+using std::vector;
 
 #define CACHE_CAPACITY (512ULL)
 
@@ -92,3 +94,5 @@ TEST_F(CacheTest, eviction_callback) {
     EXPECT_EQ(evicted, CACHE_CAPACITY * 2);
     EXPECT_EQ(cache.table.size, 0ULL);
 }
+
+} // namespace a3::test::cache

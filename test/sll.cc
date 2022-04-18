@@ -4,6 +4,8 @@
 #include <a3/sll.h>
 #include <a3/util.h>
 
+namespace a3::test::sll {
+
 using namespace testing;
 
 struct SLLNode {
@@ -68,3 +70,5 @@ TEST_F(SLLTest, for_each_empty) {
         EXPECT_THAT(false, IsTrue()) << "foreach should not loop when list is empty.";
     }
 }
+
+} // namespace a3::test::sll
