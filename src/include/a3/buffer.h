@@ -98,7 +98,7 @@ A3_ALWAYS_INLINE A3String a3_buf_token_next_copy(A3Buffer* buf, A3CString delim,
 }
 
 /// Check whether the buffer has been initialized.
-A3_EXPORT inline bool a3_buf_initialized(const A3Buffer* buf) {
+A3_ALWAYS_INLINE bool a3_buf_initialized(const A3Buffer* buf) {
     assert(buf);
     assert(buf->head <= buf->tail);
 
@@ -106,7 +106,7 @@ A3_EXPORT inline bool a3_buf_initialized(const A3Buffer* buf) {
 }
 
 /// Clear the buffer, resetting the head and tail indices.
-A3_EXPORT inline void a3_buf_reset(A3Buffer* buf) {
+A3_ALWAYS_INLINE void a3_buf_reset(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 
     buf->head = 0;
@@ -114,7 +114,7 @@ A3_EXPORT inline void a3_buf_reset(A3Buffer* buf) {
 }
 
 /// Reset the buffer if it is empty.
-A3_EXPORT inline bool a3_buf_reset_if_empty(A3Buffer* buf) {
+A3_ALWAYS_INLINE bool a3_buf_reset_if_empty(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 
     if (buf->head != buf->tail)
@@ -125,19 +125,19 @@ A3_EXPORT inline bool a3_buf_reset_if_empty(A3Buffer* buf) {
 }
 
 /// Get the length of the contents of the buffer.
-A3_EXPORT inline size_t a3_buf_len(const A3Buffer* buf) {
+A3_ALWAYS_INLINE size_t a3_buf_len(const A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
     return buf->tail - buf->head;
 }
 
 /// Get the total available capacity for writing.
-A3_EXPORT inline size_t a3_buf_cap(const A3Buffer* buf) {
+A3_ALWAYS_INLINE size_t a3_buf_cap(const A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
     return buf->data.len - a3_buf_len(buf);
 }
 
 /// Get the space available for a single write (i.e., continguous space).
-A3_EXPORT inline size_t a3_buf_space(A3Buffer* buf) {
+A3_ALWAYS_INLINE size_t a3_buf_space(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 
     a3_buf_reset_if_empty(buf);
@@ -145,7 +145,7 @@ A3_EXPORT inline size_t a3_buf_space(A3Buffer* buf) {
 }
 
 /// Compact the contents to the start of the buffer.
-A3_EXPORT inline bool a3_buf_compact(A3Buffer* buf) {
+A3_ALWAYS_INLINE bool a3_buf_compact(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
     assert(buf->head != 0);
 
@@ -156,7 +156,7 @@ A3_EXPORT inline bool a3_buf_compact(A3Buffer* buf) {
 }
 
 /// Attempt to grow the buffer to fit at least min_extra_cap more bytes.
-A3_EXPORT inline bool a3_buf_ensure_cap(A3Buffer* buf, size_t min_extra_cap) {
+A3_ALWAYS_INLINE bool a3_buf_ensure_cap(A3Buffer* buf, size_t min_extra_cap) {
     assert(a3_buf_initialized(buf));
 
     if (a3_buf_space(buf) >= min_extra_cap)
@@ -179,7 +179,7 @@ A3_EXPORT inline bool a3_buf_ensure_cap(A3Buffer* buf, size_t min_extra_cap) {
 }
 
 /// Attempt to grow the buffer to its maximum capacity.
-A3_EXPORT inline bool a3_buf_ensure_max_cap(A3Buffer* buf) {
+A3_ALWAYS_INLINE bool a3_buf_ensure_max_cap(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 
     if (buf->data.len >= buf->max_cap)
@@ -189,7 +189,7 @@ A3_EXPORT inline bool a3_buf_ensure_max_cap(A3Buffer* buf) {
 }
 
 /// Get a pointer for writing into the buffer.
-A3_EXPORT inline A3String a3_buf_write_ptr(A3Buffer* buf) {
+A3_ALWAYS_INLINE A3String a3_buf_write_ptr(A3Buffer* buf) {
     assert(buf);
 
     a3_buf_reset_if_empty(buf);
@@ -201,7 +201,7 @@ A3_EXPORT inline A3String a3_buf_write_ptr(A3Buffer* buf) {
 }
 
 /// Get a pointer for reading from the buffer.
-A3_EXPORT inline A3CString a3_buf_read_ptr(const A3Buffer* buf) {
+A3_ALWAYS_INLINE A3CString a3_buf_read_ptr(const A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 #ifdef __cplusplus
     return { buf->data.ptr + buf->head, a3_buf_len(buf) };
@@ -211,7 +211,7 @@ A3_EXPORT inline A3CString a3_buf_read_ptr(const A3Buffer* buf) {
 }
 
 /// Notify the buffer that bytes have been written into it.
-A3_EXPORT inline void a3_buf_wrote(A3Buffer* buf, size_t len) {
+A3_ALWAYS_INLINE void a3_buf_wrote(A3Buffer* buf, size_t len) {
     assert(a3_buf_initialized(buf));
     assert(buf->tail + len <= buf->data.len);
 
@@ -219,7 +219,7 @@ A3_EXPORT inline void a3_buf_wrote(A3Buffer* buf, size_t len) {
 }
 
 /// Write a string into the buffer.
-A3_EXPORT inline bool a3_buf_write_str(A3Buffer* buf, A3CString str) {
+A3_ALWAYS_INLINE bool a3_buf_write_str(A3Buffer* buf, A3CString str) {
     assert(a3_buf_initialized(buf));
 
     if (str.len + a3_buf_len(buf) > buf->max_cap)

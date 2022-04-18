@@ -21,24 +21,6 @@
 
 #include "types.h"
 
-// To my future self: This is necessary so that a symbol can be generated for this inline function.
-// On debug builds, the inline hint may be ignored, leading to an "undefined reference" error at
-// link time if these declarations are omittted. The corresponding definitions in the header are
-// marked A3_EXPORT so that these symbols appear in the library.
-extern inline bool      a3_buf_initialized(const A3Buffer*);
-extern inline void      a3_buf_reset(A3Buffer*);
-extern inline bool      a3_buf_reset_if_empty(A3Buffer*);
-extern inline size_t    a3_buf_len(const A3Buffer*);
-extern inline size_t    a3_buf_cap(const A3Buffer*);
-extern inline size_t    a3_buf_space(A3Buffer*);
-extern inline bool      a3_buf_compact(A3Buffer*);
-extern inline bool      a3_buf_ensure_cap(A3Buffer*, size_t);
-extern inline bool      a3_buf_ensure_max_cap(A3Buffer*);
-extern inline A3String  a3_buf_write_ptr(A3Buffer*);
-extern inline A3CString a3_buf_read_ptr(const A3Buffer*);
-extern inline bool      a3_buf_write_str(A3Buffer*, A3CString);
-extern inline void      a3_buf_wrote(A3Buffer*, size_t);
-
 // TODO: This should probably hand out slices of a pre-registered buffer of some
 // kind, to reduce the overhead of malloc and of mapping buffers into kernel
 // memory.
