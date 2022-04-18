@@ -41,7 +41,7 @@ typedef ssize_t A3_SSIZE_T;
 #define A3_ALWAYS_INLINE __forceinline
 #elif defined(__GNUC__) || defined(__clang__)
 #define A3_ALLOW_UNUSED  __attribute__((unused))
-#define A3_ALWAYS_INLINE static inline __attribute__((always_inline))
+#define A3_ALWAYS_INLINE static inline __attribute__((always_inline)) A3_ALLOW_UNUSED
 #else // !_MSC_VER && (__GNUC__ || __clang__)
 #define A3_ALLOW_UNUSED
 #define A3_ALWAYS_INLINE
