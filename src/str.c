@@ -150,7 +150,7 @@ A3CString a3_string_rchr_impl(A3CString str, uint8_t c) {
     return A3_CS_NULL;
 }
 
-#ifdef _WIN32
+#ifndef A3_HAVE_MEMMEM
 // Windows doesn't have memmem.
 static void* memmem(void const* haystack, size_t haystacklen, void const* needle,
                     size_t needlelen) {

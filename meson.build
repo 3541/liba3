@@ -66,6 +66,34 @@ a3_warnings_wanted = {
 a3_c_flags += c.get_supported_arguments(a3_warnings_wanted[c_arg_syntax])
 a3_cxx_flags += cxx.get_supported_arguments(a3_warnings_wanted[cxx_arg_syntax])
 
+if c.has_function('memmem', args: ['-D_GNU_SOURCE', '-D_DARWIN_C_SOURCE=__DARWIN_C_FULL'])
+  a3_c_flags += '-DA3_HAVE_MEMMEM'
+endif
+
+if c.has_function('strerror_r')
+  a3_c_flags += '-DA3_HAVE_STRERROR_R'
+
+  # If the return value of strerror_r can be dereferenced and assigned to a char, it is most likely
+  # the _GNU_SOURCE version. The XSI version returns int.
+  strerror_test = '''
+  #include <string.h>
+  #include <errno.h>
+
+  int main(void) {
+      char buf[32] = { '\0' };
+      char c = *strerror_r(EAGAIN, buf, sizeof(buf));
+      return 0;
+  }
+  '''
+  if c.compiles(strerror_test)
+    a3_c_flags += '-DA3_HAVE_GNU_STRERROR_R'
+  endif
+endif
+
+if c.has_function('strerror_s')
+  a3_c_flags += '-DA3_HAVE_STRERROR_S'
+endif
+
 a3_include = include_directories(['src/include', '.'])
 a3_src = files(
   [
@@ -74,7 +102,8 @@ a3_src = files(
     'src/log.c',
     'src/pool.c',
     'src/sll.c',
-    'src/str.c'
+    'src/str.c',
+    'src/shim/strerror.c',
   ]
 )
 

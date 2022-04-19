@@ -20,6 +20,7 @@
 #ifndef A3_LOG_H
 #define A3_LOG_H
 
+#include <a3/shim/strerror.h>
 #include <stdio.h>
 
 #include <a3/cpp.h>
@@ -99,26 +100,14 @@ A3_H_BEGIN
 #undef A3_ERRNO
 #define A3_ERROR_F(FMT, ...) A3_LOG_F(A3_LOG_ERROR, FMT, __VA_ARGS__)
 #define A3_ERROR(MSG)        A3_LOG(A3_LOG_ERROR, (MSG))
-#ifndef _GNU_SOURCE
-#ifdef _MSC_VER
-#define strerror_r(CODE, BUF, LEN) strerror_s((BUF), (LEN), (CODE))
-#endif
 #define A3_ERRNO_F(CODE, FMT, ...)                                                                 \
     do {                                                                                           \
         char A3_M_PASTE(buf_, __LINE__)[32] = { 0 };                                               \
-        strerror_r((CODE), A3_M_PASTE(buf_, __LINE__), sizeof(A3_M_PASTE(buf_, __LINE__)));        \
-        A3_LOG_F(A3_LOG_ERROR, "%s (%d) " FMT, A3_M_PASTE(buf_, __LINE__), (CODE), __VA_ARGS__);   \
+        A3_LOG_F(A3_LOG_ERROR, "%s (%d) " FMT,                                                     \
+                 a3_shim_strerror((CODE), A3_M_PASTE(buf_, __LINE__),                              \
+                                  sizeof(A3_M_PASTE(buf_, __LINE__))),                             \
+                 (CODE), __VA_ARGS__);                                                             \
     } while (0)
-#else
-#define A3_ERRNO_F(CODE, FMT, ...)                                                                 \
-    do {                                                                                           \
-        char A3_M_PASTE(buf_, __LINE__)[32] = { 0 };                                               \
-        A3_LOG_F(                                                                                  \
-            A3_LOG_ERROR, "%s (%d) " FMT,                                                          \
-            strerror_r((CODE), A3_M_PASTE(buf_, __LINE__), sizeof(A3_M_PASTE(buf_, __LINE__))),    \
-            (CODE), __VA_ARGS__);                                                                  \
-    } while (0)
-#endif
 #define A3_ERRNO(CODE, MSG) A3_ERRNO_F((CODE), "%s", (MSG))
 #endif
 #endif
