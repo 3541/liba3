@@ -91,7 +91,10 @@ if c.has_function('strerror_r')
   }
   '''
   if c.compiles(strerror_test)
+    message('strerror_r has the GNU signature.')
     a3_c_flags += '-DA3_HAVE_GNU_STRERROR_R'
+  else
+    message('strerror_r has the XSI signature.')
   endif
 elif c.has_function('strerror_s')
   a3_c_flags += '-DA3_HAVE_STRERROR_S'
