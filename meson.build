@@ -28,10 +28,12 @@ a3_common_flags = []
 a3_c_flags = []
 a3_cxx_flags = []
 
-if host_machine.system() == 'openbsd'
-  a3_common_flags += '-D_BSD_SOURCE'
-elif host_machine.system() == 'linux'
+if host_machine.system() == 'linux'
   a3_common_flags += '-D_XOPEN_SOURCE=600'
+elif host_machine.system() == 'openbsd'
+  a3_common_flags += '-D_BSD_SOURCE'
+elif host_machine.system() == 'sunos'
+  a3_common_flags += '-D__EXTENSIONS__'
 elif host_machine.system() == 'windows'
   a3_common_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
   add_project_arguments('-D_HAS_EXCEPTIONS=0', language: 'cpp')
