@@ -7,9 +7,8 @@
  * the project root for details.
  */
 
-// For memmem.
-#define _GNU_SOURCE
-#define _DARWIN_C_SOURCE __DARWIN_C_FULL
+#include <a3/shim/memmem.h>
+#include <a3/shim/strncasecmp.h>
 #include <assert.h>
 #include <ctype.h>
 #include <math.h>
@@ -18,11 +17,6 @@
 #include <string.h>
 
 #include <a3/str.h>
-
-#ifndef _MSC_VER
-#include <strings.h>
-#endif
-
 #include <a3/util.h>
 
 A3String a3_string_alloc(size_t len) {
@@ -126,14 +120,14 @@ int a3_string_cmp_impl(A3CString lhs, A3CString rhs) {
     assert(lhs.ptr && rhs.ptr);
     if (lhs.len != rhs.len)
         return -1;
-    return strncmp((char*)lhs.ptr, (char*)rhs.ptr, lhs.len);
+    return strncmp(a3_string_cstr(lhs), a3_string_cstr(rhs), lhs.len);
 }
 
 int a3_string_cmpi_impl(A3CString lhs, A3CString rhs) {
     assert(lhs.ptr && rhs.ptr);
     if (lhs.len != rhs.len)
         return -1;
-    return strncasecmp((char*)lhs.ptr, (char*)rhs.ptr, lhs.len);
+    return a3_shim_strncasecmp(a3_string_cstr(lhs), a3_string_cstr(rhs), lhs.len);
 }
 
 A3CString a3_string_rchr_impl(A3CString str, uint8_t c) {
@@ -150,23 +144,6 @@ A3CString a3_string_rchr_impl(A3CString str, uint8_t c) {
     return A3_CS_NULL;
 }
 
-#ifndef A3_HAVE_MEMMEM
-// Windows doesn't have memmem.
-static void* memmem(void const* haystack, size_t haystacklen, void const* needle,
-                    size_t needlelen) {
-    if (!haystack || !haystacklen || !needle || !needlelen)
-        return NULL;
-
-    for (uint8_t const* sp = haystack; sp + needlelen < (uint8_t const*)haystack + haystacklen;
-         sp++) {
-        if (memcmp(sp, needle, needlelen) == 0)
-            return (void*)sp;
-    }
-
-    return NULL;
-}
-#endif
-
 A3CString a3_string_memmem_impl(A3CString haystack, A3CString needle) {
     assert(haystack.ptr);
     assert(needle.ptr);
@@ -175,6 +152,6 @@ A3CString a3_string_memmem_impl(A3CString haystack, A3CString needle) {
     if (haystack.len < needle.len)
         return A3_CS_NULL;
 
-    return (A3CString) { .ptr = memmem(haystack.ptr, haystack.len, needle.ptr, needle.len),
+    return (A3CString) { .ptr = a3_shim_memmem(haystack.ptr, haystack.len, needle.ptr, needle.len),
                          .len = needle.len };
 }

@@ -31,7 +31,7 @@ a3_cxx_flags = []
 if host_machine.system() == 'openbsd'
   a3_common_flags += '-D_BSD_SOURCE'
 elif host_machine.system() == 'linux'
-  a3_common_flags += '-D_POSIX_C_SOURCE=200112L'
+  a3_common_flags += '-D_XOPEN_SOURCE=600'
 elif host_machine.system() == 'windows'
   a3_common_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
   add_project_arguments('-D_HAS_EXCEPTIONS=0', language: 'cpp')
@@ -88,10 +88,14 @@ if c.has_function('strerror_r')
   if c.compiles(strerror_test)
     a3_c_flags += '-DA3_HAVE_GNU_STRERROR_R'
   endif
+elif c.has_function('strerror_s')
+  a3_c_flags += '-DA3_HAVE_STRERROR_S'
 endif
 
-if c.has_function('strerror_s')
-  a3_c_flags += '-DA3_HAVE_STRERROR_S'
+if c.has_function('strncasecmp')
+  a3_c_flags += '-DA3_HAVE_STRNCASECMP'
+elif c.has_function('_strnicmp')
+  a3_c_flags += '-DA3_HAVE_STRNICMP'
 endif
 
 a3_include = include_directories(['src/include', '.'])
@@ -103,7 +107,9 @@ a3_src = files(
     'src/pool.c',
     'src/sll.c',
     'src/str.c',
+    'src/shim/memmem.c',
     'src/shim/strerror.c',
+    'src/shim/strncasecmp.c',
   ]
 )
 

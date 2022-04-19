@@ -21,11 +21,6 @@ typedef SSIZE_T A3_SSIZE_T;
 typedef ssize_t A3_SSIZE_T;
 #endif
 
-// Renamings
-#ifdef _MSC_VER
-#define strncasecmp _strnicmp
-#endif
-
 // Attributes
 #ifdef _WIN32
 // Note: Yes, this works on mingw GCC.

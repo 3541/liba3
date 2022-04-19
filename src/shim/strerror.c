@@ -22,5 +22,7 @@ char* a3_shim_strerror(int errnum, char* buf, size_t len) {
 #elif defined(A3_HAVE_STRERROR_S)
     strerror_s(buf, len, errnum);
     return buf;
+#else
+#error "No strerror_r alternative available."
 #endif
 }
