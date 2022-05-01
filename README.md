@@ -53,6 +53,12 @@ build system provides dependencies `a3_dep` and `a3_hash_dep`.
 Projects using other build systems can invoke Meson directly and depend on the library produced (or
 they can simply build it themselves — take look at `meson.build` for inspiration).
 
+### Building with Nix
+
+Alternatively, the project may be built with Nix. Simply running `nix build` will produce a release
+build installed under `./result` (a symlink to the Nix store). Additional build configurations are
+also available. For example, a debug build on Clang can be invoked using `nix build
+.#a3/clang/debug`.
 
 ## Notes
 Most objects (buffer, hash table, linked list, etc...) provide the following functions to do with their lifecycle:
