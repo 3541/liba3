@@ -20,27 +20,22 @@
       in rec {
         packages = utils.lib.flattenTree {
           a3 = pkgs.lib.recurseIntoAttrs (let
-            a3build = ({ buildType, san ? false, compiler }:
+            a3build = ({ buildType, san ? false, compiler, extra ? [ ]
+              , extraMesonArgs ? "" }:
               pkgs.stdenv.mkDerivation {
                 name = "a3";
                 version = "0.3.10";
 
-                nativeBuildInputs = with pkgs; [
-                  compiler
-                  git
-                  doxygen
-                  meson
-                  gtest
-                  pkg-config
-                  ninja
-                ];
+                nativeBuildInputs = with pkgs;
+                  [ compiler git doxygen meson gtest pkg-config ninja ]
+                  ++ extra;
                 src = ./.;
 
                 mesonArgs = (if buildType == "release" then
                   "-Db_lto=true"
                 else
-                  "-Db_coverage=true") + pkgs.lib.optionalString san
-                  "-Db_sanitize=address,undefined";
+                  "-Db_coverage=true") + (pkgs.lib.optionalString san
+                    "-Db_sanitize=address,undefined") + extraMesonArgs;
 
                 patchPhase = ''
                   cp -r ${self.inputs.highwayhash} subprojects/highwayhash
@@ -56,24 +51,32 @@
                 doCheck = true;
                 installPhase = "meson install -C build";
               });
-            buildTypes = (compiler: {
+            buildTypes = (compiler: extra: mesonArgs: {
               debug = a3build {
                 buildType = "debug";
                 compiler = compiler;
+                extra = extra;
+                extraMesonArgs = mesonArgs;
               };
               san = a3build {
                 buildType = "debug";
                 compiler = compiler;
+                extra = extra;
+                extraMesonArgs = mesonArgs;
                 san = true;
               };
               release = a3build {
                 buildType = "release";
                 compiler = compiler;
+                extra = extra;
+                extraMesonArgs = mesonArgs;
               };
             });
-          in (buildTypes pkgs.gcc) // {
+          in (buildTypes pkgs.gcc [ ] "") // {
             clang = pkgs.lib.recurseIntoAttrs
-              (buildTypes pkgs.llvmPackages_latest.clang);
+              (buildTypes pkgs.llvmPackages_latest.clang
+                [ pkgs.llvmPackages_latest.libllvm ]
+                "--native-file boilerplate/meson/clang.ini");
           });
         };
         defaultPackage = packages."a3/release";
