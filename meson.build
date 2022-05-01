@@ -73,13 +73,20 @@ a3_warnings_wanted = {
 a3_c_flags += c.get_supported_arguments(a3_warnings_wanted[c_arg_syntax])
 a3_cxx_flags += cxx.get_supported_arguments(a3_warnings_wanted[cxx_arg_syntax])
 
-if c.has_function('memmem', args: ['-D_GNU_SOURCE', '-D_DARWIN_C_SOURCE=__DARWIN_C_FULL'])
-  a3_c_flags += '-DA3_HAVE_MEMMEM'
-endif
+functions = {}
+foreach s : [['memmem'],
+             ['strerror_r', 'strerror_s'],
+             ['strncasecmp', '_strnicmp']]
+  foreach f : s
+    if c.has_function(f, args: ['-D_GNU_SOURCE', '-D_DARWIN_C_SOURCE=__DARWIN_C_FULL'])
+      a3_c_flags += '-DA3_HAVE_' + f.to_upper()
+      functions += { f: true }
+      break
+    endif
+  endforeach
+endforeach
 
-if c.has_function('strerror_r')
-  a3_c_flags += '-DA3_HAVE_STRERROR_R'
-
+if functions.get('strerror_r', false)
   # If the return value of strerror_r can be dereferenced and assigned to a char, it is most likely
   # the _GNU_SOURCE version. The XSI version returns int.
   strerror_test = '''
@@ -98,14 +105,6 @@ if c.has_function('strerror_r')
   else
     message('strerror_r has the XSI signature.')
   endif
-elif c.has_function('strerror_s')
-  a3_c_flags += '-DA3_HAVE_STRERROR_S'
-endif
-
-if c.has_function('strncasecmp')
-  a3_c_flags += '-DA3_HAVE_STRNCASECMP'
-elif c.has_function('_strnicmp')
-  a3_c_flags += '-DA3_HAVE_STRNICMP'
 endif
 
 a3_include = include_directories(['src/include', '.'])
