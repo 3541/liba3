@@ -1,7 +1,7 @@
 project(
   'liba3',
   ['c', 'cpp'],
-  version: '0.3.13',
+  version: '0.3.14',
   default_options: [
     'c_std=c11',
 
@@ -62,7 +62,7 @@ a3_warnings_wanted = {
     '-Wmissing-include-dirs', '-Wnull-dereference', '-Wpacked', '-Wshadow', '-Wstack-protector',
     '-Wundef', '-Wcast-align', '-Wbad-function-cast', '-Wimplicit', '-Wmissing-prototypes',
     '-Wnested-externs', '-Wstrict-prototypes', '-Wctor-dtor-privacy', '-Wdelete-non-virtual-dtor',
-    '-Wconversion', '-Weffc++', '-Wno-pedantic'
+    '-Wconversion', '-Weffc++', '-Wpointer-arith', '-Wno-pedantic'
   ],
 
   'msvc': [
