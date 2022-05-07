@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <stddef.h>
+
 #include <a3/cpp.h>
 #include <a3/types.h>
 
