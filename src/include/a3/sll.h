@@ -53,6 +53,7 @@ A3_ALWAYS_INLINE A3SLink* a3_sll_peek(A3SLL* list) {
     assert(list);
     return list->head.next;
 }
+#define A3_SLL_PEEK(L, T, F) (!a3_sll_is_empty(L) ? A3_CONTAINER_OF(a3_sll_peek(L), T, F) : NULL)
 
 /// Insert the given element after the link. An element may only be inserted after the last element
 /// in a list.
@@ -61,9 +62,11 @@ A3_ALWAYS_INLINE void a3_sll_insert_after(A3SLink* link, A3SLink* next) {
     assert(!link->next);
     link->next = next;
 }
+#define A3_SLL_INSERT_AFTER(A, B, F) a3_sll_insert_after(&(A)->F, &(B)->F)
 
 /// Remove the given element from the list. Linear time with respect to the length of the list.
 A3_EXPORT void a3_sll_remove(A3SLL*, A3SLink*);
+#define A3_SLL_REMOVE(L, E, F) a3_sll_remove(L, &(E)->F)
 
 /// Add an item to the head of the list. See also ::a3_sll_pop.
 A3_ALWAYS_INLINE void a3_sll_push(A3SLL* list, A3SLink* item) {
@@ -74,6 +77,7 @@ A3_ALWAYS_INLINE void a3_sll_push(A3SLL* list, A3SLink* item) {
         list->end = item;
     list->head.next = item;
 }
+#define A3_SLL_PUSH(L, E, F) a3_sll_push(L, &(E)->F)
 
 /// Remove an item from the head of the list. See also ::a3_sll_push.
 A3_ALWAYS_INLINE A3SLink* a3_sll_pop(A3SLL* list) {
@@ -86,12 +90,15 @@ A3_ALWAYS_INLINE A3SLink* a3_sll_pop(A3SLL* list) {
     }
     return ret;
 }
+#define A3_SLL_POP(L, T, F) (!a3_sll_is_empty(L) ? A3_CONTAINER_OF(a3_sll_pop(L), T, F) : NULL)
 
 /// Add an item to the end of the list. See also ::a3_sll_dequeue.
 A3_EXPORT void a3_sll_enqueue(A3SLL*, A3SLink*);
+#define A3_SLL_ENQUEUE(L, E, F) a3_sll_enqueue(L, &(E)->F)
 
 /// Remove an item from the head of the list. See also ::a3_sll_enqueue.
 #define a3_sll_dequeue a3_sll_pop
+#define A3_SLL_DEQUEUE A3_SLL_POP
 
 /// Iterate over a list.
 #define A3_SLL_FOR_EACH(TY, ITEM, LIST, FIELD)                                                     \
