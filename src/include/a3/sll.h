@@ -1,112 +1,124 @@
 /*
  * SINGLY-LINKED LIST -- An intrusive singly-linked list.
  *
- * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2022, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
  */
+
+/// \file sll.h
+/// # Singly-linked list.
+/// An intrusive singly-linked list. This is very similar to `STAILQ` from the canonical
+/// `sys/queue.h`. The main difference here is that the list's `end` pointer is not kept up to date
+/// by ::A3_SLL_INSERT_AFTER, which allows that function to take only the requisite elements as
+/// parameters. This is corrected in ::A3_SLL_ENQUEUE.
 
 #pragma once
 
 #include <assert.h>
 #include <stdbool.h>
 
-#include <a3/cpp.h>
-#include <a3/types.h>
-#include <a3/util.h>
-
-A3_H_BEGIN
+/// A list. Keeps track of both the head and tail in order to enable the list to be used as a queue.
+#define A3_SLL(NAME, TY)                                                                           \
+    struct NAME {                                                                                  \
+        TY*  head;                                                                                 \
+        TY** end;                                                                                  \
+    }
 
 /// A list link. To make a type usable in a list, simply add a member of this type.
-typedef struct A3SLink {
-    struct A3SLink* next; ///< The next element in the list.
-} A3SLink;
-
-/// A list. Keeps track of both the head and tail in order to enable the list to be used as a queue.
-typedef struct A3SLL {
-    A3SLink  head; ///< The first element of the list.
-    A3SLink* end;  ///< The last element of the list.
-} A3SLL;
+#define A3_S_LINK(TY)                                                                              \
+    struct {                                                                                       \
+        TY* next;                                                                                  \
+    }
 
 /// Initialize a list.
-A3_ALWAYS_INLINE void a3_sll_init(A3SLL* list) {
-    assert(list);
-    list->head.next = list->end = NULL;
-}
+#define A3_SLL_INIT(L)                                                                             \
+    do {                                                                                           \
+        assert(L);                                                                                 \
+        (L)->head = NULL;                                                                          \
+        (L)->end  = &(L)->head;                                                                    \
+    } while (false)
+
 /// Destroy a list. Does nothing to the contents.
-#define a3_sll_destroy a3_sll_init
-
-/// Allocate and initialize a new list.
-A3_EXPORT A3SLL* a3_sll_new(void);
-/// Free an allocated list. Does nothing to the contents.
-A3_EXPORT void a3_sll_free(A3SLL*);
-
-/// Check whether the list is empty.
-A3_ALWAYS_INLINE bool a3_sll_is_empty(A3SLL* list) {
-    assert(list);
-    return !list->head.next;
-}
+#define A3_SLL_DESTROY A3_SLL_INIT
 
 /// Get the first element of the list. Otherwise, returns `NULL`.
-A3_ALWAYS_INLINE A3SLink* a3_sll_peek(A3SLL* list) {
-    assert(list);
-    return list->head.next;
-}
-#define A3_SLL_PEEK(L, T, F) (!a3_sll_is_empty(L) ? A3_CONTAINER_OF(a3_sll_peek(L), T, F) : NULL)
+#define A3_SLL_HEAD(L) ((L)->head)
 
-/// Insert the given element after the link. An element may only be inserted after the last element
-/// in a list.
-A3_ALWAYS_INLINE void a3_sll_insert_after(A3SLink* link, A3SLink* next) {
-    assert(link && next);
-    assert(!link->next);
-    link->next = next;
-}
-#define A3_SLL_INSERT_AFTER(A, B, F) a3_sll_insert_after(&(A)->F, &(B)->F)
+/// Get the following element.
+#define A3_SLL_NEXT(E, F) ((E)->F.next)
+
+/// Check whether the list is empty.
+#define A3_SLL_IS_EMPTY(L) (!A3_SLL_HEAD(L))
+
+/// Insert the given element after the link.
+#define A3_SLL_INSERT_AFTER(A, B, F)                                                               \
+    do {                                                                                           \
+        assert(A);                                                                                 \
+        assert(B);                                                                                 \
+        A3_SLL_NEXT(B, F) = A3_SLL_NEXT(A, F);                                                     \
+        A3_SLL_NEXT(A, F) = (B);                                                                   \
+    } while (false)
+
+/// Remove an item from the head of the list. See also ::A3_SLL_PUSH.
+#define A3_SLL_POP(L, F)                                                                           \
+    do {                                                                                           \
+        assert(L);                                                                                 \
+        A3_SLL_HEAD(L) = A3_SLL_NEXT(A3_SLL_HEAD(L), F);                                           \
+        if (!A3_SLL_HEAD(L))                                                                       \
+            (L)->end = &A3_SLL_HEAD(L);                                                            \
+    } while (false)
 
 /// Remove the given element from the list. Linear time with respect to the length of the list.
-A3_EXPORT void a3_sll_remove(A3SLL*, A3SLink*);
-#define A3_SLL_REMOVE(L, E, F) a3_sll_remove(L, &(E)->F)
+#define A3_SLL_REMOVE(L, T, E, F)                                                                  \
+    do {                                                                                           \
+        assert(L);                                                                                 \
+        assert(E);                                                                                 \
+        if ((E) == A3_SLL_HEAD(L)) {                                                               \
+            A3_SLL_POP(L, F);                                                                      \
+            break;                                                                                 \
+        }                                                                                          \
+                                                                                                   \
+        T* _it = A3_SLL_HEAD(L);                                                                   \
+        while (A3_SLL_NEXT(_it, F) != (E))                                                         \
+            _it = A3_SLL_NEXT(_it, F);                                                             \
+        A3_SLL_NEXT(_it, F) = A3_SLL_NEXT(A3_SLL_NEXT(_it, F), F);                                 \
+        if (!A3_SLL_NEXT(_it, F))                                                                  \
+            (L)->end = &A3_SLL_NEXT(_it, F);                                                       \
+    } while (false)
 
-/// Add an item to the head of the list. See also ::a3_sll_pop.
-A3_ALWAYS_INLINE void a3_sll_push(A3SLL* list, A3SLink* item) {
-    assert(list && item);
-    assert(!item->next);
-    item->next = list->head.next;
-    if (a3_sll_is_empty(list))
-        list->end = item;
-    list->head.next = item;
-}
-#define A3_SLL_PUSH(L, E, F) a3_sll_push(L, &(E)->F)
+/// Add an item to the head of the list. See also ::A3_SLL_POP.
+#define A3_SLL_PUSH(L, E, F)                                                                       \
+    do {                                                                                           \
+        assert(L);                                                                                 \
+        assert(E);                                                                                 \
+        A3_SLL_NEXT(E, F) = A3_SLL_HEAD(L);                                                        \
+        if (!A3_SLL_NEXT(E, F))                                                                    \
+            (L)->end = &A3_SLL_NEXT(E, F);                                                         \
+        (L)->head = (E);                                                                           \
+    } while (false)
 
-/// Remove an item from the head of the list. See also ::a3_sll_push.
-A3_ALWAYS_INLINE A3SLink* a3_sll_pop(A3SLL* list) {
-    assert(list);
-    A3SLink* ret = list->head.next;
-    if (ret) {
-        list->head.next = ret->next;
-        if (list->end == ret)
-            list->end = NULL;
-    }
-    return ret;
-}
-#define A3_SLL_POP(L, T, F) (!a3_sll_is_empty(L) ? A3_CONTAINER_OF(a3_sll_pop(L), T, F) : NULL)
+/// \brief Add an item to the end of the list. See also ::A3_SLL_DEQUEUE.
+///
+/// This fixes up the list's end pointer, if necessary, and so may have worst-case linear time. This
+/// is, however, unlikely.
+#define A3_SLL_ENQUEUE(L, E, F)                                                                    \
+    do {                                                                                           \
+        assert(L);                                                                                 \
+        assert(E);                                                                                 \
+        while (*(L)->end)                                                                          \
+            (L)->end = &A3_SLL_NEXT(*(L)->end, F);                                                 \
+        A3_SLL_NEXT(E, F) = NULL;                                                                  \
+        *(L)->end         = (E);                                                                   \
+        (L)->end          = &A3_SLL_NEXT(E, F);                                                    \
+    } while (false)
 
-/// Add an item to the end of the list. See also ::a3_sll_dequeue.
-A3_EXPORT void a3_sll_enqueue(A3SLL*, A3SLink*);
-#define A3_SLL_ENQUEUE(L, E, F) a3_sll_enqueue(L, &(E)->F)
-
-/// Remove an item from the head of the list. See also ::a3_sll_enqueue.
-#define a3_sll_dequeue a3_sll_pop
+/// Remove an item from the head of the list.
 #define A3_SLL_DEQUEUE A3_SLL_POP
 
 /// Iterate over a list.
 #define A3_SLL_FOR_EACH(TY, ITEM, LIST, FIELD)                                                     \
-    if ((LIST)->head.next)                                                                         \
-        for (TY* ITEM   = A3_CONTAINER_OF((LIST)->head.next, TY, FIELD),                           \
-                 *_next = ITEM->FIELD.next ? A3_CONTAINER_OF(ITEM->FIELD.next, TY, FIELD) : NULL;  \
-             ITEM; ITEM = _next, _next = _next && _next->FIELD.next                                \
-                                             ? A3_CONTAINER_OF(_next->FIELD.next, TY, FIELD)       \
-                                             : NULL)
-
-A3_H_END
+    if (!A3_SLL_IS_EMPTY(LIST))                                                                    \
+        for (TY* ITEM = A3_SLL_HEAD(LIST), *_next = A3_SLL_NEXT(ITEM, FIELD); ITEM;                \
+             ITEM = _next, _next = _next ? A3_SLL_NEXT(_next, FIELD) : NULL)
