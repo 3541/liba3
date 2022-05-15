@@ -13,6 +13,13 @@
 
 #pragma once
 
+/// An abbreviation for the typical do-while macro construct.
+#define A3_M_BEGIN do {
+/// An abbreviation for the typical do-while macro construct.
+#define A3_M_END                                                                                   \
+    }                                                                                              \
+    while (0)
+
 /// A hack for MSVC's broken preprocessor, which expands `__VA_ARGS__` incorrectly.
 #define A3_M_MSVC_VA_HACK(E) E
 
