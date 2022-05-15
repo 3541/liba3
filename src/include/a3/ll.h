@@ -1,7 +1,7 @@
 /*
  * LINKED LIST -- An intrusive doubly-linked list.
  *
- * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2022, Alex O'Brien <3541ax@gmail.com>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -9,92 +9,179 @@
 
 /// \file ll.h
 /// # Linked List
-/// An intrusive doubly-linked list.
+/// An intrusive doubly-linked list. This is very similar to `TAILQ` from the canonical
+/// `sys/queue.h`. The main difference is that it does not require the list itself to be given as a
+/// paramter to ::A3_SLL_REMOVE, ::A3_SLL_INSERT_BEFORE, and ::A3_SLL_INSERT_AFTER. This is
+/// accomplished by way of a dummy node stored in the list itself.
 
 #pragma once
 
 #include <assert.h>
-#include <stdbool.h>
 #include <stddef.h>
 
 #include <a3/cpp.h>
-#include <a3/types.h>
+#include <a3/macro.h>
+#include <a3/util.h>
 
 A3_H_BEGIN
 
-/// A list or a list link. To make a type usable in a list, simply add a member of this type.
-typedef struct A3LL {
-    struct A3LL* next; ///< The next element in the list, or the head.
-    struct A3LL* prev; ///< The previous element in the list, or the end.
-} A3LL;
+typedef struct A3LLErasedLink_ {
+    void*  next;
+    void** prev;
+} A3LLErasedLink_;
+
+A3_H_END
+
+/// A list. Keeps track of both the head and tail in order to enable the list to be used as a queue.
+#ifndef __cplusplus
+#define A3_LL(NAME, TY)                                                                            \
+    struct NAME {                                                                                  \
+        TY*    head;                                                                               \
+        void** dummy_; /* Detectable when traversing backwards. Always NULL. */                    \
+        TY     end;                                                                                \
+    }
+#else
+#define A3_LL(NAME, TY)                                                                            \
+    struct NAME {                                                                                  \
+        TY*    head   = nullptr;                                                                   \
+        void** dummy_ = nullptr;                                                                   \
+        union {                                                                                    \
+            TY             end;                                                                    \
+            std::nullptr_t fake_ = nullptr;                                                        \
+        };                                                                                         \
+    }
+#endif
+
+/// A list link. To make a type usable in a list, simply add a member of this type.
+#define A3_LL_LINK(TY)                                                                             \
+    struct {                                                                                       \
+        TY*  next;                                                                                 \
+        TY** prev;                                                                                 \
+    }
 
 /// Initialize a list.
-A3_ALWAYS_INLINE void a3_ll_init(A3LL* list) {
-    assert(list);
-    list->next = list->prev = list;
-}
-/// Destroy a list. Does nothing to the contents.
-#define a3_ll_destroy a3_ll_init
+#define A3_LL_INIT(LIST, FIELD)                                                                    \
+    A3_M_BEGIN                                                                                     \
+        assert(LIST);                                                                              \
+                                                                                                   \
+        (LIST)->head           = NULL;                                                             \
+        (LIST)->dummy_         = NULL;                                                             \
+        (LIST)->end.FIELD.next = NULL;                                                             \
+        (LIST)->end.FIELD.prev = &(LIST)->head;                                                    \
+    A3_M_END
 
-/// Allocate and initalize a new list.
-A3_EXPORT A3LL* a3_ll_new(void);
-/// Free an allocated list. Does nothing to the contents.
-A3_EXPORT void a3_ll_free(A3LL*);
+/// Destroy a list. Does nothing to the contents.
+#define A3_LL_DESTROY A3_LL_INIT
+
+/// Get the first element of the list. Returns `NULL` if none.
+#define A3_LL_HEAD(LIST) ((LIST)->head)
 
 /// Check whether the list is empty.
-A3_ALWAYS_INLINE bool a3_ll_is_empty(A3LL* list) {
-    assert(list);
-    return list->next == list;
-}
+#define A3_LL_IS_EMPTY(LIST) (!A3_LL_HEAD(LIST))
 
-/// Get the first element of the list, if any. Otherwise, returns `NULL`.
-A3_ALWAYS_INLINE A3LL* a3_ll_peek(A3LL* list) {
-    assert(list);
-    return !a3_ll_is_empty(list) ? list->next : NULL;
-}
+/// Get the last element of the list. If none, returns `NULL`.
+#define A3_LL_END(LIST, TY, FIELD)                                                                 \
+    (!A3_LL_IS_EMPTY(LIST) ? A3_CONTAINER_OF((LIST)->end.FIELD.prev, TY, FIELD) : NULL)
 
-/// Insert the given element after the link.
-A3_ALWAYS_INLINE void a3_ll_insert_after(A3LL* link, A3LL* next) {
-    assert(link && next);
-    assert(link->next && link->prev);
-    next->next = link->next;
-    link->next = next;
-    next->prev = link;
-}
+/// Checks whether the given element is the last in the list.
+#define A3_LL_IS_LAST(ELEM, FIELD) (!(ELEM)->FIELD.next->FIELD.next)
+
+/// Get the following element.
+#define A3_LL_NEXT(ELEM, FIELD) (!A3_LL_IS_LAST(ELEM, FIELD) ? (ELEM)->FIELD.next : NULL)
+
+/// Checks whether the given element is first in the list.
+#define A3_LL_IS_FIRST(ELEM, FIELD) (!((A3LLErasedLink_*)(ELEM)->FIELD.prev)->prev)
+
+/// Get the previous element.
+#define A3_LL_PREV(ELEM, TY, FIELD)                                                                \
+    (!A3_LL_IS_FIRST(ELEM, FIELD) ? A3_CONTAINER_OF((ELEM)->FIELD.prev, TY, FIELD) : NULL)
+
+/// Insert the given element after the current.
+#define A3_LL_INSERT_AFTER(ELEM, NEXT_ELEM, FIELD)                                                 \
+    A3_M_BEGIN                                                                                     \
+        assert(ELEM);                                                                              \
+        assert(NEXT_ELEM);                                                                         \
+                                                                                                   \
+        (NEXT_ELEM)->FIELD.next        = (ELEM)->FIELD.next;                                       \
+        (NEXT_ELEM)->FIELD.prev        = &(ELEM)->FIELD.next;                                      \
+        (ELEM)->FIELD.next->FIELD.prev = &(NEXT_ELEM)->FIELD.next;                                 \
+        (ELEM)->FIELD.next             = (NEXT_ELEM);                                              \
+    A3_M_END
+
+/// Insert the given element before the current.
+#define A3_LL_INSERT_BEFORE(ELEM, PREV_ELEM, FIELD)                                                \
+    A3_M_BEGIN                                                                                     \
+        assert(ELEM);                                                                              \
+        assert(PREV_ELEM);                                                                         \
+                                                                                                   \
+        (PREV_ELEM)->FIELD.next = (ELEM);                                                          \
+        (PREV_ELEM)->FIELD.prev = (ELEM)->FIELD.prev;                                              \
+        *(ELEM)->FIELD.prev     = (PREV_ELEM);                                                     \
+        (ELEM)->FIELD.prev      = &(PREV_ELEM)->FIELD.next;                                        \
+    A3_M_END
 
 /// Remove the given element from the list.
-A3_ALWAYS_INLINE void a3_ll_remove(A3LL* link) {
-    assert(link);
-    assert(link->next && link->prev);
-    link->prev->next = link->next;
-    link->next->prev = link->prev;
-    link->next = link->prev = NULL;
-}
+#define A3_LL_REMOVE(ELEM, FIELD)                                                                  \
+    A3_M_BEGIN                                                                                     \
+        assert(ELEM);                                                                              \
+                                                                                                   \
+        (ELEM)->FIELD.next->FIELD.prev = (ELEM)->FIELD.prev;                                       \
+        *(ELEM)->FIELD.prev            = (ELEM)->FIELD.next;                                       \
+    A3_M_END
 
-/// Enqueue an element on the list.
-A3_ALWAYS_INLINE void a3_ll_enqueue(A3LL* list, A3LL* item) {
-    assert(list && item);
-    a3_ll_insert_after(list->prev, item);
-    list->prev = item;
-}
+/// Add an item to the head of the list. See also ::A3_LL_POP.
+#define A3_LL_PUSH(LIST, ELEM, FIELD)                                                              \
+    A3_M_BEGIN                                                                                     \
+        assert(LIST);                                                                              \
+        assert(ELEM);                                                                              \
+                                                                                                   \
+        if (!A3_LL_IS_EMPTY(LIST)) {                                                               \
+            A3_LL_HEAD(LIST)->FIELD.prev = &(ELEM)->FIELD.next;                                    \
+            (ELEM)->FIELD.next           = A3_LL_HEAD(LIST);                                       \
+        } else {                                                                                   \
+            (LIST)->end.FIELD.prev = &(ELEM)->FIELD.next;                                          \
+            (ELEM)->FIELD.next     = &(LIST)->end;                                                 \
+        }                                                                                          \
+                                                                                                   \
+        (ELEM)->FIELD.prev = &(LIST)->head;                                                        \
+        (LIST)->head       = (ELEM);                                                               \
+    A3_M_END
 
-/// Dequeue the first element from the list.
-A3_ALWAYS_INLINE A3LL* a3_ll_dequeue(A3LL* list) {
-    assert(list);
-    A3LL* ret = a3_ll_peek(list);
-    if (ret)
-        a3_ll_remove(ret);
-    return ret;
-}
+/// Add an item to the end of the list. See also ::A3_LL_DEQUEUE.
+#define A3_LL_ENQUEUE(LIST, ELEM, FIELD)                                                           \
+    A3_M_BEGIN                                                                                     \
+        assert(LIST);                                                                              \
+        assert(ELEM);                                                                              \
+                                                                                                   \
+        (ELEM)->FIELD.next      = &(LIST)->end;                                                    \
+        (ELEM)->FIELD.prev      = (LIST)->end.FIELD.prev;                                          \
+        *(LIST)->end.FIELD.prev = (ELEM);                                                          \
+        (LIST)->end.FIELD.prev  = &(ELEM)->FIELD.next;                                             \
+    A3_M_END
+
+/// Remove an item from the head of the list. See also ::A3_LL_PUSH.
+#define A3_LL_POP(LIST, FIELD)                                                                     \
+    A3_M_BEGIN                                                                                     \
+        assert(LIST);                                                                              \
+                                                                                                   \
+        (LIST)->head = A3_LL_NEXT(A3_LL_HEAD(LIST), FIELD);                                        \
+        if (!A3_LL_IS_EMPTY(LIST))                                                                 \
+            A3_LL_HEAD(LIST)->FIELD.prev = &(LIST)->head;                                          \
+        else                                                                                       \
+            (LIST)->end.FIELD.prev = &(LIST)->head;                                                \
+    A3_M_END
+
+/// Remove an item from the head of the list. See also ::A3_LL_ENQUEUE.
+#define A3_LL_DEQUEUE A3_LL_POP
 
 /// Iterate over a list.
 #define A3_LL_FOR_EACH(TY, ITEM, LIST, FIELD)                                                      \
-    if ((LIST)->next)                                                                              \
-        for (TY* ITEM   = A3_CONTAINER_OF((LIST)->next, TY, FIELD),                                \
-                 *_next = ITEM->FIELD.next ? A3_CONTAINER_OF(ITEM->FIELD.next, TY, FIELD) : NULL;  \
-             &ITEM->FIELD != (LIST);                                                               \
-             ITEM = _next, _next = _next && _next->FIELD.next                                      \
-                                       ? A3_CONTAINER_OF(_next->FIELD.next, TY, FIELD)             \
-                                       : NULL)
+    if (!A3_LL_IS_EMPTY(LIST))                                                                     \
+        for (TY* ITEM = A3_LL_HEAD(LIST), *_next = A3_LL_NEXT(ITEM, FIELD); ITEM;                  \
+             ITEM = _next, _next = _next ? A3_LL_NEXT(_next, FIELD) : NULL)
 
-A3_H_END
+/// Iterate over a list backwards.
+#define A3_LL_FOR_EACH_REV(TY, ITEM, LIST, FIELD)                                                  \
+    if (!A3_LL_IS_EMPTY(LIST))                                                                     \
+        for (TY* ITEM = A3_LL_END(LIST, TY, FIELD), *_prev = A3_LL_PREV(ITEM, TY, FIELD); ITEM;    \
+             ITEM = _prev, _prev = _prev ? A3_LL_PREV(_prev, TY, FIELD) : NULL)
