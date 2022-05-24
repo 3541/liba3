@@ -86,6 +86,10 @@
             [ gdb rr clang-tools texlive.combined.scheme-medium ]
             ++ packages."a3/clang/debug".nativeBuildInputs
             ++ packages."a3/debug".nativeBuildInputs;
+
+          shellHook = ''
+            unset AR
+          '';
         };
       });
 }
