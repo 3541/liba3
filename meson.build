@@ -114,6 +114,7 @@ a3_src = files(
     'src/pool.c',
     'src/spmc.c',
     'src/str.c',
+    'src/shim/atomic.c',
     'src/shim/memmem.c',
     'src/shim/strerror.c',
     'src/shim/strncasecmp.c',

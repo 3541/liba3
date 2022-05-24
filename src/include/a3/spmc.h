@@ -9,19 +9,19 @@
 
 #pragma once
 
-#include <stdatomic.h>
+#include <a3/shim/atomic.h>
 #include <stdbool.h>
 
 #define A3_ATOMIC_PTR(TY) TY* _Atomic
 
 /// An SPMC queue. See ::a3_spmc_init.
 typedef struct A3Spmc {
-    A3_ATOMIC_PTR(void) * data; //< The actual backing array.
-    size_t cap;                 //< The queue's capacity.
+    A3_ATOMIC(void*) * data; //< The actual backing array.
+    size_t cap;              //< The queue's capacity.
     size_t mask;
 
-    atomic_size_t head; //< The index of the oldest element in the queue.
-    atomic_size_t end;  //< The index of the next free slot. If head == end, queue is empty.
+    A3_ATOMIC(size_t) head; //< The index of the oldest element in the queue.
+    A3_ATOMIC(size_t) end;  //< The index of the next free slot. If head == end, queue is empty.
 
     // TODO: Assert that producer functions are called from the right thread in debug mode.
 } A3Spmc;
