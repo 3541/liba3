@@ -10,7 +10,7 @@
 #include <assert.h>
 #include <stdatomic.h>
 #include <stdbool.h>
-#include <threads.h>
+#include <stddef.h>
 
 #include <a3/spmc.h>
 #include <a3/util.h>
@@ -26,10 +26,6 @@ void a3_spmc_init(A3Spmc* q, size_t cap) {
     A3_UNWRAPN(q->data, calloc(q->cap, sizeof(*q->data)));
     atomic_init(&q->head, 0);
     atomic_init(&q->end, 0);
-
-#ifndef NDEBUG
-    q->producer = thrd_current();
-#endif
 }
 
 A3Spmc* a3_spmc_new(size_t cap) {
@@ -41,7 +37,6 @@ A3Spmc* a3_spmc_new(size_t cap) {
 
 void a3_spmc_destroy(A3Spmc* q) {
     assert(q);
-    assert(thrd_equal(q->producer, thrd_current()));
     assert(q->head == q->end);
 
     free(q->data);
@@ -86,14 +81,13 @@ void* a3_spmc_dequeue(A3Spmc* q) {
 
     // TODO: Smarter ways to block.
     while (head >= atomic_load_explicit(&q->end, memory_order_acquire))
-        thrd_yield();
+        ;
 
     return atomic_exchange_explicit(&q->data[a3_spmc_index(q, head)], NULL, memory_order_acq_rel);
 }
 
 bool a3_spmc_try_enqueue(A3Spmc* q, void* elem) {
     assert(q);
-    assert(thrd_equal(q->producer, thrd_current()));
 
     size_t end  = atomic_load_explicit(&q->end, memory_order_relaxed);
     size_t head = atomic_load_explicit(&q->head, memory_order_acquire);
@@ -112,15 +106,14 @@ bool a3_spmc_try_enqueue(A3Spmc* q, void* elem) {
 
 void a3_spmc_enqueue(A3Spmc* q, void* elem) {
     assert(q);
-    assert(thrd_equal(q->producer, thrd_current()));
 
     size_t end = atomic_load_explicit(&q->end, memory_order_relaxed);
     while (end >= atomic_load_explicit(&q->head, memory_order_acquire) + q->cap)
-        thrd_yield();
+        ;
 
     size_t end_index = a3_spmc_index(q, end);
     while (atomic_load_explicit(&q->data[end_index], memory_order_acquire))
-        thrd_yield();
+        ;
 
     atomic_store_explicit(&q->data[end_index], elem, memory_order_release);
     atomic_fetch_add_explicit(&q->end, 1, memory_order_release);

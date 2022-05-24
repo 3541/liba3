@@ -11,7 +11,6 @@
 
 #include <stdatomic.h>
 #include <stdbool.h>
-#include <threads.h>
 
 #define A3_ATOMIC_PTR(TY) TY* _Atomic
 
@@ -24,9 +23,7 @@ typedef struct A3Spmc {
     atomic_size_t head; //< The index of the oldest element in the queue.
     atomic_size_t end;  //< The index of the next free slot. If head == end, queue is empty.
 
-#ifndef NDEBUG
-    thrd_t producer; //< The producer thread. Used only for debug assertions.
-#endif
+    // TODO: Assert that producer functions are called from the right thread in debug mode.
 } A3Spmc;
 
 /// Initialize a queue. Capacity will be aligned up to the nearest power of two. When debug
