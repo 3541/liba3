@@ -56,50 +56,49 @@ static size_t a3_spmc_index(A3Spmc* q, size_t ticket) {
 void* a3_spmc_try_dequeue(A3Spmc* q) {
     assert(q);
 
-    size_t end  = A3_ATOMIC_LOAD(&q->end, memory_order_acquire);
-    size_t head = A3_ATOMIC_LOAD(&q->head, memory_order_acquire);
+    size_t end  = A3_ATOMIC_LOAD(&q->end, A3_ACQUIRE);
+    size_t head = A3_ATOMIC_LOAD(&q->head, A3_ACQUIRE);
 
     for (size_t i = 0; i < 5; i++) {
         if (head >= end)
             return NULL;
 
-        if (A3_ATOMIC_COMPARE_EXCHANGE(&q->head, &head, head + 1, memory_order_acq_rel,
-                                       memory_order_acquire))
+        if (A3_ATOMIC_COMPARE_EXCHANGE(&q->head, &head, head + 1, A3_ACQ_REL, A3_ACQUIRE))
             goto found;
     }
     return NULL;
 
 found:
     // TODO: seq_cst?
-    return A3_ATOMIC_EXCHANGE(&q->data[a3_spmc_index(q, head)], NULL, memory_order_acq_rel);
+    return A3_ATOMIC_EXCHANGE(&q->data[a3_spmc_index(q, head)], NULL, A3_ACQ_REL);
 }
 
 void* a3_spmc_dequeue(A3Spmc* q) {
     assert(q);
 
-    size_t head = A3_ATOMIC_FETCH_ADD(&q->head, 1, memory_order_acq_rel);
+    size_t head = A3_ATOMIC_FETCH_ADD(&q->head, 1, A3_ACQ_REL);
 
     // TODO: Smarter ways to block.
-    while (head >= A3_ATOMIC_LOAD(&q->end, memory_order_acquire))
+    while (head >= A3_ATOMIC_LOAD(&q->end, A3_ACQUIRE))
         ;
 
-    return A3_ATOMIC_EXCHANGE(&q->data[a3_spmc_index(q, head)], NULL, memory_order_acq_rel);
+    return A3_ATOMIC_EXCHANGE(&q->data[a3_spmc_index(q, head)], NULL, A3_ACQ_REL);
 }
 
 bool a3_spmc_try_enqueue(A3Spmc* q, void* elem) {
     assert(q);
 
-    size_t end  = A3_ATOMIC_LOAD(&q->end, memory_order_relaxed);
-    size_t head = A3_ATOMIC_LOAD(&q->head, memory_order_acquire);
+    size_t end  = A3_ATOMIC_LOAD(&q->end, A3_RELAXED);
+    size_t head = A3_ATOMIC_LOAD(&q->head, A3_ACQUIRE);
     if (end >= head + q->cap)
         return false;
 
     size_t end_index = a3_spmc_index(q, end);
-    if (atomic_load_explicit(&q->data[end_index], memory_order_acquire))
+    if (atomic_load_explicit(&q->data[end_index], A3_ACQUIRE))
         return false;
 
-    A3_ATOMIC_STORE(&q->data[end_index], elem, memory_order_release);
-    A3_ATOMIC_FETCH_ADD(&q->end, 1, memory_order_release);
+    A3_ATOMIC_STORE(&q->data[end_index], elem, A3_RELEASE);
+    A3_ATOMIC_FETCH_ADD(&q->end, 1, A3_RELEASE);
 
     return true;
 }
@@ -107,14 +106,14 @@ bool a3_spmc_try_enqueue(A3Spmc* q, void* elem) {
 void a3_spmc_enqueue(A3Spmc* q, void* elem) {
     assert(q);
 
-    size_t end = A3_ATOMIC_LOAD(&q->end, memory_order_relaxed);
-    while (end >= A3_ATOMIC_LOAD(&q->head, memory_order_acquire) + q->cap)
+    size_t end = A3_ATOMIC_LOAD(&q->end, A3_RELAXED);
+    while (end >= A3_ATOMIC_LOAD(&q->head, A3_ACQUIRE) + q->cap)
         ;
 
     size_t end_index = a3_spmc_index(q, end);
-    while (A3_ATOMIC_LOAD(&q->data[end_index], memory_order_acquire))
+    while (A3_ATOMIC_LOAD(&q->data[end_index], A3_ACQUIRE))
         ;
 
-    A3_ATOMIC_STORE(&q->data[end_index], elem, memory_order_release);
-    A3_ATOMIC_FETCH_ADD(&q->end, 1, memory_order_release);
+    A3_ATOMIC_STORE(&q->data[end_index], elem, A3_RELEASE);
+    A3_ATOMIC_FETCH_ADD(&q->end, 1, A3_RELEASE);
 }
