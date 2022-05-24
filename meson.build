@@ -54,7 +54,6 @@ add_project_arguments(cxx.get_supported_arguments(a3_flags_wanted[cxx_arg_syntax
 add_project_link_arguments(cxx.get_supported_link_arguments(a3_flags_wanted[cxx_arg_syntax]),
                            language: 'cpp')
 
-
 a3_warnings_wanted = {
   'gcc': [
     '-Wdisabled-optimization', '-Wduplicated-branches', '-Wduplicated-cond', '-Wfloat-equal',
@@ -113,6 +112,7 @@ a3_src = files(
     'src/buffer.c',
     'src/log.c',
     'src/pool.c',
+    'src/spmc.c',
     'src/str.c',
     'src/shim/memmem.c',
     'src/shim/strerror.c',
