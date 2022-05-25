@@ -12,12 +12,11 @@
 #ifdef A3_HAVE_MEMMEM
 #define _GNU_SOURCE
 #define _DARWIN_C_SOURCE __DARWIN_C_FULL
-#else
-#include <stddef.h>
-#include <stdint.h>
 #endif
 
 #include <a3/shim/memmem.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 void* a3_shim_memmem(void const* haystack, size_t haystack_len, void const* needle,
