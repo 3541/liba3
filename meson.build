@@ -114,12 +114,19 @@ a3_src = files(
     'src/pool.c',
     'src/spmc.c',
     'src/str.c',
-    'src/shim/atomic.c',
     'src/shim/memmem.c',
     'src/shim/strerror.c',
     'src/shim/strncasecmp.c',
   ]
 )
+
+if not c.check_header('stdatomic.h')
+  if c.has_header_symbol('windows.h', 'InterlockedCompareExchange')
+    a3_src += 'src/shim/atomic/msvc.c'
+  else
+    error('stdatomic not available and no atomic primitives found.')
+  endif
+endif
 
 a3_lib = library(
   'a3',

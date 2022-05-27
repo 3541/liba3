@@ -94,7 +94,7 @@ bool a3_spmc_try_enqueue(A3Spmc* q, void* elem) {
         return false;
 
     size_t end_index = a3_spmc_index(q, end);
-    if (atomic_load_explicit(&q->data[end_index], A3_ACQUIRE))
+    if (A3_ATOMIC_LOAD(&q->data[end_index], A3_ACQUIRE))
         return false;
 
     A3_ATOMIC_STORE(&q->data[end_index], elem, A3_RELEASE);
