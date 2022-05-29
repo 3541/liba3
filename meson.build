@@ -123,6 +123,8 @@ a3_src = files(
 if not c.check_header('stdatomic.h')
   if c.has_header_symbol('windows.h', 'InterlockedCompareExchange')
     a3_src += 'src/shim/atomic/msvc.c'
+  elif c.has_header_symbol('stddef.h', '__atomic_compare_exchange')
+    # GCC atomic intrinsics are used via header.
   else
     error('stdatomic not available and no atomic primitives found.')
   endif
