@@ -15,6 +15,7 @@
 #if defined(__STDC__) && __STDC_VERSION__ >= 201100L && !defined(__STDC_NO_ATOMICS__) &&           \
     (defined(__llvm__) || !defined(__GNUC__) ||                                                    \
      (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)))
+// Some versions of GCC (<4.9) lie about whether they support stdatomic.
 #include <a3/shim/atomic/c11.h>
 #elif defined(__ATOMIC_RELAXED)
 #include <a3/shim/atomic/gcc.h>
