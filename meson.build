@@ -124,6 +124,8 @@ if c.check_header('stdatomic.h') or c.has_header_symbol('stddef.h', '__atomic_co
   # Neither of these requires a C file.
 elif c.has_header_symbol('windows.h', 'InterlockedCompareExchange')
   a3_src += 'src/shim/atomic/msvc.c'
+else
+  error('No atomic primitives found.')
 endif
 
 a3_lib = library(
