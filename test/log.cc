@@ -1,6 +1,8 @@
 #include <cerrno>
 #include <cstdio>
+#include <cstring>
 #include <sstream>
+#include <string>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

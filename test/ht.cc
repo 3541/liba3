@@ -1,9 +1,12 @@
+#include <cstddef>
+#include <cstdlib>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include <a3/ht.h>
 #include <a3/str.h>
+#include <a3/util.h>
 #include <a3/util.hh>
 
 A3_HT_DEFINE_STRUCTS(A3CString, A3CString)

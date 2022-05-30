@@ -1,5 +1,9 @@
 #if __cplusplus >= 201703L
 
+#include <string>
+#include <string_view>
+#include <utility>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

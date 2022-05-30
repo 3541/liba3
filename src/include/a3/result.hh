@@ -25,8 +25,10 @@
 
 #include <concepts>
 #include <cstdint>
+#include <functional>
 #include <optional>
 #include <system_error>
+#include <type_traits>
 #include <utility>
 
 #include <a3/util.h>

@@ -1,3 +1,6 @@
+#include <cstddef>
+#include <cstdint>
+
 #include <gtest/gtest.h>
 
 #include <a3/buffer.h>

@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 #include <a3/spmc.h>
 #include <a3/util.h>

@@ -1,4 +1,7 @@
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <vector>
 
 #include <gtest/gtest.h>

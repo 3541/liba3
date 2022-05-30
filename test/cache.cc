@@ -1,10 +1,14 @@
+#include <cstddef>
+#include <cstdio>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include <a3/cache.h>
+#include <a3/ht.h>
 #include <a3/log.h>
 #include <a3/str.h>
+#include <a3/types.h>
 
 A3_CACHE_DEFINE_STRUCTS(A3CString, A3CString)
 

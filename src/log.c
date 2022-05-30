@@ -9,7 +9,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include <string.h>
 
 #include <a3/log.h>
 #include <a3/util.h>

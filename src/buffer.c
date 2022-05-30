@@ -19,8 +19,6 @@
 #include <a3/str.h>
 #include <a3/util.h>
 
-#include "types.h"
-
 // TODO: This should probably hand out slices of a pre-registered buffer of some
 // kind, to reduce the overhead of malloc and of mapping buffers into kernel
 // memory.

@@ -7,20 +7,20 @@
  * the project root for details.
  */
 
-#include <a3/pool.h>
-
 #include <assert.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <a3/pool.h>
+#include <a3/util.h>
 
 #ifndef _WIN32
 #include <stdalign.h>
 #else
 #define alignof __alignof
 #endif
-
-#include <a3/util.h>
 
 static inline size_t align_down(size_t v, size_t align) { return v & ~(align - 1); }
 static inline size_t align_up(size_t v, size_t align) { return align_down(v + align - 1, align); }

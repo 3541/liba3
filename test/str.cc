@@ -1,3 +1,6 @@
+#include <cstdint>
+#include <string_view>
+
 #include <gtest/gtest.h>
 
 #include <a3/str.h>

@@ -1,4 +1,11 @@
 #ifdef __cpp_concepts
+#include <cerrno>
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <system_error>
+#include <utility>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
