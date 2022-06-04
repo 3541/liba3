@@ -544,7 +544,7 @@ public:
     /// Return the error variant, if present.
     std::optional<typename Err<E>::Inner> err() && {
         if (!is_err())
-            return {};
+            return std::nullopt;
         m_state = State::MovedFrom;
         return std::move(m_err).err();
     }
@@ -552,7 +552,7 @@ public:
     /// Return the success variant, if present.
     std::optional<Inner> ok() && {
         if (!is_ok())
-            return {};
+            return std::nullopt;
         m_state = State::MovedFrom;
         return std::move(m_ok);
     }
