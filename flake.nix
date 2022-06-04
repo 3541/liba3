@@ -2,7 +2,7 @@
   description = "A lightweight C/C++ utility library.";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-21.11";
+    nixpkgs.url = "nixpkgs/nixos-22.05";
     utils.url = "github:numtide/flake-utils";
     highwayhash = {
       url = "github:google/highwayhash";
