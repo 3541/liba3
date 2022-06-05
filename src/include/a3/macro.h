@@ -23,6 +23,12 @@
 /// A hack for MSVC's broken preprocessor, which expands `__VA_ARGS__` incorrectly.
 #define A3_M_MSVC_VA_HACK(E) E
 
+/// Expands to its first argument.
+#define A3_M_ARG1(A1, ...) A1
+/// Expands to its second argument.
+#define A3_M_ARG2(A1, A2, ...) A2
+/// Expands to its third argument.
+#define A3_M_ARG3(A1, A2, A3, ...) A3
 /// Expands to its fourth argument.
 #define A3_M_ARG4(A1, A2, A3, A4, ...) A4
 
