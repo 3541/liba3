@@ -11,7 +11,7 @@
 /// # Linked List
 /// An intrusive doubly-linked list. This is very similar to `TAILQ` from the canonical
 /// `sys/queue.h`. The main difference is that it does not require the list itself to be given as a
-/// paramter to ::A3_SLL_REMOVE, ::A3_SLL_INSERT_BEFORE, and ::A3_SLL_INSERT_AFTER. This is
+/// paramter to ::A3_LL_REMOVE, ::A3_LL_INSERT_BEFORE, and ::A3_LL_INSERT_AFTER. This is
 /// accomplished by way of a dummy node stored in the list itself.
 
 #pragma once
