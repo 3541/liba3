@@ -84,10 +84,11 @@ A3_H_END
     (!A3_LL_IS_EMPTY(LIST) ? A3_CONTAINER_OF((LIST)->end.FIELD.prev, TY, FIELD) : NULL)
 
 /// Checks whether the given element is the last in the list.
-#define A3_LL_IS_LAST(ELEM, FIELD) (!(ELEM)->FIELD.next->FIELD.next)
+#define A3_LL_IS_LAST(ELEM, FIELD) (assert((ELEM)->FIELD.next), !(ELEM)->FIELD.next->FIELD.next)
 
 /// Get the following element.
-#define A3_LL_NEXT(ELEM, FIELD) (!A3_LL_IS_LAST(ELEM, FIELD) ? (ELEM)->FIELD.next : NULL)
+#define A3_LL_NEXT(ELEM, FIELD)                                                                    \
+    (((ELEM)->FIELD.next && !A3_LL_IS_LAST(ELEM, FIELD)) ? (ELEM)->FIELD.next : NULL)
 
 /// Checks whether the given element is first in the list.
 #define A3_LL_IS_FIRST(ELEM, FIELD) (!((A3LLErasedLink_*)(ELEM)->FIELD.prev)->prev)

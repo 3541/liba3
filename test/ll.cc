@@ -260,6 +260,12 @@ TEST_F(LLTest, remove_mid) {
     }
 }
 
+TEST_F(LLTest, next_orphan) {
+    auto  l = std::make_unique<LLNode>(42);
+    auto* n = A3_LL_NEXT(l, link);
+    EXPECT_THAT(n, IsNull());
+}
+
 } // namespace ll
 } // namespace test
 } // namespace a3
