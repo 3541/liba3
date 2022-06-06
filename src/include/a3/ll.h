@@ -73,11 +73,11 @@ A3_H_END
 /// Destroy a list. Does nothing to the contents.
 #define A3_LL_DESTROY A3_LL_INIT
 
-/// Get the first element of the list. Returns `NULL` if none.
-#define A3_LL_HEAD(LIST) ((LIST)->head)
-
 /// Check whether the list is empty.
-#define A3_LL_IS_EMPTY(LIST) (!A3_LL_HEAD(LIST))
+#define A3_LL_IS_EMPTY(LIST) (!(LIST)->head || (LIST)->head == &(LIST)->end)
+
+/// Get the first element of the list. Returns `NULL` if none.
+#define A3_LL_HEAD(LIST) (!A3_LL_IS_EMPTY(LIST) ? (LIST)->head : NULL)
 
 /// Get the last element of the list. If none, returns `NULL`.
 #define A3_LL_END(LIST, TY, FIELD)                                                                 \

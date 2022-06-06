@@ -266,6 +266,19 @@ TEST_F(LLTest, next_orphan) {
     EXPECT_THAT(n, IsNull());
 }
 
+TEST_F(LLTest, remove_only) {
+    auto l = std::make_unique<LLNode>(42);
+    A3_LL_ENQUEUE(&list, l.get(), link);
+    A3_LL_REMOVE(l, link);
+
+    EXPECT_THAT(A3_LL_IS_EMPTY(&list), IsTrue())
+        << "List should be empty after removing only element.";
+
+    auto p = std::make_unique<LLNode>(43);
+    A3_LL_ENQUEUE(&list, p.get(), link);
+    A3_LL_FOR_EACH(LLNode, n, &list, link) { EXPECT_THAT(n->data, Eq(43U)); }
+}
+
 } // namespace ll
 } // namespace test
 } // namespace a3
