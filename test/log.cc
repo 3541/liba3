@@ -60,8 +60,8 @@ TEST_F(LogTest, filter) {
 }
 
 TEST_F(LogTest, format) {
-    A3_INFO_F("%d, %0.1f, %s", 123, 1.2, "string");
-    EXPECT_THAT(read_written(), HasSubstr("123, 1.2, string\n"));
+    A3_INFO_F("%d, 0x%X, %s", 123, 18, "string");
+    EXPECT_THAT(read_written(), HasSubstr("123, 0x12, string\n"));
 }
 
 TEST_F(LogTest, format_string) {
