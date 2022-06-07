@@ -13,10 +13,16 @@ fi
 if [ -z "${CC-}" ]; then
     if command -v cc > /dev/null 2>&1; then
         export CC=cc
+        export CXX=c++
     elif command -v gcc > /dev/null 2>&1; then
         export CC=gcc
+        export CXX=g++
     elif command -v clang > /dev/null 2>&1; then
         export CC=clang
+        export CXX=clang++
+    elif command -v cl > /dev/null 2>&1; then
+        export CC=cl
+        export CXX=cl
     fi
 fi
 
@@ -39,7 +45,7 @@ case "$(uname -s)" in
         ;;
 esac
 
-if "$CC" --version | grep -q "^cc (GCC) 4\."; then
+if "$CC" --version 2>&1 | grep -q "^cc (GCC) 4\."; then
     meson_san="-Db_sanitize=address"
 fi
 
