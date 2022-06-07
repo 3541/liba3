@@ -1,5 +1,8 @@
 #include <cstdint>
+
+#if __cplusplus >= 201703L
 #include <string_view>
+#endif
 
 #include <gtest/gtest.h>
 
