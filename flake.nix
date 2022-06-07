@@ -82,40 +82,39 @@
         defaultPackage = packages."a3/release";
 
         devShell = pkgs.mkShell {
-          nativeBuildInputs = with pkgs;
-            [
-              gdb
-              rr
-              clang-tools
-              texlive.combined.scheme-medium
-              (let unwrapped = include-what-you-use;
-               in
-                 stdenv.mkDerivation {
-                   pname = "include-what-you-use";
-                   version = lib.getVersion unwrapped;
+          packages = with pkgs; [
+            gdb
+            rr
+            clang-tools
+            texlive.combined.scheme-medium
+            (let unwrapped = include-what-you-use;
+            in stdenv.mkDerivation {
+              pname = "include-what-you-use";
+              version = lib.getVersion unwrapped;
 
-                   dontUnpack = true;
+              dontUnpack = true;
 
-                   clang = llvmPackages_latest.clang;
-                   inherit unwrapped;
+              clang = llvmPackages_latest.clang;
+              inherit unwrapped;
 
-                   installPhase = ''
-                     runHook preInstall
+              installPhase = ''
+                runHook preInstall
 
-                     mkdir -p $out/bin
-                     substituteAll ${./nix-wrapper} $out/bin/include-what-you-use
-                     chmod +x $out/bin/include-what-you-use
+                mkdir -p $out/bin
+                substituteAll ${./nix-wrapper} $out/bin/include-what-you-use
+                chmod +x $out/bin/include-what-you-use
 
-                     cp ${unwrapped}/bin/iwyu_tool.py $out/bin/iwyu_tool.py
-                     sed -i \
-                         "s,executable_name = '.*\$,executable_name = '$out/bin/include-what-you-use'," \
-                         $out/bin/iwyu_tool.py
+                cp ${unwrapped}/bin/iwyu_tool.py $out/bin/iwyu_tool.py
+                sed -i \
+                    "s,executable_name = '.*\$,executable_name = '$out/bin/include-what-you-use'," \
+                    $out/bin/iwyu_tool.py
 
-                     runHook postInstall
-                   '';
-                 })
-            ] ++ packages."a3/clang/debug".nativeBuildInputs
-            ++ packages."a3/debug".nativeBuildInputs;
+                runHook postInstall
+              '';
+            })
+          ];
+
+          inputsFrom = [ packages."a3/clang/debug" packages."a3/debug" ];
 
           shellHook = ''
             unset AR
