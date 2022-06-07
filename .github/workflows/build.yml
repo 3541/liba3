@@ -37,7 +37,12 @@ jobs:
             architecture: ppc
           - os: macos-latest
             architecture: ppc
-
+    env:
+      CC: ${{ matrix.c_compiler }}
+      CXX: ${{ matrix.cxx_compiler }}
+    defaults:
+      run:
+        shell: bash
     steps:
     - uses: actions/checkout@v3
       with:
@@ -49,6 +54,10 @@ jobs:
 
     - uses: ilammy/msvc-dev-cmd@v1
       if: runner.os == 'Windows'
+
+    - name: Remove link.exe
+      if: runner.os == 'Windows'
+      run: rm -f /usr/bin/link.exe
 
     - name: Install dependencies.
       run: pip install meson ninja
@@ -83,24 +92,18 @@ jobs:
         sed -i "/^\[binaries\]/a exe_wrapper = 'qemu-${{ matrix.architecture }}'" ${{ matrix.architecture }}.ini
         sudo apt-get remove -y meson
         echo "MESON_CROSS_ARG=--cross-file ${{ matrix.architecture }}.ini" >> $GITHUB_ENV
-
-    - name: Enable sanitizers.
-      # NOTE: ASAN temporarily disabled for Windows builds due to mysterious error on test teardown.
-      if: runner.os != 'Windows' && steps.cross.outcome == 'skipped'
-      run: echo "MESON_SAN_ARG=-Db_sanitize=address,undefined" >> $GITHUB_ENV
+        echo "CC=$CROSS_TRIPLE-gcc" >> $GITHUB_ENV
+        echo "CXX=$CROSS_TRIPLE-g++" >> $GITHUB_ENV
 
     - name: Configure.
-      env:
-        CC: ${{ matrix.c_compiler }}
-        CXX: ${{ matrix.cxx_compiler }}
-      run: meson setup $MESON_CROSS_ARG $MESON_SAN_ARG --buildtype debug --werror -Dcpp_std=c++20 build
+      run: ci/configure.sh build $MESON_CROSS_ARG
 
     - name: Build.
-      run: meson compile -C build
+      run: ci/build.sh build
 
     - name: Test.
       id: test
-      run: meson test -C build
+      run: ci/test.sh build
 
     - name: Upload failed logs.
       if: failure()
