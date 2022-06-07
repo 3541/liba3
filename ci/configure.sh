@@ -11,10 +11,4 @@ shift
 
 mkdir -p "$dir"
 
-meson_std="-Dcpp_std=c++2a"
-if [ -f "/etc/debian_version" ] && grep -q "^9\." /etc/debian_version || \
-           [ "$(uname -s)" = NetBSD ]; then
-    meson_std="-Dcpp_std=c++17"
-fi
-
 meson setup --buildtype=debug --werror "$meson_std" "$meson_san" "$@" "$dir"
