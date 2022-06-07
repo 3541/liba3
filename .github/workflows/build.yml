@@ -10,8 +10,8 @@ on:
       - '**/*.hh'
       - '.github/workflows/build.yml'
       - '**/meson.build'
-      - 'extern/liba3'
       - 'boilerplate'
+      - 'ci/*'
 
 jobs:
   build:
