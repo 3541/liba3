@@ -1,7 +1,7 @@
 /*
  * RESULT -- Sum type error handling.
  *
- * Copyright (c) 2022, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2022, Alex O'Brien <3541@3541.website>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in the project root
  * for details.
@@ -38,7 +38,7 @@ namespace a3 {
 #ifndef DOXYGEN
 namespace detail {
 
-#ifndef __APPLE__
+#ifndef _LIBCPP_VERSION
 template <typename T, typename... Args>
 concept constructible_from = std::constructible_from<T, Args...>;
 
@@ -51,11 +51,10 @@ concept default_initializable = std::default_initializable<T>;
 template <typename T>
 concept signed_integral = std::signed_integral<T>;
 #else
-// Apple Clang purports to support concepts, but does not implement these ones from the standard
-// library.
+// libc++ purports to support concepts, but does not implement these ones from the standard library.
 
 template <typename T, typename... Args>
-concept constructible_from = std::destructible<T> && std::is_constructible_v<T, Args...>;
+concept constructible_from = std::is_destructible_v<T> && std::is_constructible_v<T, Args...>;
 
 template <typename Fn, typename... Args>
 concept invocable = requires(Fn&& f, Args&&... args) {
