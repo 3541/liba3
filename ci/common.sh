@@ -23,6 +23,9 @@ if [ -z "${CC-}" ]; then
     elif command -v cl > /dev/null 2>&1; then
         export CC=cl
         export CXX=cl
+    elif uname -s | grep -q "MINGW"; then
+        export CC=cl
+        export CXX=cl
     fi
 fi
 
@@ -49,21 +52,14 @@ if "$CC" --version 2>&1 | grep -q "^cc (GCC) 4\."; then
     meson_san="-Db_sanitize=address"
 fi
 
-if [ -f "/etc/debian_version" ] && grep -q "^9\." /etc/debian_version || \
-           [ "$(uname -s)" = NetBSD ]; then
+if { [ -f "/etc/debian_version" ] && grep -q "^9\." /etc/debian_version; } || \
+       [ "$(uname -s)" = NetBSD ] || { [ -f "/etc/lsb-release" ] && \
+                                           grep -q "16\.04" /etc/lsb-release; }; then
     meson_std="-Dcpp_std=c++17"
 fi
 
 export meson_san
 export meson_std
-
-jobs=1
-if command -v nproc > /dev/null 2>&1; then
-    jobs=$(nproc)
-elif command -v sysctl > /dev/null 2>&1 && sysctl -q hw.ncpuonline > /dev/null; then
-    jobs=$(sysctl -n hw.ncpuonline)
-fi
-export jobs
 
 if [ "$(uname -s)" = "Darwin" ]; then
     export PATH="$PATH:/opt/local/bin"

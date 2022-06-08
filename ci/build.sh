@@ -12,4 +12,4 @@ if [ ! -d "$dir" ]; then
     exit 1
 fi
 
-meson compile -C "$dir" --jobs="$jobs"
+meson compile -C "$dir"
