@@ -9,11 +9,6 @@
  * Windows does not provide memmem.
  */
 
-#ifdef A3_HAVE_MEMMEM
-#define _GNU_SOURCE
-#define _DARWIN_C_SOURCE __DARWIN_C_FULL
-#endif
-
 #include <a3/shim/memmem.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -21,9 +16,6 @@
 
 void* a3_shim_memmem(void const* haystack, size_t haystack_len, void const* needle,
                      size_t needle_len) {
-#ifdef A3_HAVE_MEMMEM
-    return memmem(haystack, haystack_len, needle, needle_len);
-#else
     if (!haystack || !haystack_len || !needle || !needle_len)
         return NULL;
 
@@ -34,5 +26,4 @@ void* a3_shim_memmem(void const* haystack, size_t haystack_len, void const* need
     }
 
     return NULL;
-#endif
 }

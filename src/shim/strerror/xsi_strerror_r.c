@@ -11,18 +11,6 @@
 #include <string.h>
 
 char* a3_shim_strerror(int errnum, char* buf, size_t len) {
-#ifdef A3_HAVE_STRERROR_R
-#ifdef A3_HAVE_GNU_STRERROR_R
-    return strerror_r(errnum, buf, len);
-#else
-    // XSI
     strerror_r(errnum, buf, len);
     return buf;
-#endif
-#elif defined(A3_HAVE_STRERROR_S)
-    strerror_s(buf, len, errnum);
-    return buf;
-#else
-#error "No strerror_r alternative available."
-#endif
 }
