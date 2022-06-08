@@ -1,7 +1,5 @@
 /*
- * PLATFORM TYPES -- Cross-platform shims for annoying little differences. A
- * variant which exposes nicer, but likelier to collide names is available in
- * platform_private.h.
+ * PLATFORM TYPES -- Cross-platform shims for annoying little differences.
  *
  * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
  *
