@@ -33,7 +33,7 @@ if not meson.is_subproject()
       'a3_test',
       a3_test_src,
       cpp_args: a3_test_args,
-      dependencies: [gmock_main, a3, a3_hash],
+      dependencies: [gmock_main, a3],
       build_by_default: false
     )
 

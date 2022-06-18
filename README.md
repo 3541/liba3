@@ -23,7 +23,7 @@ notice._
 - Refcounting.
 
 ## Features
-- Simple and lightweight — <2 kLOC. Less, without the optional `a3_hash` component.
+- Simple and lightweight — <3 kLOC.
 - Type-generic data structures — (Ab)uses preprocessor macros to imitate C++ templates.
 - C++ friendly — All headers are compatible, and convenient C++ wrappers are provided where
   appropriate (C++ is not required, however).
@@ -48,7 +48,7 @@ sake. Then, run `meson compile -C <BUILDDIR>` to build.
 To run the test suite, simply run `meson test -C <BUILDDIR>`.
 
 Meson projects should easily be able to hook into the build system using `subproject`. The Meson
-build system provides dependencies `a3_dep` and `a3_hash_dep`.
+build system provides dependencies `a3_dep`.
 
 Projects using other build systems can invoke Meson directly and depend on the library produced (or
 they can simply build it themselves — take look at `meson.build` for inspiration).

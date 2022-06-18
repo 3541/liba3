@@ -68,11 +68,13 @@ a3_src = files(
 )
 a3_src += a3_shim_src
 
+highwayhash_c = dependency('highwayhash_c', fallback: ['highwayhash', 'highwayhash_c_dep'])
+
 a3_lib = library(
   'a3',
   a3_src,
   include_directories: a3_include,
-  dependencies: libm,
+  dependencies: [libm, highwayhash_c],
   c_args: a3_c_flags + a3_common_flags,
   cpp_args: a3_cxx_flags + a3_common_flags,
   gnu_symbol_visibility: 'hidden',
@@ -88,10 +90,3 @@ a3 = declare_dependency(
   include_directories: include_directories(['include']),
 )
 a3_dep = a3
-
-highwayhash_c = dependency('highwayhash_c', fallback: ['highwayhash', 'highwayhash_c_dep'])
-a3_hash = declare_dependency(
-  dependencies: [a3, highwayhash_c],
-  include_directories: include_directories(['include'])
-)
-a3_hash_dep = a3_hash
