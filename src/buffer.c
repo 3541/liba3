@@ -85,7 +85,7 @@ bool a3_buf_write_vfmt(A3Buffer* this, const char* fmt, va_list args) {
         if ((size_t)rc < write_ptr.len)
             break;
 
-        if (!a3_buf_ensure_cap(this, (size_t)rc))
+        if (!a3_buf_ensure_cap(this, (size_t)rc + 1))
             break;
         write_ptr = a3_buf_write_ptr(this);
     }

@@ -60,6 +60,14 @@ TEST_F(BufferTest, write_fmt_grow) {
     ASSERT_EQ(a3_string_cmpi(a3_buf_read_ptr(&buf), A3_CS("123 1.2 string")), 0);
 }
 
+TEST_F(BufferTest, write_fmt_grow_exact) {
+    a3_buf_destroy(&buf);
+    a3_buf_init(&buf, 10, 200);
+
+    // Old bug cause hang here.
+    a3_buf_write_fmt(&buf, "%*s", 10, "");
+}
+
 TEST_F(BufferTest, write_num) {
     a3_buf_write_num(&buf, 1234567);
     ASSERT_EQ(a3_string_cmpi(a3_buf_read_ptr(&buf), A3_CS("1234567")), 0);
