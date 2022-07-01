@@ -168,7 +168,7 @@ A3_ALWAYS_INLINE bool a3_buf_ensure_cap(A3Buffer* buf, size_t min_extra_cap) {
     if (a3_buf_cap(buf) >= min_extra_cap)
         return a3_buf_compact(buf);
 
-    size_t new_cap = buf->data.len;
+    size_t new_cap = MAX(MAX(buf->data.len, 8), buf->max_cap);
     for (; new_cap < buf->data.len + min_extra_cap; new_cap *= 2)
         ;
     A3String new_data = a3_string_realloc(&buf->data, MIN(new_cap, buf->max_cap));
