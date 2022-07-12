@@ -3,7 +3,8 @@ c = meson.get_compiler('c')
 a3_shim_src = []
 
 foreach s : [['memmem'],
-             ['strncasecmp', '_strnicmp']]
+             ['strncasecmp', '_strnicmp'],
+             ['aligned_alloc', '_aligned_malloc']]
   found = ''
   foreach f : s
     if c.has_function(f)

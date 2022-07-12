@@ -14,7 +14,8 @@ if not meson.is_subproject()
       'result.cc',
       'sll.cc',
       'str.cc',
-      'try.cc'
+      'try.cc',
+      'vec.cc',
     ]
   )
 
