@@ -14,7 +14,8 @@ if not meson.is_subproject()
       'result.cc',
       'sll.cc',
       'str.cc',
-      'try.cc'
+      'try.cc',
+      'vec.cc',
     ]
   )
 
@@ -24,7 +25,7 @@ if not meson.is_subproject()
     a3_test_args += '-D_CRT_SECURE_NO_WARNINGS'
   endif
 
-  a3_test_args += cxx.get_supported_arguments(['-Wno-keyword-macro', '-Wno-pedantic'])
+  a3_test_args += cxx.get_supported_arguments(['-Wno-keyword-macro', '-Wno-pedantic', '-wd4324'])
 
   if (cxx.get_id() == 'gcc' or cxx.get_id() == 'clang') and cxx.version().split('.')[0].to_int() < 5
     warning(cxx.get_id() + ' ' + cxx.version() + ' not supported by gtest. Tests disabled.')

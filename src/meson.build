@@ -64,6 +64,7 @@ a3_src = files(
     'pool.c',
     'spmc.c',
     'str.c',
+    'vec.c',
   ]
 )
 a3_src += a3_shim_src

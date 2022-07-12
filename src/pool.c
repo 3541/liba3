@@ -7,6 +7,7 @@
  * the project root for details.
  */
 
+#include <a3/shim/aligned_alloc.h>
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -15,12 +16,6 @@
 
 #include <a3/pool.h>
 #include <a3/util.h>
-
-#ifndef _WIN32
-#include <stdalign.h>
-#else
-#define alignof __alignof
-#endif
 
 static inline size_t align_down(size_t v, size_t align) { return v & ~(align - 1); }
 static inline size_t align_up(size_t v, size_t align) { return align_down(v + align - 1, align); }
@@ -54,11 +49,7 @@ A3Pool* a3_pool_new(size_t obj_size, size_t blocks, size_t align, bool zero_bloc
     ret->free_cb     = free_cb;
     ret->obj_size    = obj_size;
     ret->cap         = blocks * block_size;
-#ifndef _WIN32
-    A3_UNWRAPSD(posix_memalign(&ret->data, align, ret->cap));
-#else
-    A3_UNWRAPN(ret->data, _aligned_malloc(ret->cap, align));
-#endif
+    A3_UNWRAPN(ret->data, a3_shim_aligned_alloc(ret->cap, align));
     memset(ret->data, 0, ret->cap);
     ret->free = OBJ_SLOT(ret, ret->data);
 
@@ -104,11 +95,6 @@ void a3_pool_free(A3Pool* pool) {
         for (A3PoolSlot* current = pool->free; current; current = current->next)
             pool->free_cb(SLOT_OBJ(pool, current));
 
-#ifndef _WIN32
-    free(pool->data);
-#else
-    // _aligned_malloced memory cannot be freed with free.
-    _aligned_free(pool->data);
-#endif
+    a3_shim_aligned_free(pool->data);
     free(pool);
 }
