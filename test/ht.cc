@@ -1,7 +1,9 @@
 #include <cstddef>
 #include <cstdlib>
+#include <unordered_map>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <a3/ht.h>
@@ -19,8 +21,9 @@ namespace test {
 namespace ht {
 
 using std::vector;
+using namespace testing;
 
-class HTTest : public ::testing::Test {
+class HTTest : public Test {
     A3_PINNED(HTTest);
 
 protected:
@@ -155,6 +158,34 @@ TEST_F(HTTest, duplicate_combine) {
     EXPECT_EQ(a3_string_cmp(*combined_value, A3_CS("val1, val2")), 0);
 
     a3_string_free(reinterpret_cast<A3String*>(combined_value));
+}
+
+TEST_F(HTTest, for_each) {
+    std::unordered_map<A3CString, A3String> strings;
+
+    for (unsigned i = 1; i <= 128; i++) {
+        A3String str = a3_string_clone(a3_cstring_from(std::to_string(i).data()));
+
+        strings.insert({ str, str });
+        A3_HT_INSERT(A3CString, A3CString)(&table, str, str);
+    }
+
+    A3_HT_FOR_EACH (A3CString, A3CString, &table, k, v) {
+        auto entry = strings.find(*k);
+        EXPECT_THAT(entry, Ne(strings.end()));
+        if (entry == strings.end())
+            break;
+
+        EXPECT_THAT(entry->second, Eq(*v));
+        if (entry->second != *v)
+            break;
+
+        A3String s = entry->second;
+        strings.erase(entry->first);
+        a3_string_free(&s);
+    }
+
+    EXPECT_THAT(strings.size(), Eq(0)) << "FOR_EACH did not yield all elements.";
 }
 
 } // namespace ht
