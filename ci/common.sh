@@ -39,6 +39,7 @@ case "$($CC -dumpmachine 2>&1)" in
     *-openbsd*) meson_san="-Db_sanitize=none" ;; # Not supported.
     s390x-*) meson_san="-Db_sanitize=none" ;; # Fails at link time.
     arm-*) meson_san="-Db_sanitize=undefined" ;; # "LeakSanitizer encountered a fatal error"
+    *-haiku*) meson_san="-Db_sanitize=none" ;; # Not supported.
 esac
 
 case "$(uname -s)" in
