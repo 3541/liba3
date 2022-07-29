@@ -1,5 +1,5 @@
 /*
- * ALLIGNED_ALLOC SHIM -- Cross-platform shim for aligned_alloc.
+ * ALIGNED_ALLOC SHIM -- Cross-platform shim for aligned_alloc.
  *
  * Copyright (c) 2022, Alex O'Brien <3541ax@gmail.com>
  *
