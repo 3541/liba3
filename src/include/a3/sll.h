@@ -144,6 +144,5 @@
 
 /// Iterate over a list.
 #define A3_SLL_FOR_EACH(TY, ITEM, LIST, FIELD)                                                     \
-    if (!A3_SLL_IS_EMPTY(LIST))                                                                    \
-        for (TY* ITEM = A3_SLL_HEAD(LIST), *_next = A3_SLL_NEXT(ITEM, FIELD); ITEM;                \
-             ITEM = _next, _next = _next ? A3_SLL_NEXT(_next, FIELD) : NULL)
+    for (TY* ITEM = A3_SLL_HEAD(LIST), *_next = (ITEM) ? A3_SLL_NEXT(ITEM, FIELD) : NULL; ITEM;    \
+         ITEM = _next, _next = _next ? A3_SLL_NEXT(_next, FIELD) : NULL)
