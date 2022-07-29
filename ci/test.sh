@@ -17,4 +17,4 @@ if [ "$meson_san" = "-Db_sanitize=none" ] && command -v valgrind > /dev/null 2>&
     meson_wrap="--wrapper=valgrind"
 fi
 
-meson test -C "$dir" "$meson_wrap"
+meson test -C "$dir" -v "$meson_wrap"
