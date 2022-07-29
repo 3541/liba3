@@ -11,6 +11,8 @@
 #include <a3/util.h>
 #include <a3/util.hh>
 
+#include <gmock/gmock-more-matchers.h>
+
 A3_HT_DEFINE_STRUCTS(A3CString, A3CString)
 
 A3_HT_DECLARE_METHODS(A3CString, A3CString)
@@ -185,7 +187,48 @@ TEST_F(HTTest, for_each) {
         a3_string_free(&s);
     }
 
-    EXPECT_THAT(strings.size(), Eq(0)) << "FOR_EACH did not yield all elements.";
+    EXPECT_THAT(strings.size(), IsFalse()) << "FOR_EACH did not yield all elements.";
+}
+
+TEST_F(HTTest, nested_for_each) {
+    std::unordered_map<A3CString, A3String> strings;
+
+    for (unsigned i = 1; i <= 128; i++) {
+        A3String str = a3_string_clone(a3_cstring_from(std::to_string(i).data()));
+
+        strings.insert({ str, str });
+        A3_HT_INSERT(A3CString, A3CString)(&table, str, str);
+    }
+
+    size_t count = 0;
+    A3_HT_FOR_EACH (A3CString, A3CString, &table, k, v) {
+        auto entry = strings.find(*k);
+        EXPECT_THAT(entry, Ne(strings.end()));
+        if (entry == strings.end())
+            break;
+
+        EXPECT_THAT(entry->second, Eq(*v));
+        if (entry->second != *v)
+            break;
+
+        A3_HT_FOR_EACH (A3CString, A3CString, &table, k_inner, v_inner) {
+            auto entry_inner = strings.find(*k_inner);
+            EXPECT_THAT(entry_inner, Ne(strings.end()));
+            if (entry_inner == strings.end())
+                break;
+
+            EXPECT_THAT(entry_inner->second, Eq(*v_inner));
+            if (entry_inner->second != *v_inner)
+                break;
+        }
+
+        count++;
+    }
+
+    EXPECT_THAT(count, Eq(128ULL)) << "FOR_EACH did not yield all elements.";
+
+    for (auto entry : strings)
+        a3_string_free(&entry.second);
 }
 
 } // namespace ht

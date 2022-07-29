@@ -74,7 +74,7 @@ TEST_F(LLTest, many_insertions) {
     A3_LL_INSERT_AFTER(mid_node, n, link);
 
     size_t i = 0;
-    A3_LL_FOR_EACH(LLNode, node, &list, link) {
+    A3_LL_FOR_EACH (LLNode, node, &list, link) {
         auto data = node->data;
         EXPECT_EQ(data, i);
         if (data != i)
@@ -84,7 +84,7 @@ TEST_F(LLTest, many_insertions) {
 
     EXPECT_EQ(i, 513ULL);
 
-    A3_LL_FOR_EACH(LLNode, node, &list, link) { delete node; }
+    A3_LL_FOR_EACH (LLNode, node, &list, link) { delete node; }
 }
 
 TEST_F(LLTest, iterate_backwards) {
@@ -94,9 +94,9 @@ TEST_F(LLTest, iterate_backwards) {
     }
 
     unsigned int i = 128;
-    A3_LL_FOR_EACH_REV(LLNode, item, &list, link) { EXPECT_THAT(item->data, Eq(i--)); }
+    A3_LL_FOR_EACH_REV (LLNode, item, &list, link) { EXPECT_THAT(item->data, Eq(i--)); }
 
-    A3_LL_FOR_EACH(LLNode, node, &list, link) { delete node; }
+    A3_LL_FOR_EACH (LLNode, node, &list, link) { delete node; }
 }
 
 TEST_F(LLTest, for_each_empty) {
@@ -130,7 +130,7 @@ TEST_F(LLTest, insert_after) {
     A3_LL_INSERT_AFTER(end, next, link);
 
     unsigned int i = 1;
-    A3_LL_FOR_EACH(LLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
+    A3_LL_FOR_EACH (LLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
     EXPECT_THAT(i, Eq(257U));
 
     while (auto* p = A3_LL_HEAD(&list)) {
@@ -161,7 +161,7 @@ TEST_F(LLTest, insert_before) {
     A3_LL_INSERT_BEFORE(end, prev, link);
 
     unsigned int i = 1;
-    A3_LL_FOR_EACH(LLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
+    A3_LL_FOR_EACH (LLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
     EXPECT_THAT(i, Eq(257U));
 
     while (auto* p = A3_LL_HEAD(&list)) {
@@ -228,7 +228,7 @@ TEST_F(LLTest, remove_mid) {
     }
 
     LLNode* mid = nullptr;
-    A3_LL_FOR_EACH(LLNode, n, &list, link) {
+    A3_LL_FOR_EACH (LLNode, n, &list, link) {
         if (n->data == 64U) {
             mid = n;
             break;
@@ -242,7 +242,7 @@ TEST_F(LLTest, remove_mid) {
 
     LLNode* before = nullptr;
     LLNode* after  = nullptr;
-    A3_LL_FOR_EACH(LLNode, n, &list, link) {
+    A3_LL_FOR_EACH (LLNode, n, &list, link) {
         if (n->data == 63U) {
             before = n;
             after  = A3_LL_NEXT(before, link);
@@ -282,7 +282,26 @@ TEST_F(LLTest, remove_only) {
 
     auto p = std::make_unique<LLNode>(43);
     A3_LL_ENQUEUE(&list, p.get(), link);
-    A3_LL_FOR_EACH(LLNode, n, &list, link) { EXPECT_THAT(n->data, Eq(43U)); }
+    A3_LL_FOR_EACH (LLNode, n, &list, link) { EXPECT_THAT(n->data, Eq(43U)); }
+}
+
+TEST_F(LLTest, nested_for_each) {
+    for (unsigned i = 1; i <= 128; i++) {
+        auto* n = new LLNode { i };
+        A3_LL_ENQUEUE(&list, n, link);
+    }
+
+    unsigned outer = 1;
+    A3_LL_FOR_EACH (LLNode, node_outer, &list, link) {
+        EXPECT_THAT(node_outer->data, Eq(outer++));
+
+        unsigned inner = 1;
+        A3_LL_FOR_EACH (LLNode, node_inner, &list, link)
+            EXPECT_THAT(node_inner->data, Eq(inner++));
+    }
+
+    A3_LL_FOR_EACH (LLNode, node, &list, link)
+        delete node;
 }
 
 } // namespace ll

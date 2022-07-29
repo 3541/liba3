@@ -177,11 +177,13 @@ A3_H_END
 
 /// Iterate over a list.
 #define A3_LL_FOR_EACH(TY, ITEM, LIST, FIELD)                                                      \
-    for (TY* ITEM = A3_LL_HEAD(LIST), *_next = (ITEM) ? A3_LL_NEXT(ITEM, FIELD) : NULL; ITEM;      \
-         ITEM = _next, _next = _next ? A3_LL_NEXT(_next, FIELD) : NULL)
+    for (TY* ITEM = A3_LL_HEAD(LIST), *ITEM##_next = (ITEM) ? A3_LL_NEXT(ITEM, FIELD) : NULL;      \
+         ITEM;                                                                                     \
+         ITEM = ITEM##_next, ITEM##_next = ITEM##_next ? A3_LL_NEXT(ITEM##_next, FIELD) : NULL)
 
 /// Iterate over a list backwards.
 #define A3_LL_FOR_EACH_REV(TY, ITEM, LIST, FIELD)                                                  \
-    for (TY* ITEM   = A3_LL_END(LIST, TY, FIELD),                                                  \
-             *_prev = (ITEM) ? A3_LL_PREV(ITEM, TY, FIELD) : NULL;                                 \
-         ITEM; ITEM = _prev, _prev = _prev ? A3_LL_PREV(_prev, TY, FIELD) : NULL)
+    for (TY* ITEM         = A3_LL_END(LIST, TY, FIELD),                                            \
+             *ITEM##_prev = (ITEM) ? A3_LL_PREV(ITEM, TY, FIELD) : NULL;                           \
+         ITEM; ITEM       = ITEM##_prev,                                                           \
+             ITEM##_prev  = ITEM##_prev ? A3_LL_PREV(ITEM##_prev, TY, FIELD) : NULL)

@@ -47,7 +47,7 @@ TEST_F(SLLTest, many_insertions) {
     }
 
     unsigned int i = 128;
-    A3_SLL_FOR_EACH(SLLNode, node, &list, link) { EXPECT_EQ(node->data, i--); }
+    A3_SLL_FOR_EACH (SLLNode, node, &list, link) { EXPECT_EQ(node->data, i--); }
 
     EXPECT_EQ(i, 0U);
 
@@ -62,7 +62,7 @@ TEST_F(SLLTest, many_insertions) {
     }
 
     i = 1;
-    A3_SLL_FOR_EACH(SLLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
+    A3_SLL_FOR_EACH (SLLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
 
     EXPECT_EQ(i, 129U);
     EXPECT_THAT(A3_SLL_NEXT(A3_SLL_HEAD(&list), link)->data, Eq(2U));
@@ -74,7 +74,7 @@ TEST_F(SLLTest, many_insertions) {
 }
 
 TEST_F(SLLTest, for_each_empty) {
-    A3_SLL_FOR_EACH(SLLNode, node, &list, link) {
+    A3_SLL_FOR_EACH (SLLNode, node, &list, link) {
         EXPECT_THAT(false, IsTrue()) << "foreach should not loop when list is empty.";
     }
 }
@@ -98,7 +98,7 @@ TEST_F(SLLTest, insert_after) {
     A3_SLL_INSERT_AFTER(end, next, link);
 
     unsigned int i = 1;
-    A3_SLL_FOR_EACH(SLLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
+    A3_SLL_FOR_EACH (SLLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
     EXPECT_THAT(i, Eq(257U));
 
     while (auto* p = A3_SLL_HEAD(&list)) {
@@ -165,7 +165,7 @@ TEST_F(SLLTest, remove_mid) {
     }
 
     SLLNode* mid = nullptr;
-    A3_SLL_FOR_EACH(SLLNode, n, &list, link) {
+    A3_SLL_FOR_EACH (SLLNode, n, &list, link) {
         if (n->data == 64U) {
             mid = n;
             break;
@@ -179,7 +179,7 @@ TEST_F(SLLTest, remove_mid) {
 
     SLLNode* before = nullptr;
     SLLNode* after  = nullptr;
-    A3_SLL_FOR_EACH(SLLNode, n, &list, link) {
+    A3_SLL_FOR_EACH (SLLNode, n, &list, link) {
         if (n->data == 63U) {
             before = n;
             after  = A3_SLL_NEXT(before, link);
@@ -201,6 +201,25 @@ TEST_F(SLLTest, remove_mid) {
             i++;
         delete p;
     }
+}
+
+TEST_F(SLLTest, nested_for_each) {
+    for (unsigned i = 1; i <= 128; i++) {
+        auto* n = new SLLNode { i };
+        A3_SLL_ENQUEUE(&list, n, link);
+    }
+
+    unsigned outer = 1;
+    A3_SLL_FOR_EACH (SLLNode, node_outer, &list, link) {
+        EXPECT_THAT(node_outer->data, Eq(outer++));
+
+        unsigned inner = 1;
+        A3_SLL_FOR_EACH (SLLNode, node_inner, &list, link)
+            EXPECT_THAT(node_inner->data, Eq(inner++));
+    }
+
+    A3_SLL_FOR_EACH (SLLNode, node, &list, link)
+        delete node;
 }
 
 } // namespace sll

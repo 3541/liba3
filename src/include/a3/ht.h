@@ -425,9 +425,10 @@ A3_H_END
 /// Iterate over every entry of the hash table `T`, storing keys in `K_OUT` and values in `V_OUT` on
 /// every iteration.
 #define A3_HT_FOR_EACH(K, V, T, K_OUT, V_OUT)                                                      \
-    A3_SSIZE_T _i    = A3_HT_NEXT_ENTRY(K, V)((T), 0);                                             \
-    K*         K_OUT = (_i >= 0) ? &(T)->entries[_i].key : NULL;                                   \
-    V*         V_OUT = (_i >= 0) ? &(T)->entries[_i].value : NULL;                                 \
-    for (; _i >= 0 && (size_t)_i < (T)->cap; _i    = A3_HT_NEXT_ENTRY(K, V)((T), (size_t)_i + 1),  \
-                                             K_OUT = &(T)->entries[MAX(_i, 0)].key,                \
-                                             V_OUT = &(T)->entries[MAX(_i, 0)].value)
+    A3_SSIZE_T K_OUT##_i = A3_HT_NEXT_ENTRY(K, V)((T), 0);                                         \
+    K*         K_OUT     = (K_OUT##_i >= 0) ? &(T)->entries[K_OUT##_i].key : NULL;                 \
+    V*         V_OUT     = (K_OUT##_i >= 0) ? &(T)->entries[K_OUT##_i].value : NULL;               \
+    for (; K_OUT##_i >= 0 && (size_t)K_OUT##_i < (T)->cap;                                         \
+         K_OUT##_i = A3_HT_NEXT_ENTRY(K, V)((T), (size_t)K_OUT##_i + 1),                           \
+         K_OUT     = &(T)->entries[MAX(K_OUT##_i, 0)].key,                                         \
+         V_OUT     = &(T)->entries[MAX(K_OUT##_i, 0)].value)
