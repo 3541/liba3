@@ -269,3 +269,53 @@ A3_EXPORT A3CString a3_string_memmem_impl(A3CString haystack, A3CString needle);
 #define a3_string_memmem(N, H) a3_string_memmem_impl(A3_S_CONST(N), A3_S_CONST(H))
 
 A3_H_END
+
+#ifdef __cplusplus
+
+inline bool operator==(A3CString const& lhs, A3CString const& rhs) {
+    return a3_string_cmp(lhs, rhs) == 0;
+}
+
+inline bool operator!=(A3CString const& lhs, A3CString const& rhs) { return !(lhs == rhs); }
+
+#ifdef A3_STR_CC_VIEW
+
+namespace std {
+
+template <>
+struct hash<A3String> {
+    size_t operator()(A3String const& str) const { return std::hash<std::string_view> {}(str); }
+};
+
+template <>
+struct hash<A3CString> {
+    size_t operator()(A3CString const& str) const { return std::hash<std::string_view> {}(str); }
+};
+
+} // namespace std
+
+#else
+
+namespace std {
+
+template <>
+struct hash<A3String> {
+    size_t operator()(A3String const& str) const {
+        return std::hash<std::string> {}(
+            std::string { reinterpret_cast<char const*>(str.ptr), str.len });
+    }
+};
+
+template <>
+struct hash<A3CString> {
+    size_t operator()(A3CString const& str) const {
+        return std::hash<std::string> {}(
+            std::string { reinterpret_cast<char const*>(str.ptr), str.len });
+    }
+};
+
+} // namespace std
+
+#endif
+
+#endif
