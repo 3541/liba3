@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <a3/util.h>
 #include <a3/vec.h>
 
 static inline size_t align_down(size_t v, size_t align) { return v & ~(align - 1); }
@@ -36,7 +37,7 @@ void a3_vec_init_(A3Vec* vec, size_t elem_size, size_t elem_align, size_t cap) {
                      .elem_align = elem_align,
                      .buf        = NULL };
     if (cap)
-        vec->buf = a3_shim_aligned_alloc(cap * elem_size, elem_align);
+        A3_UNWRAPN(vec->buf, a3_shim_aligned_alloc(cap * elem_size, elem_align));
 }
 
 void* a3_vec_write_ptr_(A3Vec* vec) {
@@ -63,14 +64,14 @@ void a3_vec_reserve(A3Vec* vec, size_t additional) {
 
     if (!vec->buf) {
         vec->cap = additional;
-        vec->buf = a3_shim_aligned_alloc(vec->cap * vec->elem_size, vec->elem_align);
+        A3_UNWRAPN(vec->buf, a3_shim_aligned_alloc(vec->cap * vec->elem_size, vec->elem_align));
         return;
     }
 
     while (vec->cap - vec->len < additional)
         vec->cap *= 2;
 
-    void* new_buf = a3_shim_aligned_alloc(vec->cap * vec->elem_size, vec->elem_align);
+    A3_UNWRAPNI(void*, new_buf, a3_shim_aligned_alloc(vec->cap * vec->elem_size, vec->elem_align));
     memcpy(new_buf, vec->buf, vec->len * vec->elem_size);
     a3_shim_aligned_free(vec->buf);
     vec->buf = new_buf;
