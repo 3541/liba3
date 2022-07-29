@@ -83,6 +83,7 @@
 
         devShell = pkgs.mkShell {
           packages = with pkgs; [
+            valgrind
             gdb
             rr
             clang-tools
