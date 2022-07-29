@@ -25,9 +25,12 @@ A3_FORMAT_FN(2, 3)
 void a3_log(A3LogLevel level, const char* fmt, ...) {
     if (level < LOG_LEVEL)
         return;
+
+    FILE* out = LOG_OUTPUT ? LOG_OUTPUT : stderr;
+
     va_list args;
     va_start(args, fmt);
-    vfprintf(LOG_OUTPUT, fmt, args);
-    fputc('\n', LOG_OUTPUT);
+    vfprintf(out, fmt, args);
+    fputc('\n', out);
     va_end(args);
 }
