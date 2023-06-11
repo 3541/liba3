@@ -2,7 +2,7 @@
   description = "A lightweight C/C++ utility library.";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-22.05";
+    nixpkgs.url = "nixpkgs/nixos-23.05";
     utils.url = "github:numtide/flake-utils";
     highwayhash = {
       url = "github:google/highwayhash";
@@ -24,7 +24,7 @@
               , extraMesonArgs ? "" }:
               pkgs.stdenv.mkDerivation {
                 name = "a3";
-                version = "0.3.10";
+                version = "0.4.2";
 
                 nativeBuildInputs = with pkgs;
                   [ compiler git doxygen meson gtest pkg-config ninja ]
