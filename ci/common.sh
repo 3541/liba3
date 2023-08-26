@@ -3,7 +3,7 @@
 # This script is intended to be sourced by other scripts in this directory. It sets up error
 # checking and common environment variables.
 
-set -eu
+set -eux
 
 if [ -n "${BASH-}" ]; then
     # shellcheck disable=SC3040
