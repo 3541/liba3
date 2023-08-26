@@ -20,4 +20,4 @@ fi
 echo -n "TESTS DEFINED: "
 meson test -C "$dir" --list
 
-meson test -C "$dir" -v "$meson_wrap"
+meson test -C "$dir" -v "$meson_wrap" a3_gtest
