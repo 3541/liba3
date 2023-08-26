@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         architecture: [amd64, s390x, arm, ppc]
         include:
           - os: windows-latest
@@ -63,7 +63,7 @@ jobs:
       run: pip install meson ninja
 
     - name: Fixup cross triple quirks.
-      if: matrix.os == 'ubuntu-20.04' && matrix.architecture != 'amd64'
+      if: matrix.os == 'ubuntu-latest' && matrix.architecture != 'amd64'
       id: cross
       run: |
         case "${{ matrix.architecture }}" in
@@ -85,7 +85,7 @@ jobs:
       if: steps.cross.outcome != 'skipped'
       run: |
         sudo apt-get update
-        sudo apt-get install -y dpkg-dev qemu-user meson gcc-$CROSS_TRIPLE g++-$CROSS_TRIPLE pkg-config-$CROSS_TRIPLE
+        sudo apt-get install -y dpkg-dev qemu-user meson gcc-$CROSS_TRIPLE g++-$CROSS_TRIPLE
         sudo mkdir /etc/qemu-binfmt
         sudo ln -s /usr/$CROSS_TRIPLE /etc/qemu-binfmt/${{ matrix.architecture }}
         /usr/share/meson/debcrossgen --arch $DEB_ARCH -o ${{ matrix.architecture }}.ini
