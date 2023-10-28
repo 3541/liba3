@@ -2,8 +2,8 @@ version: 2.1
 
 jobs:
   build-aarch64:
-    machine:
-      image: ubuntu-2004:current
+    docker:
+      - image: cimg/base:2023.06
     resource_class: arm.medium
     steps:
       - run: |
@@ -22,7 +22,27 @@ jobs:
           command: "ci/test.sh build"
       - store_test_results:
           path: build/a3_gtest.xml
+  build-m1:
+    macos:
+      xcode: 14.3.1
+    resource_class: macos.m1.medium.gen1
+    steps:
+      - run: |
+          pip3 install meson ninja
+      - checkout
+      - run:
+          name: "Configure"
+          command: "ci/configure.sh build"
+      - run:
+          name: "Build"
+          command: "ci/build.sh build"
+      - run:
+          name: "Test"
+          command: "ci/test.sh build"
+      - store_test_results:
+          path: build/a3_gtest.xml
 workflows:
   build-and-test:
     jobs:
       - build-aarch64
+      - build-m1
