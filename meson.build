@@ -40,12 +40,6 @@ if build_machine.system() == 'linux' and c.has_argument('-Werror')
   endif
 endif
 
-foreach language : ['c', 'cpp']
-  if meson.get_compiler(language).links('int main(void) {}', args: '-latomic', name: 'libatomic')
-    add_global_link_arguments('-latomic', language: language)
-  endif
-endforeach
-
 subdir('src')
 subdir('test')
 subdir('doc')

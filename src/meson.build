@@ -7,6 +7,7 @@ c_arg_syntax = c.get_argument_syntax()
 cxx_arg_syntax = cxx.get_argument_syntax()
 
 libm = c.find_library('m', required: false)
+libatomic = c.find_library('atomic', required: false)
 
 a3_common_flags = []
 a3_c_flags = []
@@ -75,7 +76,7 @@ a3_lib = library(
   'a3',
   a3_src,
   include_directories: a3_include,
-  dependencies: [libm, highwayhash_c],
+  dependencies: [libm, libatomic, highwayhash_c],
   c_args: a3_c_flags + a3_common_flags,
   cpp_args: a3_cxx_flags + a3_common_flags,
   gnu_symbol_visibility: 'hidden',

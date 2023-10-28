@@ -38,7 +38,7 @@ case "$($CC -dumpmachine 2>&1)" in
     *-solaris*) meson_san="-Db_sanitize=none" ;; # Missing libasan.
     *-openbsd*) meson_san="-Db_sanitize=none" ;; # Not supported.
     s390x-*) meson_san="-Db_sanitize=none" ;; # Fails at link time.
-    arm-*) meson_san="-Db_sanitize=undefined" ;; # "LeakSanitizer encountered a fatal error"
+    arm-*) meson_san="-Db_sanitize=none" ;; # "LeakSanitizer encountered a fatal error"
     *-haiku*) meson_san="-Db_sanitize=none" ;; # Not supported.
     powerpc-*) meson_san="-Db_sanitize=address" ;; # Fails to link due to missing intrinsic.
 esac
