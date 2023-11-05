@@ -1,0 +1,52 @@
+name: Build and test on other platforms
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '**/*.cc'
+      - '**/*.hh'
+      - '.github/workflows/other.yml'
+      - '**/meson.build'
+      - 'boilerplate'
+      - 'ci/*'
+
+jobs:
+  build-vagrant:
+    runs-on: macos-latest # Supports nested virtualization, while the Ubuntu hosts do not.
+    strategy:
+      matrix:
+        os: [openbsd]
+    env:
+      VAGRANT_VAGRANTFILE: ci/vagrant/${{ matrix.os }}.Vagrantfile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Select VM
+        run: cp "ci/vagrant/${{ matrix.os }}.Vagrantfile" /tmp/vm
+      - name: VM cache # https://github.com/twpayne/chezmoi/blob/v2.9.3/.github/workflows/main.yml#L173-L191
+        uses: actions/cache@v2
+        with:
+          path: ~/.vagrant.d
+          key: ${{ runner.os }}-vagrant-${{ matrix.os }}-${{ hashFiles('/tmp/vm') }}
+          restore-keys: |
+            ${{ runner.os }}-vagrant-${{ matrix.os }}-
+      - name: Start VM
+        run: vagrant up
+      - name: Configure
+        run: vagrant ssh -c "cd /src && ci/configure.sh build"
+      - name: Build
+        run: vagrant ssh -c "cd /src && ci/build.sh build"
+      - name: Test
+        run: vagrant ssh -c "cd /src && ci/test.sh build"
+      - name: Stop VM
+        run: vagrant destroy -f
+      - name: Upload failed logs.
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test logs
+          path: build/meson-logs/
