@@ -19,11 +19,11 @@
     "highwayhash": {
       "flake": false,
       "locked": {
-        "lastModified": 1697220140,
-        "narHash": "sha256-rz1wKsmoRE5M+HA3EmzKj0z/yajwwUWf4sBJN8p1yCM=",
+        "lastModified": 1698908547,
+        "narHash": "sha256-aCEzhqSC3pMsyeEA8IEe2LQlldnZZPQJ6sefp9JG0Y4=",
         "owner": "google",
         "repo": "highwayhash",
-        "rev": "38c52f11a5fe663fbe5849c66f21eb2ff5b600e7",
+        "rev": "248bf17bebc6eb6c4a64634d2637816094209145",
         "type": "github"
       },
       "original": {
@@ -34,11 +34,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1698288402,
-        "narHash": "sha256-jIIjApPdm+4yt8PglX8pUOexAdEiAax/DXW3S/Mb21E=",
+        "lastModified": 1698942558,
+        "narHash": "sha256-/UmnB+mEd6Eg3mJBrAgqRcyZX//RSjHphcCO7Ig9Bpk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "60b9db998f71ea49e1a9c41824d09aa274be1344",
+        "rev": "621f51253edffa1d6f08d5fce4f08614c852d17e",
         "type": "github"
       },
       "original": {
