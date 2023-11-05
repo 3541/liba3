@@ -16,10 +16,13 @@ on:
 jobs:
   build-nix:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [release, clang/release, mingw/release]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
       - uses: DeterminateSystems/nix-installer-action@v5
       - name: Build with Nix
-        run: nix build .
+        run: nix build ".?submodules=1#a3/${{ matrix.target }}"

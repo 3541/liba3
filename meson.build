@@ -17,7 +17,7 @@ project(
 )
 
 c = meson.get_compiler('c')
-if build_machine.system() == 'linux' and c.has_argument('-Werror')
+if host_machine.system() == 'linux' and c.has_argument('-Werror')
   trivial = '''
   #include <features.h>
   int main(void) {}

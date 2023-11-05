@@ -2,25 +2,25 @@ c = meson.get_compiler('c')
 
 a3_shim_src = []
 
-foreach s : [['memmem'],
-             ['strncasecmp', '_strnicmp'],
-             ['aligned_alloc', '_aligned_malloc']]
+foreach s : [[['memmem', 'string.h']],
+             [['strncasecmp', 'strings.h'], ['_strnicmp', 'string.h']],
+             [['aligned_alloc', 'stdlib.h'], ['_aligned_malloc', 'malloc.h']]]
   found = ''
   foreach f : s
-    if c.has_function(f)
-      found = f
+    if c.has_function(f[0], prefix: '#include <' + f[1] + '>', args: '-D_GNU_SOURCE')
+      found = f[0]
       break
     endif
   endforeach
 
   if found != ''
     if s.length() == 1
-      a3_shim_src += files(s[0] / 'present.c')
+      a3_shim_src += files(s[0][0] / 'present.c')
     else
-      a3_shim_src += files(s[0] / found + '.c')
+      a3_shim_src += files(s[0][0] / found + '.c')
     endif
   else
-    a3_shim_src += files(s[0] / 'missing.c')
+    a3_shim_src += files(s[0][0] / 'missing.c')
   endif
 endforeach
 

@@ -16,26 +16,28 @@
 
   outputs = { self, nixpkgs, utils, highwayhash, ... }:
     utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system};
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        llvm = pkgs.llvmPackages_latest;
       in rec {
         packages = utils.lib.flattenTree {
           a3 = pkgs.lib.recurseIntoAttrs (let
-            a3build = ({ buildType, san ? false, compiler, extra ? [ ]
-              , extraMesonArgs ? "" }:
-              pkgs.stdenv.mkDerivation {
+            a3build = ({ buildType, buildPkgs ? pkgs, hostPkgs ? pkgs
+              , san ? false, compiler, extra ? [ ], extraMesonArgs ? "" }:
+              pkgs.stdenv.mkDerivation rec {
                 name = "a3";
                 version = "0.4.2";
 
-                nativeBuildInputs = with pkgs;
-                  [ compiler git doxygen meson gtest pkg-config ninja ]
-                  ++ extra;
+                nativeBuildInputs = with buildPkgs;
+                  [ compiler git doxygen meson pkg-config ninja ] ++ extra;
+                buildInputs = with hostPkgs; [ gtest ];
                 src = ./.;
 
                 mesonArgs = (if buildType == "release" then
-                  "-Db_lto=true"
+                  "-Db_lto=true "
                 else
-                  "-Db_coverage=true") + (pkgs.lib.optionalString san
-                    "-Db_sanitize=address,undefined") + extraMesonArgs;
+                  "-Db_coverage=true ") + (pkgs.lib.optionalString san
+                    "-Db_sanitize=address,undefined ") + extraMesonArgs;
 
                 patchPhase = ''
                   cp -r ${self.inputs.highwayhash} subprojects/highwayhash
@@ -43,8 +45,7 @@
                   cp subprojects/packagefiles/highwayhash/meson.build subprojects/highwayhash/
                 '';
                 configurePhase = ''
-                  CC=${compiler}/bin/cc CXX=${compiler}/bin/c++ meson setup --prefix $out \
-                      --buildtype ${buildType} --wrap-mode nodownload -Dcpp_std=c++20 build
+                  meson setup ${mesonArgs} --prefix=$out --buildtype=${buildType} --wrap-mode=nodownload -Dcpp_std=c++20 build .
                 '';
                 buildPhase = "meson compile -C build";
                 checkPhase = "meson test -C build";
@@ -72,11 +73,22 @@
                 extraMesonArgs = mesonArgs;
               };
             });
-          in (buildTypes pkgs.gcc [ ] "") // {
+            crossBuild = (compiler: hostPkgs: mesonArgs: {
+              release = a3build {
+                buildType = "release";
+                extraMesonArgs = mesonArgs;
+                inherit compiler hostPkgs;
+              };
+            });
+          in (buildTypes pkgs.gcc [ ] "--native-file=boilerplate/meson/gcc.ini")
+          // {
             clang = pkgs.lib.recurseIntoAttrs
-              (buildTypes pkgs.llvmPackages_latest.clang
-                [ pkgs.llvmPackages_latest.libllvm ]
-                "--native-file boilerplate/meson/clang.ini");
+              (buildTypes llvm.clang [ llvm.libllvm llvm.bintools ]
+                "--native-file=boilerplate/meson/clang.ini");
+            mingw = pkgs.lib.recurseIntoAttrs
+              (crossBuild pkgs.pkgsCross.mingwW64.buildPackages.gcc
+                pkgs.pkgsCross.mingwW64
+                "--cross-file=boilerplate/meson/mingw.ini");
           });
         };
         defaultPackage = packages."a3/release";
@@ -88,6 +100,7 @@
             rr
             clang-tools
             texlive.combined.scheme-medium
+            act
             (let unwrapped = include-what-you-use;
             in stdenv.mkDerivation {
               pname = "include-what-you-use";
@@ -115,7 +128,11 @@
             })
           ];
 
-          inputsFrom = [ packages."a3/clang/debug" packages."a3/debug" ];
+          inputsFrom = [
+            packages."a3/debug"
+            packages."a3/clang/debug"
+            packages."a3/mingw/release"
+          ];
 
           shellHook = ''
             unset AR
