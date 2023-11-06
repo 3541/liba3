@@ -23,6 +23,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: DeterminateSystems/nix-installer-action@v5
+      - uses: DeterminateSystems/nix-installer-action@v6
       - name: Build with Nix
         run: nix build ".?submodules=1#a3/${{ matrix.target }}"
