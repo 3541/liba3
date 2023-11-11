@@ -24,5 +24,6 @@ jobs:
         with:
           submodules: recursive
       - uses: DeterminateSystems/nix-installer-action@v7
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
       - name: Build with Nix
         run: nix build ".?submodules=1#a3/${{ matrix.target }}"
