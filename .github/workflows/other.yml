@@ -28,7 +28,7 @@ jobs:
       - name: Select VM
         run: cp "ci/vagrant/${{ matrix.os }}.Vagrantfile" /tmp/vm
       - name: VM cache # https://github.com/twpayne/chezmoi/blob/v2.9.3/.github/workflows/main.yml#L173-L191
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.vagrant.d
           key: ${{ runner.os }}-vagrant-${{ matrix.os }}-${{ hashFiles('/tmp/vm') }}
