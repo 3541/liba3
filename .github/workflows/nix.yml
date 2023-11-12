@@ -12,6 +12,7 @@ on:
       - '**/meson.build'
       - 'boilerplate'
       - '**/*.nix'
+      - 'flake.lock'
 
 jobs:
   build-nix:
