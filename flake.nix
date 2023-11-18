@@ -33,10 +33,8 @@
                 buildInputs = with hostPkgs; [ gtest ];
                 src = ./.;
 
-                mesonArgs = (if buildType == "release" then
-                  "-Db_lto=true "
-                else
-                  "-Db_coverage=true ") + (pkgs.lib.optionalString san
+                mesonArgs = (pkgs.lib.optionalString (buildType == "release")
+                  "-Db_lto=true ") + (pkgs.lib.optionalString san
                     "-Db_sanitize=address,undefined ") + extraMesonArgs;
 
                 patchPhase = ''
