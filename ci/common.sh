@@ -26,6 +26,12 @@ if [ -z "${CC-}" ]; then
     elif uname -s | grep -q "MINGW"; then
         export CC=cl
         export CXX=cl
+    elif uname -s | grep -q "MSYS"; then
+        export CC=cl
+        export CXX=cl
+    else
+        echo "No compiler found." >&2
+        exit 1
     fi
 fi
 
@@ -47,6 +53,10 @@ case "$(uname -s)" in
     MINGW*)
         meson_san="-Db_sanitize=address" # Windows does not support UBSAN.
         meson_std="-Dcpp_std=c++20" # Meson on Windows does not accept C++2a as a standard.
+        ;;
+    MSYS*)
+        meson_san="-Db_sanitize=address"
+        meson_std="-Dcpp_std=c++20"
         ;;
 esac
 
