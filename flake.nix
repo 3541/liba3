@@ -2,7 +2,7 @@
   description = "A lightweight C/C++ utility library.";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-23.05";
+    nixpkgs.url = "nixpkgs/nixos-23.11";
     utils.url = "github:numtide/flake-utils";
     highwayhash = {
       url = "github:google/highwayhash";
@@ -23,14 +23,18 @@
         packages = utils.lib.flattenTree {
           a3 = pkgs.lib.recurseIntoAttrs (let
             a3build = ({ buildType, buildPkgs ? pkgs, hostPkgs ? pkgs
-              , san ? false, compiler, extra ? [ ], extraMesonArgs ? "" }:
+              , san ? false, compiler, extra ? [ ], extraMesonArgs ? ""
+              , hostStdenv ? hostPkgs.stdenv }:
               pkgs.stdenv.mkDerivation rec {
                 name = "a3";
                 version = "0.4.2";
 
                 nativeBuildInputs = with buildPkgs;
                   [ compiler git doxygen meson pkg-config ninja ] ++ extra;
-                buildInputs = with hostPkgs; [ gtest ];
+                buildInputs = with hostPkgs;
+                  [ (gtest.override { stdenv = hostStdenv; }) ];
+                hardeningDisable =
+                  pkgs.lib.optional (buildType == "debug") "fortify";
                 src = ./.;
 
                 mesonArgs = (pkgs.lib.optionalString (buildType == "release")
@@ -50,12 +54,13 @@
                 doCheck = true;
                 installPhase = "meson install -C build";
               });
-            buildTypes = (compiler: extra: mesonArgs: {
+            buildTypes = (compiler: stdenv: extra: mesonArgs: {
               debug = a3build {
                 buildType = "debug";
                 compiler = compiler;
                 extra = extra;
                 extraMesonArgs = mesonArgs;
+                hostStdenv = stdenv;
               };
               san = a3build {
                 buildType = "debug";
@@ -63,12 +68,14 @@
                 extra = extra;
                 extraMesonArgs = mesonArgs;
                 san = true;
+                hostStdenv = stdenv;
               };
               release = a3build {
                 buildType = "release";
                 compiler = compiler;
                 extra = extra;
                 extraMesonArgs = mesonArgs;
+                hostStdenv = stdenv;
               };
             });
             crossBuild = (compiler: hostPkgs: mesonArgs: {
@@ -78,16 +85,21 @@
                 inherit compiler hostPkgs;
               };
             });
-          in (buildTypes pkgs.gcc [ ] "--native-file=boilerplate/meson/gcc.ini")
-          // {
-            clang = pkgs.lib.recurseIntoAttrs
-              (buildTypes llvm.clang [ llvm.libllvm llvm.bintools ]
-                "--native-file=boilerplate/meson/clang.ini");
-            mingw = pkgs.lib.recurseIntoAttrs
-              (crossBuild pkgs.pkgsCross.mingwW64.buildPackages.gcc
-                pkgs.pkgsCross.mingwW64
-                "--cross-file=boilerplate/meson/mingw.ini");
-          });
+          in (buildTypes pkgs.gcc pkgs.stdenv [ ]
+            "--native-file=boilerplate/meson/gcc.ini") // {
+              clang = pkgs.lib.recurseIntoAttrs
+                (buildTypes llvm.clang llvm.stdenv [
+                  llvm.libllvm
+                  llvm.bintools
+                ] "--native-file=boilerplate/meson/clang.ini");
+              libcxxClang = pkgs.lib.recurseIntoAttrs
+                (buildTypes llvm.libcxxClang llvm.libcxxStdenv [ llvm.bintools ]
+                  "--native-file=boilerplate/meson/clang.ini");
+              mingw = pkgs.lib.recurseIntoAttrs
+                (crossBuild pkgs.pkgsCross.mingwW64.buildPackages.gcc
+                  pkgs.pkgsCross.mingwW64
+                  "--cross-file=boilerplate/meson/mingw.ini");
+            });
         };
         defaultPackage = packages."a3/release";
 
@@ -133,7 +145,8 @@
           ];
 
           shellHook = ''
-            unset AR
+            NIX_HARDENING_ENABLE="''${NIX_HARDENING_ENABLE/fortify/}"
+            export NIX_HARDENING_ENABLE="''${NIX_HARDENING_ENABLE/fortify3/}"
           '';
         };
       });

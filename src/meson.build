@@ -39,6 +39,11 @@ add_project_arguments(cxx.get_supported_arguments(a3_flags_wanted[cxx_arg_syntax
 add_project_link_arguments(cxx.get_supported_link_arguments(a3_flags_wanted[cxx_arg_syntax]),
                            language: 'cpp')
 
+if get_option('buildtype') != 'debug'
+  add_project_arguments(c.get_supported_arguments(['-U_FORTIFY_SOURCE', '-D_FORTIFY_SOURCE=3']), language: 'c')
+  add_project_arguments(cxx.get_supported_arguments(['-U_FORTIFY_SOURCE', '-D_FORTIFY_SOURCE=3']), language: 'cpp')
+endif
+
 a3_warnings_wanted = {
   'gcc': [
     '-Wdisabled-optimization', '-Wduplicated-branches', '-Wduplicated-cond', '-Wfloat-equal',

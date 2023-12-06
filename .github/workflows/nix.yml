@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [release, clang/release, mingw/release]
+        target: [release, clang/release, clang/debug, libcxxClang/release, mingw/release]
     steps:
       - uses: actions/checkout@v4
         with:
