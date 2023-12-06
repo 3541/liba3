@@ -18,22 +18,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-2019]
         architecture: [amd64, s390x, arm, ppc]
         include:
-          - os: windows-latest
+          - os: windows-2019
             c_compiler: cl
             cxx_compiler: cl
         exclude:
-          - os: windows-latest
+          - os: windows-2019
             architecture: s390x
           - os: macos-latest
             architecture: s390x
-          - os: windows-latest
+          - os: windows-2019
             architecture: arm
           - os: macos-latest
             architecture: arm
-          - os: windows-latest
+          - os: windows-2019
             architecture: ppc
           - os: macos-latest
             architecture: ppc
