@@ -3,3 +3,4 @@ build
 .envrc
 result
 .direnv
+.vagrant

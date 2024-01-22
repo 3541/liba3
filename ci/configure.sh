@@ -4,6 +4,7 @@
 # configures the given build directory with maximally-aggressive warnings and runtime
 # instrumentation.
 
+cd "$(dirname "$0")/.."
 . ci/common.sh
 
 dir="$1"

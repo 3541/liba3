@@ -3,6 +3,7 @@
 # This script is intended to be called from a CI pipeline (either directly or from all.sh). It
 # assumes the library has already been configured in the given directory, and then builds it.
 
+cd "$(dirname "$0")/.."
 . ci/common.sh
 
 dir="$1"

@@ -108,6 +108,7 @@
             clang-tools
             texlive.combined.scheme-medium
             act
+            vagrant
             (let unwrapped = include-what-you-use;
             in stdenv.mkDerivation {
               pname = "include-what-you-use";

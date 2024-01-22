@@ -5,6 +5,7 @@
 
 dir=$(mktemp -d)
 
+cd "$(dirname "$0")/.."
 . ci/common.sh
 
 cleanup() {

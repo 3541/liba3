@@ -1,0 +1,62 @@
+name: Build and test on other systems
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '**/*.cc'
+      - '**/*.hh'
+      - '.github/workflows/other.yml'
+      - '**/meson.build'
+      - 'boilerplate'
+      - 'ci/**/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        os: [openbsd]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu-kvm libvirt-daemon-system vagrant
+
+    - name: Enable KVM
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+        # sudo usermod -aG libvirt,kvm $USER <-- Does nothing at present, since groups are not reloaded.
+
+    - name: Select VM
+      run: |
+        cp "ci/vms/${{ matrix.os }}.rb" ci/vms/current.rb
+        echo "VAGRANT_VAGRANTFILE=ci/vms/${{ matrix.os }}.rb" >> $GITHUB_ENV
+
+    - uses: actions/cache@v2
+      with:
+        path: ~/.vagrant.d/boxes
+        key: ${{ matrix.os }}-vagrant-${{ hashFiles('ci/vms/current.rb') }}
+        restore-keys: |
+          ${{ matrix.os }}-vagrant-
+
+    - name: Start VM
+      run: sudo -E vagrant up
+
+    - name: Configure
+      run: sudo -E vagrant ssh -c "/build/ci/configure.sh build"
+
+    - name: Build
+      run: sudo -E vagrant ssh -c "/build/ci/build.sh build"
+
+    - name: Test
+      run: sudo -E vagrant ssh -c "/build/ci/test.sh build"
