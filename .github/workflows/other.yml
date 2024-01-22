@@ -42,7 +42,7 @@ jobs:
         cp "ci/vms/${{ matrix.os }}.rb" ci/vms/current.rb
         echo "VAGRANT_VAGRANTFILE=ci/vms/${{ matrix.os }}.rb" >> $GITHUB_ENV
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v4
       with:
         path: ~/.vagrant.d/boxes
         key: ${{ matrix.os }}-vagrant-${{ hashFiles('ci/vms/current.rb') }}
