@@ -85,21 +85,18 @@
                 inherit compiler hostPkgs;
               };
             });
-          in (buildTypes pkgs.gcc pkgs.stdenv [ ]
-            "--native-file=boilerplate/meson/gcc.ini") // {
-              clang = pkgs.lib.recurseIntoAttrs
-                (buildTypes llvm.clang llvm.stdenv [
-                  llvm.libllvm
-                  llvm.bintools
-                ] "--native-file=boilerplate/meson/clang.ini");
-              libcxxClang = pkgs.lib.recurseIntoAttrs
-                (buildTypes llvm.libcxxClang llvm.libcxxStdenv [ llvm.bintools ]
-                  "--native-file=boilerplate/meson/clang.ini");
-              mingw = pkgs.lib.recurseIntoAttrs
-                (crossBuild pkgs.pkgsCross.mingwW64.buildPackages.gcc
-                  pkgs.pkgsCross.mingwW64
-                  "--cross-file=boilerplate/meson/mingw.ini");
-            });
+          in (buildTypes pkgs.gcc pkgs.stdenv [ ] "--native-file=meson/gcc.ini")
+          // {
+            clang = pkgs.lib.recurseIntoAttrs
+              (buildTypes llvm.clang llvm.stdenv [ llvm.libllvm llvm.bintools ]
+                "--native-file=meson/clang.ini");
+            libcxxClang = pkgs.lib.recurseIntoAttrs
+              (buildTypes llvm.libcxxClang llvm.libcxxStdenv [ llvm.bintools ]
+                "--native-file=meson/clang.ini");
+            mingw = pkgs.lib.recurseIntoAttrs
+              (crossBuild pkgs.pkgsCross.mingwW64.buildPackages.gcc
+                pkgs.pkgsCross.mingwW64 "--cross-file=meson/mingw.ini");
+          });
         };
         defaultPackage = packages."a3/release";
 
