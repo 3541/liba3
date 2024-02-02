@@ -25,6 +25,6 @@ jobs:
         with:
           submodules: recursive
       - uses: DeterminateSystems/nix-installer-action@v9 # Locally revert to v8 if running with act.
-      - uses: DeterminateSystems/magic-nix-cache-action@v2
+      - uses: DeterminateSystems/magic-nix-cache-action@v3
       - name: Build with Nix
         run: nix build ".#a3/${{ matrix.target }}"
