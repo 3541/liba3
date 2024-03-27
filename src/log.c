@@ -7,6 +7,7 @@
  * the project root for details.
  */
 
+#include <a3/shim/format.h>
 #include <stdarg.h>
 #include <stdio.h>
 

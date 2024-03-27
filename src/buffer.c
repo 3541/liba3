@@ -7,6 +7,7 @@
  * the project root for details.
  */
 
+#include <a3/shim/format.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -106,8 +107,8 @@ bool a3_buf_write_fmt(A3Buffer* this, const char* fmt, ...) {
 }
 
 bool a3_buf_write_num(A3Buffer* this, size_t num) {
-    uint8_t  tmp[20] = { '\0' };
-    A3String num_str = a3_string_itoa_into((A3String) { .ptr = tmp, .len = sizeof(tmp) }, num);
+    uint8_t  tmp[20] = {'\0'};
+    A3String num_str = a3_string_itoa_into((A3String){.ptr = tmp, .len = sizeof(tmp)}, num);
     return a3_buf_write_str(this, A3_S_CONST(num_str));
 }
 
@@ -155,7 +156,7 @@ A3String a3_buf_token_next(A3Buffer* this, A3CString delim, bool preserve_end) {
         for (; last < this->tail && memchr(delim.ptr, this->data.ptr[last], delim.len); last++)
             this->data.ptr[last] = '\0';
 
-    A3String ret = { .ptr = &this->data.ptr[this->head], .len = end - this->head };
+    A3String ret = {.ptr = &this->data.ptr[this->head], .len = end - this->head};
     this->head   = last;
     return ret;
 }

@@ -123,11 +123,4 @@
 #define A3_TRY(...)                                                                                \
     A3_M_MSVC_VA_HACK(A3_M_ARG4(__VA_ARGS__, A3_TRY_COND, A3_TRYB_MAP, A3_TRYB, )(__VA_ARGS__))
 
-#if defined(__GNUC__) || defined(__clang__)
-#define A3_FORMAT_FN(FMT_INDEX, VARG_INDEX)                                                        \
-    __attribute__((__format__(__printf__, FMT_INDEX, VARG_INDEX)))
-#else
-#define A3_FORMAT_FN(FMT_INDEX, VARG_INDEX)
-#endif
-
 #define A3_CONTAINER_OF(PTR, TY, FIELD) ((TY*)((uintptr_t)(void*)(PTR)-offsetof(TY, FIELD)))
