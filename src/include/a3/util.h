@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <a3/shim/likely.h>
 #include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -40,22 +41,6 @@
 // Disable warning for "assignment within conditional expression. Why is this
 // even a warning?
 #pragma warning(disable : 4706)
-#endif
-
-#if defined(__GNUC__) || defined(__clang__)
-#define A3_LIKELY(E)   (__builtin_expect(!!(E), 1))
-#define A3_UNLIKELY(E) (__builtin_expect(!!(E), 0))
-#elif defined(__has_cpp_attribute)
-#if __has_cpp_attribute(likely) && __has_cpp_attribute(unlikely)
-#define A3_LIKELY(E)   (E) [[likely]]
-#define A3_UNLIKELY(E) (E) [[unlikely]]
-#else
-#define A3_LIKELY(E)   (E)
-#define A3_UNLIKELY(E) (E)
-#endif
-#else
-#define A3_LIKELY(E)   (E)
-#define A3_UNLIKELY(E) (E)
 #endif
 
 // "unwrap" a return value which is falsy on error, and assign to T on success.
