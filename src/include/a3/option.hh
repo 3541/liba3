@@ -1,7 +1,7 @@
 /*
- * OPTION -- Nicer std::optional.
+ * OPTION — Nicer std::optional.
  *
- * Copyright (c) 2022, Alex O'Brien <3541@3541.website>
+ * Copyright (c) 2022, 2024, Alex O'Brien <3541@3541.website>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in the project root
  * for details.
@@ -9,21 +9,19 @@
 
 /// \file option.hh
 /// # Option
-///  An extension of std::optional, primarily to add conversions to a3::Result, specialization for
-/// reference types, and map-type functions.
+///  An extension of std::optional, providing correct behavior for reference types.
 
 #pragma once
 
-#if __cplusplus < 201703L && !defined(DOXYGEN)
-#warning "C++17 or greater is required for std::optional."
-#else
-
 #include <functional>
 #include <optional>
+#include <type_traits>
 
-#ifdef __cpp_concepts
-#include <a3/result.hh>
+#ifdef __cpp_lib_concepts
+#include <concepts>
 #endif
+
+#include <a3/fwd.hh>
 
 namespace a3 {
 
@@ -32,23 +30,42 @@ class Option;
 
 namespace detail {
 
+#ifdef __cpp_lib_concepts
+template <typename F, typename... Args>
+concept Invocable = std::invocable<F, Args...>;
+#else
+template <typename F, typename... Args>
+concept Invocable = std::is_invocable_v<F, Args...>;
+#endif
+
+template <typename T>
+constexpr inline bool IsOptionalImpl = false;
+
+template <typename T>
+constexpr inline bool IsOptionalImpl<std::optional<T>> = true;
+
+template <typename T>
+constexpr inline bool IsOptional = IsOptionalImpl<std::remove_reference_t<std::remove_cv_t<T>>>;
+
 template <typename T>
 class OptionBase : public std::optional<T> {
 public:
     using std::optional<T>::optional;
 
     /// Convert a reference to an Option to an optional reference.
-    Option<T&> as_ref() & {
+    Option<T&> as_ref() {
         if (!this->has_value())
-            return std::nullopt;
-        return std::ref(this->value());
+            return {};
+
+        return **this;
     }
 
     /// @copydoc as_ref
-    Option<T const&> as_ref() const& {
+    Option<T const&> as_ref() const {
         if (!this->has_value())
-            return std::nullopt;
-        return std::cref(this->value());
+            return {};
+
+        return **this;
     }
 };
 
@@ -58,7 +75,19 @@ class OptionBase<T&> : public std::optional<std::reference_wrapper<T>> {
 public:
     using std::optional<std::reference_wrapper<T>>::optional;
 
-    T& value() { return std::optional<std::reference_wrapper<T>>::value().get(); }
+    T&       value() { return std::optional<std::reference_wrapper<T>>::value(); }
+    T const& value() const { return std::optional<std::reference_wrapper<T>>::value(); }
+
+    T& operator*() noexcept {
+        return *static_cast<std::optional<std::reference_wrapper<T>>&>(*this);
+    }
+
+    T const& operator*() const noexcept {
+        return *static_cast<std::optional<std::reference_wrapper<T>> const&>(*this);
+    }
+
+    T*       operator->() noexcept { return &**this; }
+    T const* operator->() const noexcept { return &**this; }
 };
 #endif
 
@@ -70,64 +99,58 @@ class Option : public detail::OptionBase<T> {
 public:
     using detail::OptionBase<T>::OptionBase;
 
-    /// Construct (or implicitly convert) an Option from a `std::optional`.
-    template <typename U>
-    Option(std::optional<U>&& o) : detail::OptionBase<T> { std::forward<std::optional<U>>(o) } {}
-
-#if !defined(__cpp_lib_optional) || __cpp_lib_optional < 202110L
     /// \brief Transform the contents of an Option.
     ///
     /// Apply a lambda to the contents (if any) of the Option, returning the result. This is much
-    /// like `std::optional`'s upcoming `transform` API.
-    template <typename Fn, typename U = std::invoke_result_t<Fn, T>>
+    /// like `std::optional`'s `transform` API, but plays nice with references.
+    template <detail::Invocable<T> Fn, typename U = std::invoke_result_t<Fn, T>>
     Option<U> map(Fn&& f) && {
         if (!this->has_value())
             return {};
-        return std::forward<Fn>(f)(std::move(*this).value());
+
+        return std::invoke(A3_FWD(f), *std::move(*this));
     }
-#else
-    template <typename Fn, typename U = std::invoke_result_t<Fn, T>>
-    Option<U> map(Fn&& f) && {
-        return std::move(*this).transform(std::forward<Fn>(f));
+
+    /// @copydoc map
+    template <detail::Invocable<T> Fn, typename U = std::invoke_result_t<Fn, T>>
+        requires std::is_copy_constructible_v<T>
+    Option<U> map(Fn&& f) const& {
+        return Option<T>{*this}.map(A3_FWD(f));
     }
-#endif
 
     /// \brief Like Option::map, but return a non-optional type.
     ///
     /// Calls the provided fallback function if `this` is empty.
-    template <typename Fn, typename FFn>
+    template <detail::Invocable<T> Fn, detail::Invocable FFn>
     std::invoke_result_t<Fn, T> map_or_else(FFn&& fallback, Fn&& f) && {
         if (!this->has_value())
-            return std::forward<FFn>(fallback)();
-        return std::move(*this).map(std::forward<Fn>(f)).value();
+            return std::invoke(A3_FWD(fallback));
+
+        return *std::move(*this).map(A3_FWD(f));
+    }
+
+    /// @copydoc map_or_else
+    template <detail::Invocable<T> Fn, detail::Invocable FFn>
+        requires std::is_copy_constructible_v<T>
+    std::invoke_result_t<Fn, T> map_or_else(FFn&& fallback, Fn&& f) const& {
+        return Option<T>{*this}.map_or_else(A3_FWD(fallback), A3_FWD(f));
     }
 
     /// Like Option::map_or_else, but the fallback is simply a value, rather than a lambda.
-    template <typename Fn, typename U = std::invoke_result_t<Fn, T>>
+    template <detail::Invocable<T> Fn, typename U = std::invoke_result_t<Fn, T>>
     std::invoke_result_t<Fn, T> map_or(U&& fallback, Fn&& f) && {
-        return std::move(*this).map_or_else([&fallback] { return std::forward<U>(fallback); },
-                                            std::forward<Fn>(f));
-    }
-
-#if defined(__cpp_concepts) || defined(DOXYGEN)
-    /// \brief Map `this` onto a Result.
-    ///
-    /// Constructs the error variant using the given lambda, if required.
-    template <typename EFn>
-    Result<T, std::invoke_result_t<EFn>> ok_or_else(EFn&& ef) && {
         if (!this->has_value())
-            return Err { std::forward<EFn>(ef)() };
-        return std::move(*this).value();
+            return A3_FWD(fallback);
+
+        return *std::move(*this).map(A3_FWD(f));
     }
 
-    /// Like Option::ok_or_else, but the error variant is given as a simple value.
-    template <typename E>
-    Result<T, E> ok_or(E&& err) && {
-        return std::move(*this).ok_or_else([&err] { return std::forward<E>(err); });
+    /// @copydoc map_or
+    template <detail::Invocable<T> Fn, typename U = std::invoke_result_t<Fn, T>>
+        requires std::is_copy_constructible_v<T>
+    std::invoke_result_t<Fn, T> map_or(U&& fallback, Fn&& f) const& {
+        return Option<T>{*this}.map_or(A3_FWD(fallback), A3_FWD(f));
     }
-#endif
 };
 
 } // namespace a3
-
-#endif
