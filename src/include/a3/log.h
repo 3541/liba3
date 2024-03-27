@@ -32,7 +32,7 @@ A3_H_BEGIN
 
 #ifndef A3_LOG_LEVEL
 /// The compile-time log level. Anything less severe is compiled out.
-#define A3_LOG_LEVEL A3_LOG_INFO
+#define A3_LOG_LEVEL A3_LOG_TRACE
 #endif
 
 /// Log a formatted message at the given level.

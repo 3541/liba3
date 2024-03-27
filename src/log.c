@@ -14,7 +14,7 @@
 #include <a3/util.h>
 
 static FILE*      LOG_OUTPUT = NULL;
-static A3LogLevel LOG_LEVEL  = A3_LOG_TRACE;
+static A3LogLevel LOG_LEVEL  = A3_LOG_DEBUG;
 
 void a3_log_init(FILE* out, A3LogLevel level) {
     LOG_OUTPUT = out;
