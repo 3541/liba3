@@ -105,7 +105,7 @@
             valgrind
             gdb
             rr
-            clang-tools
+            clang-tools_17
             texlive.combined.scheme-medium
             act
             vagrant
