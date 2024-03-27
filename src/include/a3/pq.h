@@ -1,7 +1,7 @@
 /*
  * PRIORITY QUEUE -- A type-generic priority queue backed by a binary heap.
  *
- * Copyright (c) 2020-2021, Alex O'Brien <3541ax@gmail.com>
+ * Copyright (c) 2020-2021, Alex O'Brien <3541@3541.website>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
