@@ -13,6 +13,12 @@
 
 namespace a3::test::log {
 
+namespace {
+
+std::string WARN_ENV{"A3_LOG_LEVEL=WARN"};
+
+}
+
 using namespace testing;
 
 class LogTest : public Test {
@@ -81,13 +87,11 @@ TEST_F(LogTest, macros) {
 }
 
 struct EnvLogTest : public LogTest {
-    std::string m_env{"A3_LOG_LEVEL=WARN"};
-
     void SetUp() override {
 #ifdef _MSC_VER
-        ::_putenv(m_env.data());
+        ::_putenv(WARN_ENV.data());
 #else
-        ::putenv(m_env.data());
+        ::putenv(WARN_ENV.data());
 #endif
         a3_log_init(stream, A3_LOG_INVALID);
     }
