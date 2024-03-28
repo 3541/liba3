@@ -80,12 +80,12 @@ described [here](https://github.com/3541/liba3/blob/trunk/LICENSE).
 
 `liba3` uses the following third-party projects:
 
-### HighayHash
+### HighwayHash
 The project links with [HighwayHash](https://github.com/google/highwayhash),
 which is licensed under the [Apache
 license](https://github.com/google/highwayhash/blob/master/LICENSE).
 
 ### Google Test
-The test framework uses [Google Test](https://github.com/google/googletest),
+The test suite uses [Google Test](https://github.com/google/googletest),
 which is licensed under the [3-clause BSD
 license](https://github.com/google/googletest/blob/master/LICENSE).
