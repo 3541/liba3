@@ -11,9 +11,7 @@
 #include <a3/log.h>
 #include <a3/str.h>
 
-namespace a3 {
-namespace test {
-namespace log {
+namespace a3::test::log {
 
 using namespace testing;
 
@@ -21,12 +19,9 @@ class LogTest : public Test {
     static constexpr size_t READ_BUF_SIZE = 512;
 
 protected:
-    FILE* stream { nullptr }; // NOLINT(misc-non-private-member-variables-in-classes)
+    FILE* stream{tmpfile()};
 
-    void SetUp() override {
-        stream = tmpfile();
-        a3_log_init(stream, A3_LOG_INFO);
-    }
+    void SetUp() override { a3_log_init(stream, A3_LOG_INFO); }
 
     void TearDown() override { fclose(stream); }
 
@@ -34,7 +29,7 @@ protected:
         fflush(stream);
         fseek(stream, 0, SEEK_SET);
         std::string ret(READ_BUF_SIZE, '\0');
-        size_t      written = fread(&ret[0], sizeof(char), READ_BUF_SIZE, stream);
+        size_t      written = fread(ret.data(), sizeof(char), READ_BUF_SIZE, stream);
         ret.resize(written);
         return ret;
     }
@@ -85,6 +80,27 @@ TEST_F(LogTest, macros) {
     ASSERT_EQ(read_written(), expected.str().c_str());
 }
 
-} // namespace log
-} // namespace test
-} // namespace a3
+struct EnvLogTest : public LogTest {
+    std::string m_env{"A3_LOG_LEVEL=WARN"};
+
+    void SetUp() override {
+#ifdef _MSC_VER
+        ::_putenv(m_env.data());
+#else
+        ::putenv(m_env.data());
+#endif
+        a3_log_init(stream, A3_LOG_INVALID);
+    }
+};
+
+TEST_F(EnvLogTest, environment) {
+    A3_INFO("this should not appear");
+    A3_WARN("1");
+    A3_ERROR("2");
+
+    EXPECT_THAT(read_written(), HasSubstr("1\n"));
+    EXPECT_THAT(read_written(), HasSubstr("2\n"));
+    EXPECT_THAT(read_written(), Not(HasSubstr("should not appear")));
+}
+
+} // namespace a3::test::log

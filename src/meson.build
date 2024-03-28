@@ -54,9 +54,7 @@ a3_warnings_wanted = {
     '-Wconversion', '-Weffc++', '-Wpointer-arith', '-Wno-pedantic'
   ],
 
-  'msvc': [
-    '-wd5105'
-  ]
+  'msvc': ['-wd5105', '-wd4189']
 }
 
 a3_c_flags += c.get_supported_arguments(a3_warnings_wanted[c_arg_syntax])

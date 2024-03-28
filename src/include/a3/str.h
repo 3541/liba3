@@ -118,7 +118,7 @@ A3_H_BEGIN
 A3_ALWAYS_INLINE A3CString _A3_S_CONST(A3String s) { return a3_cstring_new(s.ptr, s.len); }
 A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
 /// Cast a string to a constant string.
-#define A3_S_CONST(X) _Generic((X), A3String : _A3_S_CONST, A3CString : _A3_S_NOP)(X)
+#define A3_S_CONST(X) (_Generic((X), A3String : _A3_S_CONST, A3CString : _A3_S_NOP)(X))
 
 #else
 
