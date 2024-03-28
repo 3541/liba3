@@ -63,7 +63,7 @@ concept invocable = requires(Fn&& f, Args&&... args) {
 
 template <typename T>
 concept default_initializable = constructible_from<T> && requires {
-    { T {} };
+    { T{} };
     { ::new (static_cast<void*>(nullptr)) T };
 };
 
@@ -96,9 +96,7 @@ template <typename I>
 static constexpr bool IS_REF = InnerTypeImpl<I>::IS_REF;
 
 template <typename T>
-concept Deref = requires(T t) {
-    *t;
-};
+concept Deref = requires(T t) { *t; };
 
 template <typename D>
 struct DerefTargetImpl;
@@ -109,7 +107,8 @@ struct DerefTargetImpl<D> {
 };
 
 template <typename D>
-requires(!Deref<D>) struct DerefTargetImpl<D> {
+    requires(!Deref<D>)
+struct DerefTargetImpl<D> {
     using T = std::nullptr_t;
 };
 
@@ -142,29 +141,27 @@ public:
     /// Construct an Err from something convertible to its inner type.
     template <typename F>
     // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
-    requires(detail::constructible_from<Inner, F>) explicit Err(F&& err) :
-        m_err { std::forward<F>(err) } {}
+        requires(detail::constructible_from<Inner, F>)
+    explicit Err(F&& err) : m_err{std::forward<F>(err)} {}
 
     /// Convert an Err from one inner type to another.
     template <typename F>
-    requires(detail::constructible_from<Inner, typename Err<F>::Inner>) explicit Err(Err<F>&& err) :
-        m_err { std::move(err.m_err) } {}
+        requires(detail::constructible_from<Inner, typename Err<F>::Inner>)
+    explicit Err(Err<F>&& err) : m_err{std::move(err.m_err)} {}
 
 #ifndef DOXYGEN
     template <typename F>
-    requires(detail::constructible_from<Inner, typename Err<F>::Inner>) explicit Err(
-        Err<F> const& err) :
-        m_err { err.m_err } {}
+        requires(detail::constructible_from<Inner, typename Err<F>::Inner>)
+    explicit Err(Err<F> const& err) : m_err{err.m_err} {}
 
     template <typename F>
-    requires(detail::IS_REF<E>&& detail::constructible_from<
-             Inner, typename Err<F>::Inner const&>) explicit Err(Err<F> const& err) :
-        m_err { err.m_err } {}
+        requires(detail::IS_REF<E> &&
+                 detail::constructible_from<Inner, typename Err<F>::Inner const&>)
+    explicit Err(Err<F> const& err) : m_err{err.m_err} {}
 
     template <typename F>
-    requires(detail::IS_REF<E>&& detail::constructible_from<
-             Inner, typename Err<F>::Inner&>) explicit Err(Err<F>& err) :
-        m_err { err.m_err } {}
+        requires(detail::IS_REF<E> && detail::constructible_from<Inner, typename Err<F>::Inner&>)
+    explicit Err(Err<F>& err) : m_err{err.m_err} {}
 #endif
 
     /// Get the contents of the Err.
@@ -195,32 +192,34 @@ private:
     State m_state;
 
 public:
-    Result() requires detail::default_initializable<Inner> : m_ok {}, m_state { State::Ok } {}
+    Result()
+        requires detail::default_initializable<Inner>
+        : m_ok{}, m_state{State::Ok} {}
 
     /// Construct a Result from something convertible to the successful variant.
     template <typename U = T>
-    requires(detail::constructible_from<Inner, U> && !std::same_as<Err<E>, U> &&
-             // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
-             !std::same_as<Result<T, E>, U>) Result(U&& value) :
-        m_ok { std::forward<U>(value) }, m_state { State::Ok } {}
+        requires(detail::constructible_from<Inner, U> && !std::same_as<Err<E>, U> &&
+                 // NOLINTNEXTLINE(bugprone-forwarding-reference-overload)
+                 !std::same_as<Result<T, E>, U>)
+    Result(U&& value) : m_ok{std::forward<U>(value)}, m_state{State::Ok} {}
 
     /// Construct a Result from an Err.
     template <typename F = E>
-    requires(detail::constructible_from<E, F>) Result(Err<F>&& err) :
-        m_err { std::forward<Err<F>>(err) }, m_state { State::Err } {}
+        requires(detail::constructible_from<E, F>)
+    Result(Err<F>&& err) : m_err{std::forward<Err<F>>(err)}, m_state{State::Err} {}
 
 #ifndef DOXYGEN
     template <typename U, typename F>
-    requires(detail::constructible_from<Inner, typename Result<U, F>::Inner const&>&&
-                 detail::constructible_from<E, F const&> &&
-             !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F> const& other) :
-        m_state { other.m_state } {
+        requires(detail::constructible_from<Inner, typename Result<U, F>::Inner const&> &&
+                 detail::constructible_from<E, F const&> && !std::same_as<T, U> &&
+                 !std::same_as<E, F>)
+    Result(Result<U, F> const& other) : m_state{other.m_state} {
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) Inner { other.m_ok };
+            new (&m_ok) Inner{other.m_ok};
             break;
         case State::Err:
-            new (&m_err) Err<E> { other.m_err };
+            new (&m_err) Err<E>{other.m_err};
             break;
         case State::MovedFrom:
             break;
@@ -228,16 +227,15 @@ public:
     }
 
     template <typename U, typename F>
-    requires(detail::constructible_from<Inner, typename Result<U, F>::Inner&>&&
-                 detail::constructible_from<E, F&> &&
-             !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F>& other) :
-        m_state { other.m_state } {
+        requires(detail::constructible_from<Inner, typename Result<U, F>::Inner&> &&
+                 detail::constructible_from<E, F&> && !std::same_as<T, U> && !std::same_as<E, F>)
+    Result(Result<U, F>& other) : m_state{other.m_state} {
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) Inner { other.m_ok };
+            new (&m_ok) Inner{other.m_ok};
             break;
         case State::Err:
-            new (&m_err) Err<E> { other.m_err };
+            new (&m_err) Err<E>{other.m_err};
             break;
         case State::MovedFrom:
             break;
@@ -247,17 +245,16 @@ public:
 
     /// Convert a Result between compatible types.
     template <typename U, typename F>
-    requires(detail::constructible_from<Inner, typename Result<U, F>::Inner>&&
-                 detail::constructible_from<E, F> &&
-             !std::same_as<T, U> && !std::same_as<E, F>) Result(Result<U, F>&& other) :
-        m_state { other.m_state } {
+        requires(detail::constructible_from<Inner, typename Result<U, F>::Inner> &&
+                 detail::constructible_from<E, F> && !std::same_as<T, U> && !std::same_as<E, F>)
+    Result(Result<U, F>&& other) : m_state{other.m_state} {
         other.m_state = State::MovedFrom;
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) Inner { other.m_ok };
+            new (&m_ok) Inner{other.m_ok};
             break;
         case State::Err:
-            new (&m_err) Err<E> { other.m_err };
+            new (&m_err) Err<E>{other.m_err};
             break;
         case State::MovedFrom:
             break;
@@ -266,13 +263,13 @@ public:
 
 #ifndef DOXYGEN
     // TODO: Add variants of copy and move constructors and assignment operators for trivial types.
-    Result(Result const& other) : m_state { other.m_state } {
+    Result(Result const& other) : m_state{other.m_state} {
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) Inner { other.m_ok };
+            new (&m_ok) Inner{other.m_ok};
             break;
         case State::Err:
-            new (&m_err) Err { other.m_err };
+            new (&m_err) Err{other.m_err};
             break;
         case State::MovedFrom:
             break;
@@ -288,10 +285,10 @@ public:
         m_state = other.m_state;
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) Inner { other.m_ok };
+            new (&m_ok) Inner{other.m_ok};
             break;
         case State::Err:
-            new (&m_err) Err { other.m_err };
+            new (&m_err) Err{other.m_err};
             break;
         case State::MovedFrom:
             break;
@@ -300,14 +297,14 @@ public:
         return *this;
     }
 
-    Result(Result&& other) noexcept : m_state { other.m_state } {
+    Result(Result&& other) noexcept : m_state{other.m_state} {
         other.m_state = State::MovedFrom;
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) Inner { std::move(other.m_ok) };
+            new (&m_ok) Inner{std::move(other.m_ok)};
             break;
         case State::Err:
-            new (&m_err) Err { std::move(other.m_err) };
+            new (&m_err) Err{std::move(other.m_err)};
             break;
         case State::MovedFrom:
             break;
@@ -321,10 +318,10 @@ public:
         other.m_state = State::MovedFrom;
         switch (m_state) {
         case State::Ok:
-            new (&m_ok) Inner { std::move(other.m_ok) };
+            new (&m_ok) Inner{std::move(other.m_ok)};
             break;
         case State::Err:
-            new (&m_err) Err { std::move(other.m_err) };
+            new (&m_err) Err{std::move(other.m_err)};
             break;
         case State::MovedFrom:
             break;
@@ -372,7 +369,9 @@ public:
     }
 
 #ifndef DOXYGEN
-    T unwrap() const& requires(std::is_trivially_copyable_v<Inner>) {
+    T unwrap() const&
+        requires(std::is_trivially_copyable_v<Inner>)
+    {
         A3_UNWRAPND(is_ok());
         return m_ok;
     }
@@ -386,7 +385,9 @@ public:
     }
 
 #ifndef DOXYGEN
-    E unwrap_err() const& requires(std::is_trivially_copyable_v<Err<E>>) {
+    E unwrap_err() const&
+        requires(std::is_trivially_copyable_v<Err<E>>)
+    {
         A3_UNWRAPND(!is_ok());
         return m_err.err();
     }
@@ -402,7 +403,9 @@ public:
     }
 
 #ifndef DOXYGEN
-    T unwrap_or(T fallback) const& requires(std::is_trivially_copyable_v<Inner>) {
+    T unwrap_or(T fallback) const&
+        requires(std::is_trivially_copyable_v<Inner>)
+    {
         if (is_ok())
             return m_ok;
         return fallback;
@@ -413,18 +416,19 @@ public:
     template <detail::invocable<E> Fn>
         T unwrap_or_else(Fn&& f) &&
         requires(detail::constructible_from<T, std::invoke_result_t<Fn, E>>) {
-        auto state = std::exchange(m_state, State::MovedFrom);
-        if (state == State::Ok) {
-            return std::move(m_ok);
+            auto state = std::exchange(m_state, State::MovedFrom);
+            if (state == State::Ok) {
+                return std::move(m_ok);
+            }
+            return std::forward<Fn>(f)(std::move(m_err));
         }
-        return std::forward<Fn>(f)(std::move(m_err));
-    }
 
 #ifndef DOXYGEN
-    template <detail::invocable<E> Fn>
-    T unwrap_or_else(Fn&& f) const& requires(
-        detail::constructible_from<T, std::invoke_result_t<Fn, E>>&&
-            std::is_trivially_copyable_v<Inner>) {
+        template <detail::invocable<E> Fn>
+        T unwrap_or_else(Fn&& f) const&
+            requires(detail::constructible_from<T, std::invoke_result_t<Fn, E>> &&
+                     std::is_trivially_copyable_v<Inner>)
+    {
         if (is_ok())
             return m_ok;
         return std::forward<Fn>(f)(m_err);
@@ -436,7 +440,9 @@ public:
     /// Apply a lambda to the contents (if any) of the Result, returning the result. This is much
     /// like `std::optional`'s upcoming `transform` API. See also Option::map.
     template <detail::invocable<T> Fn>
-        Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && requires(!detail::IS_REF<T>) {
+    Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) &&
+        requires(!detail::IS_REF<T>)
+    {
         auto state = std::exchange(m_state, State::MovedFrom);
         switch (state) {
         case State::Ok:
@@ -452,7 +458,9 @@ public:
 
 #ifndef DOXYGEN
     template <detail::invocable<T> Fn>
-        Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) && requires(detail::IS_REF<T>) {
+    Result<std::invoke_result_t<Fn, T>, E> map(Fn&& f) &&
+        requires(detail::IS_REF<T>)
+    {
         auto state = std::exchange(m_state, State::MovedFrom);
         switch (state) {
         case State::Ok:
@@ -469,8 +477,9 @@ public:
 
     /// Like Result::map, but returns a fallback if it is an error.
     template <detail::invocable<T> Fn, typename U = std::invoke_result_t<Fn, T>>
-    U map_or(U&&  fallback,
-             Fn&& f) requires(detail::constructible_from<U, std::invoke_result_t<Fn, T>>) {
+    U map_or(U&& fallback, Fn&& f)
+        requires(detail::constructible_from<U, std::invoke_result_t<Fn, T>>)
+    {
         if (is_err())
             return std::forward<U>(fallback);
         return std::move(*this).map(std::forward<Fn>(f)).m_ok;
@@ -480,9 +489,10 @@ public:
     template <
         detail::invocable<T> Fn, detail::invocable<E> FFn,
         typename U = std::common_type_t<std::invoke_result_t<Fn, T>, std::invoke_result_t<FFn, E>>>
-    U map_or_else(FFn&& ff, Fn&& f) requires(
-        detail::constructible_from<U, std::invoke_result_t<Fn, T>>&&
-            detail::constructible_from<U, std::invoke_result_t<FFn, E>>) {
+    U map_or_else(FFn&& ff, Fn&& f)
+        requires(detail::constructible_from<U, std::invoke_result_t<Fn, T>> &&
+                 detail::constructible_from<U, std::invoke_result_t<FFn, E>>)
+    {
         if (is_err()) {
             m_state = State::MovedFrom;
             return std::forward<FFn>(ff)(std::move(m_err).err());
@@ -492,13 +502,15 @@ public:
 
     /// Like Result::map, but over the error variant.
     template <detail::invocable<E> Fn>
-        Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) && requires(!detail::IS_REF<E>) {
+    Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) &&
+        requires(!detail::IS_REF<E>)
+    {
         auto state = std::exchange(m_state, State::MovedFrom);
         switch (state) {
         case State::Ok:
             return std::move(m_ok);
         case State::Err:
-            return Err { std::forward<Fn>(f)(std::move(m_err).err()) };
+            return Err{std::forward<Fn>(f)(std::move(m_err).err())};
         case State::MovedFrom:
             A3_PANIC("Result::map_err on moved-from Result.");
         }
@@ -508,13 +520,15 @@ public:
 
 #ifndef DOXYGEN
     template <detail::invocable<E> Fn>
-        Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) && requires(detail::IS_REF<E>) {
+    Result<T, std::invoke_result_t<Fn, E>> map_err(Fn&& f) &&
+        requires(detail::IS_REF<E>)
+    {
         auto state = std::exchange(m_state, State::MovedFrom);
         switch (state) {
         case State::Ok:
             return std::move(m_ok);
         case State::Err:
-            return Err { std::forward<Fn>(f)(m_err.err()) };
+            return Err{std::forward<Fn>(f)(m_err.err())};
         case State::MovedFrom:
             A3_PANIC("Result::map_err on moved-from Result.");
         }
@@ -529,13 +543,16 @@ public:
     Result<T const&, E const&> as_ref() const& { return *this; }
 
     /// Dereference the value, if any, and return a Result containing a reference.
-    Result<detail::DerefTarget<T>&, E&> as_deref() & requires detail::Deref<T&> {
+    Result<detail::DerefTarget<T>&, E&> as_deref() &
+        requires detail::Deref<T&>
+    {
         return as_ref().map([](auto& v) -> auto& { return *v; });
     }
 
 #ifndef DOXYGEN
-    Result<detail::DerefTarget<T> const&, E const&>
-    as_deref() const& requires detail::Deref<T const&> {
+    Result<detail::DerefTarget<T> const&, E const&> as_deref() const&
+        requires detail::Deref<T const&>
+    {
         return as_ref().map([](auto const& v) -> auto const& { return *v; });
     }
 #endif
@@ -567,7 +584,7 @@ public:
     ({                                                                                             \
         auto _tmp = (R);                                                                           \
         if (_tmp.is_err())                                                                         \
-            return a3::Err { std::move(_tmp).unwrap_err() };                                       \
+            return a3::Err{std::move(_tmp).unwrap_err()};                                          \
         if (!_tmp.is_ok())                                                                         \
             A3_PANIC("A3_RTRY on moved-from Result.");                                             \
         std::move(_tmp).unwrap();                                                                  \
@@ -576,7 +593,7 @@ public:
 
 /// Construct a Result from a C-style error code.
 inline Err<std::error_code> error_code(int code) {
-    return Err { std::error_code { code, std::system_category() } };
+    return Err{std::error_code{code, std::system_category()}};
 }
 
 /// \brief Construct a Result from a signed return.
@@ -585,7 +602,7 @@ inline Err<std::error_code> error_code(int code) {
 /// encode an error.
 template <detail::signed_integral R>
 Result<std::make_unsigned_t<R>, std::error_code> signed_result(R val) {
-    if (val < R { 0 })
+    if (val < R{0})
         return error_code(static_cast<int>(-val));
     return static_cast<std::make_unsigned_t<R>>(val);
 }
@@ -596,7 +613,7 @@ Result<std::make_unsigned_t<R>, std::error_code> signed_result(R val) {
 /// in `errno`.
 template <detail::signed_integral R>
 Result<std::make_unsigned_t<R>, std::error_code> errno_result(R val) {
-    if (val < R { 0 })
+    if (val < R{0})
         return error_code(errno);
     return static_cast<std::make_unsigned_t<R>>(val);
 }
