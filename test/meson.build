@@ -11,7 +11,6 @@ if not meson.is_subproject()
       'option.cc',
       'pool.cc',
       'rc.cc',
-      'result.cc',
       'sll.cc',
       'str.cc',
       'try.cc',
