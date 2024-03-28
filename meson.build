@@ -1,7 +1,7 @@
 project(
   'liba3',
   ['c', 'cpp'],
-  version: '0.4.2',
+  version: '0.5.0',
   default_options: [
     'c_std=c11',
 
