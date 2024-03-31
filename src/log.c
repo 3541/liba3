@@ -7,10 +7,11 @@
  * the project root for details.
  */
 
-#include <a3/shim/format.h>
-#include <a3/shim/likely.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <a3/shim/format.h>
+#include <a3/shim/likely.h>
 
 #include <a3/log.h>
 #include <a3/str.h>
@@ -21,6 +22,9 @@ A3LogLevel   A3_PRIV_LOG_LEVEL = A3_LOG_INVALID;
 
 void a3_log_init(FILE* out, A3LogLevel level) {
     A3CString env = a3_cstring_from(getenv("A3_LOG_LEVEL"));
+
+    if (level == A3_LOG_INVALID)
+        level = A3_LOG_DEBUG;
 
     if (env.ptr) {
         if (a3_string_cmpi(env, A3_CS("trace")) == 0)

@@ -10,6 +10,7 @@
 #define A3_LOG_LEVEL A3_LOG_DEBUG
 #include <a3/log.h>
 #include <a3/str.h>
+#include <a3/util.h>
 
 namespace a3::test::log {
 
@@ -106,5 +107,11 @@ TEST_F(EnvLogTest, environment) {
     EXPECT_THAT(read_written(), HasSubstr("2\n"));
     EXPECT_THAT(read_written(), Not(HasSubstr("should not appear")));
 }
+
+struct LogDeathTest : public LogTest {
+    void SetUp() override { a3_log_init(stderr, A3_LOG_INVALID); }
+};
+
+TEST_F(LogDeathTest, panic) { ASSERT_DEATH(A3_PANIC("should die"), "should die"); }
 
 } // namespace a3::test::log
