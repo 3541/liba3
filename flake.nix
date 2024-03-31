@@ -27,7 +27,7 @@
               , hostStdenv ? hostPkgs.stdenv }:
               pkgs.stdenv.mkDerivation rec {
                 name = "a3";
-                version = "0.4.2";
+                version = "0.5.0";
 
                 nativeBuildInputs = with buildPkgs;
                   [ compiler git doxygen meson pkg-config ninja ] ++ extra;
@@ -101,45 +101,48 @@
         defaultPackage = packages."a3/release";
 
         devShell = pkgs.mkShell {
-          packages = with pkgs; [
-            valgrind
-            gdb
-            rr
-            clang-tools_17
-            texlive.combined.scheme-medium
-            act
-            vagrant
-            (let unwrapped = include-what-you-use;
-            in stdenv.mkDerivation {
-              pname = "include-what-you-use";
-              version = lib.getVersion unwrapped;
+          packages = with pkgs;
+            [
+              clang-tools_17
+              texlive.combined.scheme-medium
+              act
+              (let unwrapped = include-what-you-use;
+              in stdenv.mkDerivation {
+                pname = "include-what-you-use";
+                version = lib.getVersion unwrapped;
 
-              dontUnpack = true;
+                dontUnpack = true;
 
-              clang = llvmPackages_latest.clang;
-              inherit unwrapped;
+                clang = llvmPackages_latest.clang;
+                inherit unwrapped;
 
-              installPhase = ''
-                runHook preInstall
+                installPhase = ''
+                  runHook preInstall
 
-                mkdir -p $out/bin
-                substituteAll ${./nix-wrapper} $out/bin/include-what-you-use
-                chmod +x $out/bin/include-what-you-use
+                  mkdir -p $out/bin
+                  substituteAll ${./nix-wrapper} $out/bin/include-what-you-use
+                  chmod +x $out/bin/include-what-you-use
 
-                cp ${unwrapped}/bin/iwyu_tool.py $out/bin/iwyu_tool.py
-                sed -i \
-                    "s,executable_name = '.*\$,executable_name = '$out/bin/include-what-you-use'," \
-                    $out/bin/iwyu_tool.py
+                  cp ${unwrapped}/bin/iwyu_tool.py $out/bin/iwyu_tool.py
+                  sed -i \
+                      "s,executable_name = '.*\$,executable_name = '$out/bin/include-what-you-use'," \
+                      $out/bin/iwyu_tool.py
 
-                runHook postInstall
-              '';
-            })
-          ];
+                  runHook postInstall
+                '';
+              })
+            ] ++ pkgs.lib.optionals
+            (!pkgs.lib.strings.hasSuffix "darwin" system) [
+              valgrind
+              gdb
+              rr
+              vagrant
+            ];
 
           inputsFrom = [
             packages."a3/debug"
             packages."a3/clang/debug"
-            packages."a3/mingw/release"
+            #packages."a3/mingw/release"
           ];
 
           shellHook = ''
