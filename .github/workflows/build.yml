@@ -73,7 +73,7 @@ jobs:
       run: pip install meson ninja
 
     - name: Fixup cross triple quirks.
-      if: matrix.os == 'ubuntu-latest' && matrix.architecture != 'amd64'
+      if: matrix.os == 'ubuntu-22.04' && matrix.architecture != 'amd64'
       id: cross
       run: |
         case "${{ matrix.architecture }}" in
