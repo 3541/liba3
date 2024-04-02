@@ -18,25 +18,35 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-13, windows-2022]
+        os: [ubuntu-22.04, macos-13, macos-14, windows-2022]
         architecture: [amd64, s390x, arm, ppc]
         include:
           - os: windows-2022
             c_compiler: cl
             cxx_compiler: cl
+          - os: macos-14
+            architecture: aarch64
         exclude:
           - os: windows-2022
             architecture: s390x
           - os: macos-13
             architecture: s390x
+          - os: macos-14
+            architecture: s390x
           - os: windows-2022
             architecture: arm
           - os: macos-13
+            architecture: arm
+          - os: macos-14
             architecture: arm
           - os: windows-2022
             architecture: ppc
           - os: macos-13
             architecture: ppc
+          - os: macos-14
+            architecture: ppc
+          - os: macos-14
+            architecture: amd64
     env:
       CC: ${{ matrix.c_compiler }}
       CXX: ${{ matrix.cxx_compiler }}
