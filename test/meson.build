@@ -11,6 +11,7 @@ if not meson.is_subproject()
       'option.cc',
       'pool.cc',
       'rc.cc',
+      'shim/accept.cc',
       'sll.cc',
       'str.cc',
       'try.cc',
@@ -25,6 +26,9 @@ if not meson.is_subproject()
   endif
 
   a3_test_args += cxx.get_supported_arguments(['-Wno-keyword-macro', '-Wno-pedantic', '-wd4324'])
+  if host_machine.system() == 'windows'
+    a3_test_args += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
+  endif
 
   if (cxx.get_id() == 'gcc' or cxx.get_id() == 'clang') and cxx.version().split('.')[0].to_int() < 5
     warning(cxx.get_id() + ' ' + cxx.version() + ' not supported by gtest. Tests disabled.')

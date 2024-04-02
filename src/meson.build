@@ -79,7 +79,7 @@ a3_lib = library(
   'a3',
   a3_src,
   include_directories: a3_include,
-  dependencies: [libm, libatomic, highwayhash_c],
+  dependencies: [libm, libatomic, highwayhash_c] + a3_shim_deps,
   c_args: a3_c_flags + a3_common_flags,
   cpp_args: a3_cxx_flags + a3_common_flags,
   gnu_symbol_visibility: 'hidden',

@@ -1,6 +1,7 @@
 c = meson.get_compiler('c')
 
 a3_shim_src = []
+a3_shim_deps = []
 
 foreach s : [[['memmem', 'string.h']],
              [['strncasecmp', 'strings.h'], ['_strnicmp', 'string.h']],
@@ -54,4 +55,18 @@ elif c.has_header_symbol('windows.h', 'InterlockedCompareExchange')
   a3_shim_src += files('atomic/msvc.c')
 else
   error('No atomic primitives found.')
+endif
+
+if c.has_function('accept4')
+  a3_shim_src += files('accept/accept4.c')
+elif c.has_function('fcntl')
+  a3_shim_src += files('accept/fcntl.c')
+else
+  ws2 = c.find_library('ws2_32', required: true)
+  if c.has_function('ioctlsocket', prefix: '#include <winsock2.h>', dependencies: ws2)
+    a3_shim_src += files('accept/ioctlsocket.c')
+    a3_shim_deps += ws2
+  else
+    error('No alternative found for fcntl().')
+  endif
 endif
