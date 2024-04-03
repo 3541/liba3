@@ -9,17 +9,20 @@
  * Windows does not provide memmem.
  */
 
-#include <a3/shim/memmem.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
+#include <a3/shim/memmem.h>
+
 void* a3_shim_memmem(void const* haystack, size_t haystack_len, void const* needle,
                      size_t needle_len) {
-    if (!haystack || !haystack_len || !needle || !needle_len)
+    if (!needle_len)
+        return (void*)haystack;
+    if (haystack_len < needle_len || !haystack || !needle)
         return NULL;
 
-    for (uint8_t const* sp = haystack; sp + needle_len < (uint8_t const*)haystack + haystack_len;
+    for (uint8_t const* sp = haystack; sp + needle_len <= (uint8_t const*)haystack + haystack_len;
          sp++) {
         if (memcmp(sp, needle, needle_len) == 0)
             return (void*)sp;
