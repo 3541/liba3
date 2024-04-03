@@ -106,6 +106,7 @@
               clang-tools_17
               texlive.combined.scheme-medium
               act
+              lcov
               (let unwrapped = include-what-you-use;
               in stdenv.mkDerivation {
                 pname = "include-what-you-use";
