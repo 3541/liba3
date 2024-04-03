@@ -12,6 +12,7 @@ if not meson.is_subproject()
       'pool.cc',
       'rc.cc',
       'shim/accept.cc',
+      'shim/memmem.cc',
       'sll.cc',
       'str.cc',
       'try.cc',
