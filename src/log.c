@@ -17,8 +17,8 @@
 #include <a3/str.h>
 #include <a3/util.h>
 
-static FILE* LOG_OUTPUT        = NULL;
-A3LogLevel   A3_PRIV_LOG_LEVEL = A3_LOG_INVALID;
+FILE*      A3_PRIV_LOG_OUTPUT = NULL;
+A3LogLevel A3_PRIV_LOG_LEVEL  = A3_LOG_INVALID;
 
 void a3_log_init(FILE* out, A3LogLevel level) {
     A3CString env = a3_cstring_from(getenv("A3_LOG_LEVEL"));
@@ -39,16 +39,8 @@ void a3_log_init(FILE* out, A3LogLevel level) {
             level = A3_LOG_ERROR;
     }
 
-    LOG_OUTPUT        = out;
-    A3_PRIV_LOG_LEVEL = level;
+    A3_PRIV_LOG_OUTPUT = out;
+    A3_PRIV_LOG_LEVEL  = level;
 }
 
 void a3_log_init_default(void) { a3_log_init(stderr, A3_LOG_INVALID); }
-
-A3_VA_FWD_FMT(1, 2)
-void a3_log_impl(char const* fmt, A3_VA_FWD_ARG(args)) {
-    A3_VA_FWD_START(args, fmt);
-
-    vfprintf(LOG_OUTPUT, fmt, args);
-    fputc('\n', LOG_OUTPUT);
-}
