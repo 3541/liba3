@@ -31,14 +31,13 @@ notice._
 ## Building and Usage
 Build dependencies:
 - A C compiler supporting C11.
-- Meson 0.55 or later.
+- Meson 1.3.0 or later.
 
 _Note: C11 support means genuine standard-compliant C11 support. For MSVC, this means VS2019 or
-newer is required. Additionally, Meson 0.55 is not aware of the `/std:c11` flag, so Meson 0.56 or
-later is required to build on Windows._
+newer is required._
 
 Test suite dependencies:
-- A C++ compiler supporting C++14.
+- A C++ compiler supporting C++17.
 
 To build, ensure all submodules are in place (`git submodule update --init --recursive`), and run
 `meson setup <BUILDDIR>` to set up the build system in `BUILDDIR`. A script which generates a set

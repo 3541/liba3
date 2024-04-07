@@ -36,7 +36,6 @@ if [ -z "${CC-}" ]; then
 fi
 
 meson_san="-Db_sanitize=address,undefined"
-meson_std="-Dcpp_std=c++2a"
 
 case "$($CC -dumpmachine 2>&1)" in
     *-musl) meson_san="-Db_sanitize=none" ;;
@@ -52,22 +51,14 @@ esac
 case "$(uname -s)" in
     MINGW*)
         meson_san="-Db_sanitize=address" # Windows does not support UBSAN.
-        meson_std="-Dcpp_std=c++20" # Meson on Windows does not accept C++2a as a standard.
         ;;
     MSYS*)
         meson_san="-Db_sanitize=address"
-        meson_std="-Dcpp_std=c++20"
         ;;
 esac
 
 if "$CC" --version 2>&1 | grep -q "^cc (GCC) 4\."; then
     meson_san="-Db_sanitize=address"
-fi
-
-if { [ -f "/etc/debian_version" ] && grep -q "^9\." /etc/debian_version; } || \
-       [ "$(uname -s)" = NetBSD ] || { [ -f "/etc/lsb-release" ] && \
-                                           grep -q "16\.04" /etc/lsb-release; }; then
-    meson_std="-Dcpp_std=c++17"
 fi
 
 export meson_san

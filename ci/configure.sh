@@ -12,4 +12,4 @@ shift
 
 mkdir -p "$dir"
 
-meson setup --buildtype=debug --werror "$meson_std" "$meson_san" "$@" "$dir"
+meson setup --buildtype=debug --werror "$meson_san" "$@" "$dir"

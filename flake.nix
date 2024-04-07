@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-23.11";
+    nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     utils.url = "github:numtide/flake-utils";
     highwayhash = {
       url = "github:google/highwayhash";
@@ -14,10 +15,11 @@
     };
   };
 
-  outputs = { self, nixpkgs, utils, highwayhash, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, utils, highwayhash, ... }:
     utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        pkgsUnstable = nixpkgs-unstable.legacyPackages.${system};
         llvm = pkgs.llvmPackages_latest;
       in rec {
         packages = utils.lib.flattenTree {
@@ -30,7 +32,7 @@
                 version = "0.5.0";
 
                 nativeBuildInputs = with buildPkgs;
-                  [ compiler git doxygen meson pkg-config ninja ] ++ extra;
+                  [ compiler git doxygen pkgsUnstable.meson pkg-config ninja ] ++ extra;
                 buildInputs = with hostPkgs;
                   [ (gtest.override { stdenv = hostStdenv; }) ];
                 hardeningDisable =
@@ -47,7 +49,7 @@
                   cp subprojects/packagefiles/highwayhash/meson.build subprojects/highwayhash/
                 '';
                 configurePhase = ''
-                  meson setup ${mesonArgs} --prefix=$out --buildtype=${buildType} --wrap-mode=nodownload -Dcpp_std=c++20 build .
+                  meson setup ${mesonArgs} --prefix=$out --buildtype=${buildType} --wrap-mode=nodownload build .
                 '';
                 buildPhase = "meson compile -C build";
                 checkPhase = "meson test -C build";
