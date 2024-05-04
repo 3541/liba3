@@ -65,7 +65,7 @@ TEST_F(PoolTest, alloc) {
 
     block->f1 = 123;
     block->f2 = 456;
-    strcpy(block->f3, "string");
+    std::copy_n("string", sizeof("string"), block->f3);
     EXPECT_EQ(block->f1, 123ULL);
     EXPECT_EQ(block->f2, 456ULL);
     EXPECT_STREQ(block->f3, "string");
