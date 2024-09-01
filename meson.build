@@ -5,7 +5,7 @@ project(
   default_options: [
     'c_std=c11',
 
-    'cpp_std=c++23,c++20,c++17',
+    meson.version().endswith('.99') ? 'cpp_std=c++2a' : 'cpp_std=c++23,c++20,c++17',
     'cpp_rtti=false',
     'cpp_eh=none',
 
