@@ -9,10 +9,13 @@
  * Windows does not provide aligned_alloc.
  */
 
-#include <a3/shim/aligned_alloc.h>
+#define _GNU_SOURCE
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+#include <a3/shim/aligned_alloc.h>
 
 void* a3_shim_aligned_alloc(size_t size, size_t align) {
     assert(size > 0);
