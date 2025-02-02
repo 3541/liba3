@@ -28,9 +28,12 @@ class LogTest : public Test {
 protected:
     FILE* stream{tmpfile()};
 
-    void SetUp() override { a3_log_init(stream, A3_LOG_INFO); }
+    LogTest() { a3_log_init(stream, A3_LOG_INFO); }
 
-    void TearDown() override { fclose(stream); }
+    ~LogTest() override {
+        fclose(stream);
+        a3_log_init_default();
+    }
 
     std::string read_written() const {
         fflush(stream);
