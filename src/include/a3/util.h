@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include <a3/shim/likely.h>
 #include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -21,6 +20,7 @@
 #include <a3/cpp.h>
 #include <a3/log_internal.h>
 #include <a3/macro.h>
+#include <a3/shim/likely.h>
 #include <a3/types.h>
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -30,6 +30,7 @@
 #define A3_PANIC_FMT(FMT, ...)                                                                     \
     do {                                                                                           \
         a3_log(A3_LOG_ERROR, "PANIC %s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__);              \
+        a3_log_flush();                                                                            \
         abort();                                                                                   \
     } while (0)
 

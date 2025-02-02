@@ -1,7 +1,7 @@
 /*
  * LOG -- Simple logging utilities.
  *
- * Copyright (c) 2020-2022, 2024, Alex O'Brien <3541@3541.website>
+ * Copyright (c) 2020-2022, 2024-2025, Alex O'Brien <3541@3541.website>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -50,6 +50,7 @@ extern A3LogLevel A3_PRIV_LOG_LEVEL;
 
 A3_EXPORT void a3_log_init(FILE*, A3LogLevel);
 A3_EXPORT void a3_log_init_default(void);
+A3_EXPORT void a3_log_flush(void);
 
 A3_FORMAT_FN(2, 3)
 A3_LOG_INLINE void a3_log(A3LogLevel level, char const* fmt, ...) {

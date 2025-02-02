@@ -1,7 +1,7 @@
 /*
  * LOG -- Simple logging utilities.
  *
- * Copyright (c) 2020-2022, 2024, Alex O'Brien <3541@3541.website>
+ * Copyright (c) 2020-2022, 2024-2025, Alex O'Brien <3541@3541.website>
  *
  * This file is licensed under the BSD 3-clause license. See the LICENSE file in
  * the project root for details.
@@ -10,10 +10,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <a3/log.h>
 #include <a3/shim/format.h>
 #include <a3/shim/likely.h>
-
-#include <a3/log.h>
 #include <a3/str.h>
 #include <a3/util.h>
 
@@ -44,3 +43,11 @@ void a3_log_init(FILE* out, A3LogLevel level) {
 }
 
 void a3_log_init_default(void) { a3_log_init(stderr, A3_LOG_INVALID); }
+
+void a3_log_flush(void) {
+    if A3_UNLIKELY (A3_PRIV_LOG_LEVEL == A3_LOG_INVALID)
+        a3_log_init_default();
+
+    assert(A3_PRIV_LOG_OUTPUT);
+    (void)fflush(A3_PRIV_LOG_OUTPUT);
+}
