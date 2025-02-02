@@ -1,3 +1,5 @@
+#ifdef __cpp_lib_concepts
+
 #include <memory>
 
 #include <gmock/gmock.h>
@@ -82,3 +84,5 @@ TEST(nonnull, unique_array) {
 }
 
 } // namespace a3::test
+
+#endif

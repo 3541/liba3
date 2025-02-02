@@ -9,6 +9,8 @@
 
 #pragma once
 
+#ifdef __cpp_lib_concepts
+
 #include <concepts>
 #include <cstddef>
 #include <memory>
@@ -180,3 +182,5 @@ auto make_box(auto&&... args) {
 }
 
 } // namespace a3
+
+#endif
