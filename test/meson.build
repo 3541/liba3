@@ -8,6 +8,7 @@ if not meson.is_subproject()
       'ht.cc',
       'll.cc',
       'log.cc',
+      'nonnull.cc',
       'option.cc',
       'pool.cc',
       'rc.cc',
