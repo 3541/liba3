@@ -16,6 +16,6 @@ project(
   ]
 )
 
-subdir('src')
+subdir('a3')
 subdir('test')
 subdir('doc')
