@@ -21,17 +21,6 @@ typedef SSIZE_T A3_SSIZE_T;
 typedef ssize_t A3_SSIZE_T;
 #endif
 
-#ifdef _MSC_VER
-#define A3_ALLOW_UNUSED
-#define A3_ALWAYS_INLINE __forceinline
-#elif defined(__GNUC__) || defined(__clang__)
-#define A3_ALLOW_UNUSED  __attribute__((unused))
-#define A3_ALWAYS_INLINE static inline __attribute__((always_inline)) A3_ALLOW_UNUSED
-#else // !_MSC_VER && (__GNUC__ || __clang__)
-#define A3_ALLOW_UNUSED
-#define A3_ALWAYS_INLINE
-#endif
-
 #ifdef __cplusplus
 #define A3_THREAD_LOCAL thread_local
 #elif __STDC_VERSION__ >= 201112L
