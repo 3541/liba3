@@ -15,7 +15,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include <a3/cpp.h>
+#include <a3/shim/cpp.h>
 #include <a3/util.h>
 
 #define A3_PQ(TY) struct TY##A3PQ

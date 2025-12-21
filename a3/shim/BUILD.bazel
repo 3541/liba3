@@ -1,0 +1,74 @@
+cc_library(
+    name = "platform",
+    hdrs = [
+        "attribute.h",
+        "cpp.h",
+        "export.h",
+        "platform.h",
+    ],
+)
+
+cc_library(
+    name = "cpp",
+    hdrs = ["cpp.h"],
+)
+
+cc_library(
+    name = "socket_types",
+    hdrs = ["socket_types.h"],
+    deps = [":platform"],
+)
+
+cc_library(
+    name = "accept",
+    hdrs = ["accept.h"],
+    srcs = glob(["accept/*.c"]),
+    deps = [":socket_types", ":platform"],
+)
+
+cc_library(
+    name = "aligned_alloc",
+    hdrs = ["aligned_alloc.h"],
+    srcs = glob(["aligned_alloc/*.c"]),
+    deps = [":platform"],
+)
+
+cc_library(
+    name = "atomic",
+    hdrs = ["atomic.h"],
+    srcs = glob(["atomic/*.c"]),
+    deps = [":platform"],
+)
+
+cc_library(
+    name = "format",
+    hdrs = ["format.h"],
+    deps = [":platform"],
+)
+
+cc_library(
+    name = "likely",
+    hdrs = ["likely.h"],
+    deps = [":platform"],
+)
+
+cc_library(
+    name = "memmem",
+    hdrs = ["memmem.h"],
+    srcs = glob(["memmem/*.c"]),
+    deps = [":platform"],
+)
+
+cc_library(
+    name = "strerror",
+    hdrs = ["strerror.h"],
+    srcs = glob(["strerror/*.c"]),
+    deps = [":platform"],
+)
+
+cc_library(
+    name = "strncasecmp",
+    hdrs = ["strncasecmp.h"],
+    srcs = glob(["strncasecmp/*.c"]),
+    deps = [":platform"],
+)

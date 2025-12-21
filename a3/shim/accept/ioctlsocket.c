@@ -7,13 +7,17 @@
  * for details.
  */
 
+#include "a3/shim/platform.h"
+
+#ifdef A3_PLATFORM_OS_WINDOWS
+
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <winsock2.h>
 
-#include <a3/shim/accept.h>
-#include <a3/shim/socket_types.h>
-
-#include <a3/util.h>
+#include "a3/shim/accept.h"
+#include "a3/shim/socket_types.h"
 
 A3Socket a3_shim_accept(A3Socket fd, struct sockaddr* addr, A3Socklen* len, int flags) {
     assert(!(flags & ~(A3_SOCK_CLOEXEC | A3_SOCK_NONBLOCK)));
@@ -22,8 +26,14 @@ A3Socket a3_shim_accept(A3Socket fd, struct sockaddr* addr, A3Socklen* len, int 
     if (res == INVALID_SOCKET)
         return -WSAGetLastError();
 
-    if (flags & A3_SOCK_NONBLOCK)
-        A3_UNWRAPSD(ioctlsocket(res, FIONBIO, &(u_long){1}));
+    if (flags & A3_SOCK_NONBLOCK) {
+        if (ioctlsocket(res, FIONBIO, &(u_long){1}) < 0) {
+            perror("accept/ioctlsocket");
+            abort();
+        }
+    }
 
     return res;
 }
+
+#endif

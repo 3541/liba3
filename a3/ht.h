@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <time.h>
 
-#include <a3/cpp.h>
+#include <a3/shim/cpp.h>
 #include <a3/types.h>
 #include <a3/util.h>
 

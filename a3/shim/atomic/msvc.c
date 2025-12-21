@@ -11,12 +11,17 @@
  * of the Windows Interlocked functions, but for now, this is definitely /correct/.
  */
 
+#include "a3/shim/platform.h"
+
+#ifdef A3_PLATFORM_OS_WINDOWS
+
 #include <Windows.h>
-#include <a3/shim/atomic.h>
 #include <assert.h>
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#include "a3/shim/atomic.h"
 
 void* a3_atomic_ptr_load(A3_ATOMIC(void*) const* atom, A3MemoryOrder order) {
     (void)order;
@@ -112,3 +117,5 @@ size_t a3_atomic_usize_fetch_add(A3_ATOMIC(size_t) * atom, size_t rhs, A3MemoryO
 
     return ret;
 }
+
+#endif

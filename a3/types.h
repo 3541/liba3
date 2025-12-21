@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <a3/shim/export.h>
+
 // Types
 #ifdef _MSC_VER
 #include <basetsd.h>
@@ -18,16 +20,6 @@ typedef SSIZE_T A3_SSIZE_T;
 #include <sys/types.h>
 typedef ssize_t A3_SSIZE_T;
 #endif
-
-// Attributes
-#ifdef _WIN32
-// Note: Yes, this works on mingw GCC.
-#define A3_EXPORT __declspec(dllexport)
-#elif defined(__GNUC__) || defined(__clang__)
-#define A3_EXPORT __attribute__((__visibility__("default")))
-#else // !_WIN32 && (__GNUC__ || __clang__)
-#define A3_EXPORT
-#endif // !_WIN32 && !__GNUC__ && !__clang__
 
 #ifdef _MSC_VER
 #define A3_ALLOW_UNUSED

@@ -7,9 +7,16 @@
  * for details.
  */
 
-#include <a3/shim/strncasecmp.h>
+#include "a3/shim/platform.h"
+
+#ifdef A3_PLATFORM_OS_WINDOWS
+
 #include <string.h>
+
+#include "a3/shim/strncasecmp.h"
 
 int a3_shim_strncasecmp(char const* lhs, char const* rhs, size_t n) {
     return _strnicmp(lhs, rhs, n);
 }
+
+#endif

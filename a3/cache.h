@@ -12,7 +12,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include <a3/cpp.h>
+#include <a3/shim/cpp.h>
 #include <a3/ht.h>
 #include <a3/util.h>
 

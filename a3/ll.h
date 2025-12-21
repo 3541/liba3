@@ -19,7 +19,7 @@
 #include <assert.h>
 #include <stddef.h>
 
-#include <a3/cpp.h>
+#include <a3/shim/cpp.h>
 #include <a3/macro.h>
 #include <a3/util.h>
 

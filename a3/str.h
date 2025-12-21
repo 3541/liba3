@@ -19,7 +19,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <a3/cpp.h>
+#include <a3/shim/cpp.h>
+#include <a3/shim/export.h>
 #include <a3/types.h>
 
 #if defined(__cplusplus) && __cplusplus >= 201703L
@@ -35,7 +36,7 @@ typedef struct A3CString {
     size_t         len; ///< The string's length.
 
 #ifdef A3_STR_CC_VIEW
-    operator std::string_view() const { return { reinterpret_cast<char const*>(ptr), len }; }
+    operator std::string_view() const { return {reinterpret_cast<char const*>(ptr), len}; }
 #endif
 } A3CString;
 
@@ -45,11 +46,11 @@ typedef struct A3String {
     size_t   len; ///< The string's length.
 
 #ifdef A3_STR_CC_VIEW
-    operator std::string_view() const { return { reinterpret_cast<char const*>(ptr), len }; }
+    operator std::string_view() const { return {reinterpret_cast<char const*>(ptr), len}; }
 #endif
 
 #ifdef __cplusplus
-    operator A3CString() const { return { ptr, len }; }
+    operator A3CString() const { return {ptr, len}; }
 #endif
 } A3String;
 
@@ -76,10 +77,10 @@ A3_ALWAYS_INLINE A3String A3_CS_MUT(A3CString s) { return a3_string_new((uint8_t
 
 A3_H_END
 
-#define A3_CS(S)     (A3CString { reinterpret_cast<uint8_t const*>(&(S)[0]), sizeof(S) - 1 })
-#define A3_CS_OBJ(S) (A3CString { reinterpret_cast<uint8_t const*>(&(S)), sizeof(S) })
-#define A3_S_NULL    (A3String { nullptr, 0 })
-#define A3_CS_NULL   (A3CString { nullptr, 0 })
+#define A3_CS(S)     (A3CString{reinterpret_cast<uint8_t const*>(&(S)[0]), sizeof(S) - 1})
+#define A3_CS_OBJ(S) (A3CString{reinterpret_cast<uint8_t const*>(&(S)), sizeof(S)})
+#define A3_S_NULL    (A3String{nullptr, 0})
+#define A3_CS_NULL   (A3CString{nullptr, 0})
 
 A3_ALWAYS_INLINE A3CString A3_S_CONST(A3String s) { return a3_cstring_new(s.ptr, s.len); }
 A3_ALWAYS_INLINE A3CString A3_S_CONST(A3CString s) { return s; }
@@ -89,16 +90,16 @@ A3_H_BEGIN
 #else
 
 /// Create a constant string from a literal C string.
-#define A3_CS(S)     ((A3CString) { .ptr = (uint8_t const*)(S), .len = sizeof(S) - 1 })
+#define A3_CS(S)     ((A3CString){.ptr = (uint8_t const*)(S), .len = sizeof(S) - 1})
 
 /// Create an A3CString pointing to a struct.
-#define A3_CS_OBJ(S) ((A3CString) { .ptr = (uint8_t const*)&(S), .len = sizeof(S) })
+#define A3_CS_OBJ(S) ((A3CString){.ptr = (uint8_t const*)&(S), .len = sizeof(S)})
 
 /// A null string.
-#define A3_S_NULL    ((A3String) { .ptr = NULL, .len = 0 })
+#define A3_S_NULL    ((A3String){.ptr = NULL, .len = 0})
 
 /// A null constant string.
-#define A3_CS_NULL   ((A3CString) { .ptr = NULL, .len = 0 })
+#define A3_CS_NULL   ((A3CString){.ptr = NULL, .len = 0})
 
 #endif
 
@@ -109,7 +110,7 @@ A3_H_BEGIN
 #define A3_S_CONST(X)                                                                              \
     ({                                                                                             \
         __typeof__((X)) _in_str = (X);                                                             \
-        A3CString       _ret    = { .ptr = _in_str.ptr, .len = _in_str.len };                      \
+        A3CString       _ret    = {.ptr = _in_str.ptr, .len = _in_str.len};                        \
         _ret;                                                                                      \
     })
 
@@ -118,7 +119,7 @@ A3_H_BEGIN
 A3_ALWAYS_INLINE A3CString _A3_S_CONST(A3String s) { return a3_cstring_new(s.ptr, s.len); }
 A3_ALWAYS_INLINE A3CString _A3_S_NOP(A3CString s) { return s; }
 /// Cast a string to a constant string.
-#define A3_S_CONST(X) (_Generic((X), A3String : _A3_S_CONST, A3CString : _A3_S_NOP)(X))
+#define A3_S_CONST(X) (_Generic((X), A3String: _A3_S_CONST, A3CString: _A3_S_NOP)(X))
 
 #else
 
@@ -284,12 +285,12 @@ namespace std {
 
 template <>
 struct hash<A3String> {
-    size_t operator()(A3String const& str) const { return std::hash<std::string_view> {}(str); }
+    size_t operator()(A3String const& str) const { return std::hash<std::string_view>{}(str); }
 };
 
 template <>
 struct hash<A3CString> {
-    size_t operator()(A3CString const& str) const { return std::hash<std::string_view> {}(str); }
+    size_t operator()(A3CString const& str) const { return std::hash<std::string_view>{}(str); }
 };
 
 } // namespace std
@@ -301,16 +302,16 @@ namespace std {
 template <>
 struct hash<A3String> {
     size_t operator()(A3String const& str) const {
-        return std::hash<std::string> {}(
-            std::string { reinterpret_cast<char const*>(str.ptr), str.len });
+        return std::hash<std::string>{}(
+            std::string{reinterpret_cast<char const*>(str.ptr), str.len});
     }
 };
 
 template <>
 struct hash<A3CString> {
     size_t operator()(A3CString const& str) const {
-        return std::hash<std::string> {}(
-            std::string { reinterpret_cast<char const*>(str.ptr), str.len });
+        return std::hash<std::string>{}(
+            std::string{reinterpret_cast<char const*>(str.ptr), str.len});
     }
 };
 

@@ -9,9 +9,14 @@
  * Windows does not provide aligned_alloc.
  */
 
-#include <a3/shim/aligned_alloc.h>
+#include "a3/shim/platform.h"
+
+#ifdef A3_PLATFORM_OS_WINDOWS
+
 #include <assert.h>
 #include <malloc.h>
+
+#include "a3/shim/aligned_alloc.h"
 
 void* a3_shim_aligned_alloc(size_t size, size_t align) {
     assert(size);
@@ -25,3 +30,5 @@ void a3_shim_aligned_free(void* ptr) {
 
     _aligned_free(ptr);
 }
+
+#endif

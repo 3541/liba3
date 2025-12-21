@@ -9,16 +9,17 @@
 
 #pragma once
 
-#ifdef _WIN32
+#include "a3/shim/cpp.h"
+#include "a3/shim/export.h"
+#include "a3/shim/platform.h"
+#include "a3/shim/socket_types.h"
+
+#ifdef A3_PLATFORM_OS_WINDOWS
 #include <windows.h>
 #include <ws2def.h>
 #else
 #include <sys/socket.h>
 #endif
-
-#include <a3/shim/socket_types.h>
-
-#include <a3/cpp.h>
 
 #ifdef SOCK_NONBLOCK
 #define A3_SOCK_NONBLOCK SOCK_NONBLOCK
@@ -34,6 +35,6 @@
 
 A3_H_BEGIN
 
-A3Socket a3_shim_accept(A3Socket, struct sockaddr*, A3Socklen*, int flags);
+A3_EXPORT A3Socket a3_shim_accept(A3Socket, struct sockaddr*, A3Socklen*, int flags);
 
 A3_H_END

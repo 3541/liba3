@@ -13,8 +13,9 @@ git_override(
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
 llvm.toolchain(
     name = "llvm",
-    cxx_standard = {"": "c++26"},
     llvm_version = "21.1.8",
+    cxx_standard = {"": "c++26"},
+    extra_compile_flags = {"": ["-fvisibility=hidden"]}
 )
 use_repo(llvm, "llvm")
 

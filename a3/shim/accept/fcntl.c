@@ -7,15 +7,19 @@
  * for details.
  */
 
+#include "a3/shim/platform.h"
+
+#if defined(A3_PLATFORM_OS_UNIXLIKE) && !defined(A3_PLATFORM_OS_LINUX)
+
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 
-#include <a3/shim/accept.h>
-#include <a3/shim/socket_types.h>
-
-#include <a3/util.h>
+#include "a3/shim/accept.h"
+#include "a3/shim/socket_types.h"
 
 A3Socket a3_shim_accept(A3Socket fd, struct sockaddr* addr, A3Socklen* len, int flags) {
     assert(!(flags & ~(A3_SOCK_CLOEXEC | A3_SOCK_NONBLOCK)));
@@ -24,15 +28,26 @@ A3Socket a3_shim_accept(A3Socket fd, struct sockaddr* addr, A3Socklen* len, int 
     if (res < 0)
         return -errno;
 
+    if (!(flags & (A3_SOCK_CLOEXEC | A3_SOCK_NONBLOCK)))
+        return res;
+
     int f = fcntl(res, F_GETFL);
-    A3_UNWRAPSD(f);
+    if (f < 0) {
+        perror("accept/fcntl");
+        abort();
+    }
 
     if (flags & A3_SOCK_CLOEXEC)
         flags |= O_CLOEXEC;
     if (flags & A3_SOCK_NONBLOCK)
         flags |= O_NONBLOCK;
 
-    A3_UNWRAPSD(fcntl(res, F_SETFL, flags));
+    if (fcntl(res, F_SETFL, flags) < 0) {
+        perror("accept/fcntl");
+        abort();
+    }
 
     return res;
 }
+
+#endif

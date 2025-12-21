@@ -7,13 +7,19 @@
  * for details.
  */
 
+#include "a3/shim/platform.h"
+
+#ifdef A3_PLATFORM_OS_LINUX
+
 #define _GNU_SOURCE
 
 #include <sys/socket.h>
 
-#include <a3/shim/accept.h>
-#include <a3/shim/socket_types.h>
+#include "a3/shim/accept.h"
+#include "a3/shim/socket_types.h"
 
 A3Socket a3_shim_accept(A3Socket fd, struct sockaddr* addr, A3Socklen* len, int flags) {
     return accept4(fd, addr, len, flags);
 }
+
+#endif
