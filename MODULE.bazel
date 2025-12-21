@@ -1,0 +1,28 @@
+module(
+    name = "a3",
+    version = "0.6.0",
+)
+
+bazel_dep(name = "toolchains_llvm", version = "1.6.0")
+git_override(
+    module_name = "toolchains_llvm",
+    commit = "5c53223db6c710d436f542b73d570f0b2680a902",
+    remote = "https://github.com/bazel-contrib/toolchains_llvm.git",
+)
+
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+llvm.toolchain(
+    name = "llvm",
+    cxx_standard = {"": "c++26"},
+    llvm_version = "21.1.8",
+)
+use_repo(llvm, "llvm")
+
+register_toolchains("@llvm//:all")
+
+bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
+git_override(
+    module_name = "hedron_compile_commands",
+    commit = "abb61a688167623088f8768cc9264798df6a9d10",
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+)
