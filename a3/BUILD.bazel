@@ -9,3 +9,32 @@ cc_library(
         "//a3/shim:strncasecmp",
     ],
 )
+
+cc_library(
+    name = "macro",
+    hdrs = ["macro.h"],
+)
+
+cc_library(
+    name = "try",
+    hdrs = ["try.h"],
+    deps = [":macro", "//a3/shim:likely"],
+)
+
+cc_library(
+    name = "minmax",
+    hdrs = ["minmax.h"]
+)
+
+cc_library(
+    name = "buffer",
+    hdrs = ["buffer.h"],
+    srcs = ["buffer.c"],
+    deps = [
+        ":minmax",
+        ":str",
+        ":try",
+        "//a3/shim:platform",
+        "//a3/shim:format",
+    ],
+)

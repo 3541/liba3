@@ -7,7 +7,8 @@
  * the project root for details.
  */
 
-#include <a3/shim/format.h>
+#include "a3/buffer.h"
+
 #include <assert.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -16,9 +17,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <a3/buffer.h>
-#include <a3/str.h>
-#include <a3/util.h>
+#include "a3/minmax.h"
+#include "a3/shim/format.h"
+#include "a3/str.h"
+#include "a3/try.h"
 
 // TODO: This should probably hand out slices of a pre-registered buffer of some
 // kind, to reduce the overhead of malloc and of mapping buffers into kernel
@@ -26,7 +28,7 @@
 bool a3_buf_init(A3Buffer* this, size_t cap, size_t max_cap) {
     if (!this->data.ptr)
         this->data = a3_string_alloc(cap);
-    A3_TRYB(this->data.ptr);
+    A3_TRY(this->data.ptr);
     this->max_cap = max_cap;
 
     return true;
@@ -54,7 +56,7 @@ void a3_buf_free(A3Buffer* buf) {
 bool a3_buf_write_byte(A3Buffer* this, uint8_t byte) {
     assert(a3_buf_initialized(this));
 
-    A3_TRYB(a3_buf_ensure_cap(this, 1));
+    A3_TRY(a3_buf_ensure_cap(this, 1));
 
     this->data.ptr[this->tail++] = byte;
 
@@ -62,7 +64,7 @@ bool a3_buf_write_byte(A3Buffer* this, uint8_t byte) {
 }
 
 bool a3_buf_write_line(A3Buffer* this, A3CString str) {
-    A3_TRYB(a3_buf_write_str(this, str));
+    A3_TRY(a3_buf_write_str(this, str));
     return a3_buf_write_byte(this, '\n');
 }
 
@@ -91,7 +93,7 @@ bool a3_buf_write_vfmt(A3Buffer* this, const char* fmt, va_list args) {
         write_ptr = a3_buf_write_ptr(this);
     }
 
-    a3_buf_wrote(this, MIN(write_ptr.len, (size_t)rc));
+    a3_buf_wrote(this, A3_MIN(write_ptr.len, (size_t)rc));
 
     return true;
 }
@@ -166,7 +168,7 @@ bool a3_buf_consume(A3Buffer* this, A3CString needle) {
     assert(needle.ptr);
 
     A3String pos = a3_buf_memmem(this, needle);
-    A3_TRYB(pos.ptr);
+    A3_TRY(pos.ptr);
 
     if ((size_t)(pos.ptr - this->data.ptr) != this->head)
         return false;
