@@ -20,10 +20,10 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <a3/shim/cpp.h>
-#include <a3/str.h>
-#include <a3/types.h>
-#include <a3/util.h>
+#include "a3/minmax.h"
+#include "a3/shim/cpp.h"
+#include "a3/str.h"
+#include "a3/try.h"
 
 A3_H_BEGIN
 
@@ -149,7 +149,7 @@ A3_ALWAYS_INLINE bool a3_buf_compact(A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
     assert(buf->head != 0);
 
-    A3_TRYB(memmove(buf->data.ptr, &buf->data.ptr[buf->head], a3_buf_len(buf)));
+    A3_TRY(memmove(buf->data.ptr, &buf->data.ptr[buf->head], a3_buf_len(buf)));
     buf->tail -= buf->head;
     buf->head = 0;
     return true;
@@ -168,11 +168,11 @@ A3_ALWAYS_INLINE bool a3_buf_ensure_cap(A3Buffer* buf, size_t min_extra_cap) {
     if (a3_buf_cap(buf) >= min_extra_cap)
         return a3_buf_compact(buf);
 
-    size_t new_cap = MAX(MAX(buf->data.len, 8), buf->max_cap);
+    size_t new_cap = A3_MAX(A3_MAX(buf->data.len, 8), buf->max_cap);
     for (; new_cap < buf->data.len + min_extra_cap; new_cap *= 2)
         ;
-    A3String new_data = a3_string_realloc(&buf->data, MIN(new_cap, buf->max_cap));
-    A3_TRYB(new_data.ptr);
+    A3String new_data = a3_string_realloc(&buf->data, A3_MIN(new_cap, buf->max_cap));
+    A3_TRY(new_data.ptr);
     buf->data = new_data;
 
     return true;
@@ -194,9 +194,9 @@ A3_ALWAYS_INLINE A3String a3_buf_write_ptr(A3Buffer* buf) {
 
     a3_buf_reset_if_empty(buf);
 #ifdef __cplusplus
-    return { buf->data.ptr + buf->tail, a3_buf_space(buf) };
+    return {buf->data.ptr + buf->tail, a3_buf_space(buf)};
 #else
-    return (A3String) { .ptr = buf->data.ptr + buf->tail, .len = a3_buf_space(buf) };
+    return (A3String){.ptr = buf->data.ptr + buf->tail, .len = a3_buf_space(buf)};
 #endif
 }
 
@@ -204,9 +204,9 @@ A3_ALWAYS_INLINE A3String a3_buf_write_ptr(A3Buffer* buf) {
 A3_ALWAYS_INLINE A3CString a3_buf_read_ptr(const A3Buffer* buf) {
     assert(a3_buf_initialized(buf));
 #ifdef __cplusplus
-    return { buf->data.ptr + buf->head, a3_buf_len(buf) };
+    return {buf->data.ptr + buf->head, a3_buf_len(buf)};
 #else
-    return (A3CString) { .ptr = buf->data.ptr + buf->head, .len = a3_buf_len(buf) };
+    return (A3CString){.ptr = buf->data.ptr + buf->head, .len = a3_buf_len(buf)};
 #endif
 }
 
@@ -224,7 +224,7 @@ A3_ALWAYS_INLINE bool a3_buf_write_str(A3Buffer* buf, A3CString str) {
 
     if (str.len + a3_buf_len(buf) > buf->max_cap)
         return false;
-    A3_TRYB(a3_buf_ensure_cap(buf, str.len));
+    A3_TRY(a3_buf_ensure_cap(buf, str.len));
 
     a3_string_copy(a3_buf_write_ptr(buf), str);
     a3_buf_wrote(buf, str.len);
