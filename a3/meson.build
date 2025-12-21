@@ -60,7 +60,7 @@ a3_warnings_wanted = {
 a3_c_flags += c.get_supported_arguments(a3_warnings_wanted[c_arg_syntax])
 a3_cxx_flags += cxx.get_supported_arguments(a3_warnings_wanted[cxx_arg_syntax])
 
-a3_include = include_directories(['include', '.'])
+a3_include = include_directories(['..'])
 a3_src = files(
   [
     'buffer.c',
@@ -92,6 +92,6 @@ pkg.generate(a3_lib)
 
 a3 = declare_dependency(
   link_with: a3_lib,
-  include_directories: include_directories(['include']),
+  include_directories: a3_include,
 )
 a3_dep = a3
