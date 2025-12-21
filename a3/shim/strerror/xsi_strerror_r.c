@@ -7,10 +7,19 @@
  * for details.
  */
 
-#include <a3/shim/strerror.h>
+#include "a3/shim/platform.h"
+
+#ifdef A3_PLATFORM_OS_UNIXLIKE
+
+#include "a3/shim/strerror.h"
+
+#undef _GNU_SOURCE
+
 #include <string.h>
 
 char* a3_shim_strerror(int errnum, char* buf, size_t len) {
     strerror_r(errnum, buf, len);
     return buf;
 }
+
+#endif

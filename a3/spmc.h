@@ -9,9 +9,10 @@
 
 #pragma once
 
-#include <a3/shim/atomic.h>
 #include <stdbool.h>
 
+#include <a3/shim/atomic.h>
+#include <a3/shim/export.h>
 #include <a3/types.h>
 
 #define A3_ATOMIC_PTR(TY) TY* _Atomic

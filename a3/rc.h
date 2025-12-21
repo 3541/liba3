@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include <a3/cpp.h>
+#include <a3/shim/cpp.h>
 #include <a3/types.h>
 
 #ifdef __cplusplus

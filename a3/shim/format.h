@@ -9,7 +9,9 @@
 
 #pragma once
 
-#if defined(__GNUC__) || defined(__clang__)
+#include "a3/shim/platform.h"
+
+#ifdef A3_PLATFORM_COMPILER_GCC_LIKE
 #define A3_FORMAT_FN(FMT_INDEX, VARG_INDEX)                                                        \
     __attribute__((__format__(__printf__, FMT_INDEX, VARG_INDEX)))
 #else

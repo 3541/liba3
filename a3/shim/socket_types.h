@@ -9,9 +9,10 @@
 
 #pragma once
 
-#include <a3/cpp.h>
+#include "a3/shim/cpp.h"
+#include "a3/shim/platform.h"
 
-#ifndef _WIN32
+#ifndef A3_PLATFORM_OS_WINDOWS
 #include <netinet/in.h>
 #else
 #include <winsock2.h>
@@ -19,7 +20,7 @@
 
 A3_H_BEGIN
 
-#ifdef _WIN32
+#ifdef A3_PLATFORM_OS_WINDOWS
 typedef int            A3Socklen;
 typedef unsigned short A3Port;
 typedef SOCKET         A3Socket;

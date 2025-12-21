@@ -18,7 +18,8 @@
 #define alignof __alignof
 #endif
 
-#include <a3/cpp.h>
+#include <a3/shim/cpp.h>
+#include <a3/shim/export.h>
 #include <a3/types.h>
 
 A3_H_BEGIN

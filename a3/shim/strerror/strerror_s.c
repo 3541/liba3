@@ -7,10 +7,17 @@
  * for details.
  */
 
-#include <a3/shim/strerror.h>
+#include "a3/shim/platform.h"
+
+#ifdef A3_PLATFORM_OS_WINDOWS
+
 #include <string.h>
+
+#include "a3/shim/strerror.h"
 
 char* a3_shim_strerror(int errnum, char* buf, size_t len) {
     strerror_s(buf, len, errnum);
     return buf;
 }
+
+#endif

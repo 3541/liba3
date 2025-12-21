@@ -7,14 +7,20 @@
  * for details.
  */
 
+#include "a3/shim/platform.h"
+
+#ifdef A3_PLATFORM_OS_UNIXLIKE
+
 #define _GNU_SOURCE
 
 #include <stddef.h>
 #include <string.h>
 
-#include <a3/shim/memmem.h>
+#include "a3/shim/memmem.h"
 
 void* a3_shim_memmem(void const* haystack, size_t haystack_len, void const* needle,
                      size_t needle_len) {
     return memmem(haystack, haystack_len, needle, needle_len);
 }
+
+#endif

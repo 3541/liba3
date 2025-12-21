@@ -9,17 +9,15 @@
 
 #pragma once
 
-#if defined(__GNUC__) || defined(__clang__)
+#include "a3/shim/platform.h"
+#include "a3/shim/attribute.h"
+
+#ifdef A3_PLATFORM_COMPILER_GCC_LIKE
 #define A3_LIKELY(E)   (__builtin_expect(!!(E), 1))
 #define A3_UNLIKELY(E) (__builtin_expect(!!(E), 0))
-#elif defined(__has_cpp_attribute)
-#if __has_cpp_attribute(likely) && __has_cpp_attribute(unlikely)
+#elif A3_HAS_CPP_ATTR(likely) && A3_HAS_CPP_ATTR(unlikely)
 #define A3_LIKELY(E)   (E) [[likely]]
 #define A3_UNLIKELY(E) (E) [[unlikely]]
-#else
-#define A3_LIKELY(E)   (E)
-#define A3_UNLIKELY(E) (E)
-#endif
 #else
 #define A3_LIKELY(E)   (E)
 #define A3_UNLIKELY(E) (E)

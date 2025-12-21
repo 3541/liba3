@@ -18,7 +18,7 @@
 #include <a3/shim/format.h>
 #include <a3/shim/likely.h>
 
-#include <a3/cpp.h>
+#include <a3/shim/cpp.h>
 #include <a3/types.h>
 
 #ifdef __has_builtin

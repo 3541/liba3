@@ -20,7 +20,7 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <a3/cpp.h>
+#include <a3/shim/cpp.h>
 #include <a3/macro.h>
 #include <a3/types.h>
 
