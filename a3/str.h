@@ -19,9 +19,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <a3/shim/cpp.h>
-#include <a3/shim/export.h>
-#include <a3/types.h>
+#include "a3/shim/attributes.h"
+#include "a3/shim/cpp.h"
+#include "a3/shim/export.h"
 
 #if defined(__cplusplus) && __cplusplus >= 201703L
 #include <string_view>

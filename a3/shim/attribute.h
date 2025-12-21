@@ -10,7 +10,13 @@
 #pragma once
 
 #ifdef __has_cpp_attribute
-#define A3_HAS_CPP_ATTR(A) __has_cpp_attribute
+#define A3_HAS_CPP_ATTR(A) __has_cpp_attribute(A)
 #else
 #define A3_HAS_CPP_ATTR(A) 0
+#endif
+
+#ifdef __has_attribute
+#define A3_HAS_ATTR(A) __has_attribute(A)
+#else
+#define A3_HAS_ATTR(A) 0
 #endif

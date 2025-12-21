@@ -1,3 +1,5 @@
+package(default_visibility = ["//a3:__subpackages__"])
+
 cc_library(
     name = "platform",
     hdrs = [
@@ -71,4 +73,10 @@ cc_library(
     hdrs = ["strncasecmp.h"],
     srcs = glob(["strncasecmp/*.c"]),
     deps = [":platform"],
+)
+
+cc_library(
+    name = "attributes",
+    hdrs = ["attributes.h"],
+    deps = [":platform"]
 )

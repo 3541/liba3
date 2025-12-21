@@ -1,0 +1,11 @@
+cc_library(
+    name = "str",
+    hdrs = ["str.h"],
+    srcs = ["str.c"],
+    deps = [
+        "//a3/shim:attributes",
+        "//a3/shim:memmem",
+        "//a3/shim:platform",
+        "//a3/shim:strncasecmp",
+    ],
+)

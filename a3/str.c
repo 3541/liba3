@@ -7,8 +7,8 @@
  * the project root for details.
  */
 
-#include <a3/shim/memmem.h>
-#include <a3/shim/strncasecmp.h>
+#include "a3/str.h"
+
 #include <assert.h>
 #include <ctype.h>
 #include <math.h>
@@ -18,15 +18,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <a3/str.h>
-#include <a3/util.h>
+#include "a3/shim/memmem.h"
+#include "a3/shim/strncasecmp.h"
 
 A3String a3_string_alloc(size_t len) {
-    return (A3String) { .ptr = calloc(len + 1, sizeof(uint8_t)), .len = len };
+    return (A3String){.ptr = calloc(len + 1, sizeof(uint8_t)), .len = len};
 }
 
 A3String a3_string_realloc(A3String* this, size_t new_len) {
-    A3String ret     = { .ptr = realloc(this->ptr, new_len + 1), .len = new_len };
+    A3String ret     = {.ptr = realloc(this->ptr, new_len + 1), .len = new_len};
     ret.ptr[new_len] = '\0';
     this->ptr        = NULL;
     this->len        = 0;
@@ -53,7 +53,8 @@ void a3_string_free(A3String* this) {
 void a3_string_copy(A3String dst, A3CString src) {
     if (!dst.ptr || !src.ptr || dst.ptr == src.ptr)
         return;
-    memcpy(dst.ptr, src.ptr, MIN(dst.len, src.len));
+
+    memcpy(dst.ptr, src.ptr, dst.len < src.len ? dst.len : src.len);
 }
 
 void a3_string_concat(A3String dst, size_t count, ...) {
@@ -98,7 +99,7 @@ A3String a3_string_itoa_into(A3String dst, size_t v) {
         v /= 10;
         i++;
     } while (i <= dst.len && v);
-    A3String ret = { .ptr = dst.ptr, .len = i };
+    A3String ret = {.ptr = dst.ptr, .len = i};
     a3_string_reverse(ret);
     return ret;
 }
@@ -137,7 +138,7 @@ A3CString a3_string_rchr_impl(A3CString str, uint8_t c) {
 
     for (size_t i = str.len - 1;; i--) {
         if (str.ptr[i] == c)
-            return (A3CString) { .ptr = &str.ptr[i], .len = str.len - i };
+            return (A3CString){.ptr = &str.ptr[i], .len = str.len - i};
 
         if (i == 0)
             break;
@@ -154,6 +155,6 @@ A3CString a3_string_memmem_impl(A3CString haystack, A3CString needle) {
     if (haystack.len < needle.len)
         return A3_CS_NULL;
 
-    return (A3CString) { .ptr = a3_shim_memmem(haystack.ptr, haystack.len, needle.ptr, needle.len),
-                         .len = needle.len };
+    return (A3CString){.ptr = a3_shim_memmem(haystack.ptr, haystack.len, needle.ptr, needle.len),
+                       .len = needle.len};
 }
