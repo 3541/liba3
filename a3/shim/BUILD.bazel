@@ -16,6 +16,11 @@ cc_library(
 )
 
 cc_library(
+    name = "types",
+    hdrs = ["types.h"],
+)
+
+cc_library(
     name = "socket_types",
     hdrs = ["socket_types.h"],
     deps = [":platform"],
@@ -78,5 +83,5 @@ cc_library(
 cc_library(
     name = "attributes",
     hdrs = ["attributes.h"],
-    deps = [":platform"]
+    deps = [":platform"],
 )

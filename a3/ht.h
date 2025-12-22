@@ -22,9 +22,11 @@
 #include <stdint.h>
 #include <time.h>
 
-#include <a3/shim/cpp.h>
-#include <a3/types.h>
-#include <a3/util.h>
+#include "a3/minmax.h"
+#include "a3/shim/cpp.h"
+#include "a3/shim/types.h"
+#include "a3/try.h"
+#include "a3/unwrap.h"
 
 // From highwayhash.h. Forward-declared since the library header causes unused
 // function warnings.
@@ -185,13 +187,13 @@ A3_H_END
                                                                                                    \
     void A3_HT_RESIZE(K, V)(A3_HT(K, V)*, size_t);                                                 \
                                                                                                    \
-    bool       A3_HT_INSERT(K, V)(A3_HT(K, V)*, K, V);                                             \
-    A3_SSIZE_T A3_HT_FIND_INDEX(K, V)(A3_HT(K, V)*, K);                                            \
+    bool    A3_HT_INSERT(K, V)(A3_HT(K, V)*, K, V);                                                \
+    A3SSize A3_HT_FIND_INDEX(K, V)(A3_HT(K, V)*, K);                                               \
     A3_HT_ENTRY(K, V) * A3_HT_FIND_ENTRY(K, V)(A3_HT(K, V)*, K);                                   \
-    V*         A3_HT_FIND(K, V)(A3_HT(K, V)*, K);                                                  \
-    bool       A3_HT_DELETE_INDEX(K, V)(A3_HT(K, V)*, size_t);                                     \
-    bool       A3_HT_DELETE(K, V)(A3_HT(K, V)*, K);                                                \
-    A3_SSIZE_T A3_HT_NEXT_ENTRY(K, V)(A3_HT(K, V)*, size_t index);                                 \
+    V*      A3_HT_FIND(K, V)(A3_HT(K, V)*, K);                                                     \
+    bool    A3_HT_DELETE_INDEX(K, V)(A3_HT(K, V)*, size_t);                                        \
+    bool    A3_HT_DELETE(K, V)(A3_HT(K, V)*, K);                                                   \
+    A3SSize A3_HT_NEXT_ENTRY(K, V)(A3_HT(K, V)*, size_t index);                                    \
                                                                                                    \
     A3_ALWAYS_INLINE size_t A3_HT_SIZE(K, V)(A3_HT(K, V) * table) {                                \
         assert(table);                                                                             \
@@ -256,10 +258,10 @@ A3_H_END
         }                                                                                          \
     }                                                                                              \
                                                                                                    \
-    A3_SSIZE_T A3_HT_NEXT_ENTRY(K, V)(A3_HT(K, V) * table, size_t index) {                         \
+    A3SSize A3_HT_NEXT_ENTRY(K, V)(A3_HT(K, V) * table, size_t index) {                            \
         for (; index < table->cap; index++)                                                        \
             if (table->entries[index].hash)                                                        \
-                return (A3_SSIZE_T)index;                                                          \
+                return (A3SSize)index;                                                             \
         return -1;                                                                                 \
     }                                                                                              \
                                                                                                    \
@@ -291,7 +293,7 @@ A3_H_END
         return true;                                                                               \
     }                                                                                              \
                                                                                                    \
-    A3_SSIZE_T A3_HT_FIND_INDEX(K, V)(A3_HT(K, V) * table, K key) {                                \
+    A3SSize A3_HT_FIND_INDEX(K, V)(A3_HT(K, V) * table, K key) {                                   \
         assert(table);                                                                             \
                                                                                                    \
         uint64_t hash = A3_HT_HASH(K, V)(table, key);                                              \
@@ -302,13 +304,13 @@ A3_H_END
                 A3_HT_PROBE_COUNT(K, V)(table, i, current_entry->hash) < probe_count)              \
                 return -1;                                                                         \
             if (hash == current_entry->hash && C(key, current_entry->key) == 0)                    \
-                return (A3_SSIZE_T)i;                                                              \
+                return (A3SSize)i;                                                                 \
         }                                                                                          \
     }                                                                                              \
                                                                                                    \
     A3_HT_ENTRY(K, V) * A3_HT_FIND_ENTRY(K, V)(A3_HT(K, V) * table, K key) {                       \
         assert(table);                                                                             \
-        A3_SSIZE_T i = A3_HT_FIND_INDEX(K, V)(table, key);                                         \
+        A3SSize i = A3_HT_FIND_INDEX(K, V)(table, key);                                            \
         if (i < 0)                                                                                 \
             return NULL;                                                                           \
         return &table->entries[i];                                                                 \
@@ -370,7 +372,7 @@ A3_H_END
         assert(table);                                                                             \
                                                                                                    \
         A3_HT_ENTRY(K, V)* entry = A3_HT_FIND_ENTRY(K, V)(table, key);                             \
-        A3_TRYB_MAP(entry, NULL);                                                                  \
+        A3_TRY(entry, NULL);                                                                       \
         return &entry->value;                                                                      \
     }                                                                                              \
                                                                                                    \
@@ -378,7 +380,7 @@ A3_H_END
         assert(table);                                                                             \
                                                                                                    \
         A3_HT_ENTRY(K, V)* entry = &table->entries[index];                                         \
-        A3_TRYB(entry);                                                                            \
+        A3_TRY(entry);                                                                             \
         entry->hash = 0;                                                                           \
         table->size--;                                                                             \
                                                                                                    \
@@ -400,7 +402,7 @@ A3_H_END
     bool A3_HT_DELETE(K, V)(A3_HT(K, V) * table, K key) {                                          \
         assert(table);                                                                             \
                                                                                                    \
-        A3_SSIZE_T index = A3_HT_FIND_INDEX(K, V)(table, key);                                     \
+        A3SSize index = A3_HT_FIND_INDEX(K, V)(table, key);                                        \
         if (index < 0)                                                                             \
             return false;                                                                          \
         return A3_HT_DELETE_INDEX(K, V)(table, (size_t)index);                                     \
@@ -425,10 +427,10 @@ A3_H_END
 /// Iterate over every entry of the hash table `T`, storing keys in `K_OUT` and values in `V_OUT` on
 /// every iteration.
 #define A3_HT_FOR_EACH(K, V, T, K_OUT, V_OUT)                                                      \
-    A3_SSIZE_T K_OUT##_i = A3_HT_NEXT_ENTRY(K, V)((T), 0);                                         \
-    K*         K_OUT     = (K_OUT##_i >= 0) ? &(T)->entries[K_OUT##_i].key : NULL;                 \
-    V*         V_OUT     = (K_OUT##_i >= 0) ? &(T)->entries[K_OUT##_i].value : NULL;               \
+    A3SSize K_OUT##_i = A3_HT_NEXT_ENTRY(K, V)((T), 0);                                            \
+    K*      K_OUT     = (K_OUT##_i >= 0) ? &(T)->entries[K_OUT##_i].key : NULL;                    \
+    V*      V_OUT     = (K_OUT##_i >= 0) ? &(T)->entries[K_OUT##_i].value : NULL;                  \
     for (; K_OUT##_i >= 0 && (size_t)K_OUT##_i < (T)->cap;                                         \
          K_OUT##_i = A3_HT_NEXT_ENTRY(K, V)((T), (size_t)K_OUT##_i + 1),                           \
-         K_OUT     = &(T)->entries[MAX(K_OUT##_i, 0)].key,                                         \
-         V_OUT     = &(T)->entries[MAX(K_OUT##_i, 0)].value)
+         K_OUT     = &(T)->entries[A3_MAX(K_OUT##_i, 0)].key,                                      \
+         V_OUT     = &(T)->entries[A3_MAX(K_OUT##_i, 0)].value)
