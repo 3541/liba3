@@ -20,13 +20,12 @@
 #ifndef A3_LOG_H
 #define A3_LOG_H
 
-#include <a3/shim/strerror.h>
 #include <stdio.h>
 
-#include <a3/shim/cpp.h>
-#include <a3/log_internal.h>
-#include <a3/macro.h>
-#include <a3/types.h>
+#include "a3/detail/log.h"
+#include "a3/macro.h"
+#include "a3/shim/cpp.h"
+#include "a3/shim/strerror.h"
 
 A3_H_BEGIN
 
@@ -102,7 +101,7 @@ A3_H_BEGIN
 #define A3_ERROR(MSG)        A3_LOG(A3_LOG_ERROR, (MSG))
 #define A3_ERRNO_F(CODE, FMT, ...)                                                                 \
     do {                                                                                           \
-        char A3_M_PASTE(buf_, __LINE__)[32] = { 0 };                                               \
+        char A3_M_PASTE(buf_, __LINE__)[32] = {0};                                                 \
         A3_LOG_F(A3_LOG_ERROR, "%s (%d) " FMT,                                                     \
                  a3_shim_strerror((CODE), A3_M_PASTE(buf_, __LINE__),                              \
                                   sizeof(A3_M_PASTE(buf_, __LINE__))),                             \
@@ -111,6 +110,18 @@ A3_H_BEGIN
 #define A3_ERRNO(CODE, MSG) A3_ERRNO_F((CODE), "%s", (MSG))
 #endif
 #endif
+
+// Abort with a message.
+#define A3_PANIC_FMT(FMT, ...)                                                                     \
+    do {                                                                                           \
+        a3_log(A3_LOG_ERROR, "PANIC %s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__);              \
+        a3_log_flush();                                                                            \
+        abort();                                                                                   \
+    } while (0)
+
+#define A3_PANIC(msg) A3_PANIC_FMT("%s", (msg))
+
+#define A3_UNREACHABLE() A3_PANIC("UNREACHABLE")
 
 A3_H_END
 

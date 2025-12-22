@@ -10,11 +10,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <a3/log.h>
-#include <a3/shim/format.h>
-#include <a3/shim/likely.h>
-#include <a3/str.h>
-#include <a3/util.h>
+#include "a3/log.h"
+#include "a3/shim/format.h"
+#include "a3/shim/likely.h"
+#include "a3/str.h"
 
 FILE*      A3_PRIV_LOG_OUTPUT = NULL;
 A3LogLevel A3_PRIV_LOG_LEVEL  = A3_LOG_INVALID;
