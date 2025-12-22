@@ -6,10 +6,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <a3/ht.h>
-#include <a3/str.h>
-#include <a3/util.h>
-#include <a3/util.hh>
+#include "a3/ht.h"
+#include "a3/str.h"
 
 #include <gmock/gmock-more-matchers.h>
 
@@ -26,8 +24,6 @@ using std::vector;
 using namespace testing;
 
 class HTTest : public Test {
-    A3_PINNED(HTTest);
-
 protected:
     A3_HT(A3CString, A3CString) table {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
@@ -110,7 +106,7 @@ TEST_F(HTTest, fixed_size) {
         for (auto& key : keys) {
             auto key_const = A3_S_CONST(key);
             A3_HT_INSERT(A3CString, A3CString)(&table, key_const, key_const);
-            A3_TRYB(A3_HT_FIND(A3CString, A3CString)(&table, key_const));
+            A3_TRY(A3_HT_FIND(A3CString, A3CString)(&table, key_const));
         }
 
         return true;

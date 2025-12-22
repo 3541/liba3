@@ -64,3 +64,15 @@ cc_library(
         "//a3/shim:likely",
     ],
 )
+
+cc_library(
+    name = "ht",
+    hdrs = ["ht.h"],
+    deps = [
+        ":unwrap",
+        ":try",
+        ":minmax",
+        "//a3/shim:platform",
+        "//a3/shim:types",
+    ],
+)
