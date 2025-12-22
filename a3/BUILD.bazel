@@ -53,5 +53,14 @@ cc_library(
         "//a3/shim:likely",
         "//a3/shim:format",
     ],
-    implementation_deps = ["//a3:str"]
+    implementation_deps = ["//a3:str"],
+)
+
+cc_library(
+    name = "unwrap",
+    hdrs = ["unwrap.h"],
+    deps = [
+        ":log",
+        "//a3/shim:likely",
+    ],
 )

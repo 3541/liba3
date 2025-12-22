@@ -17,9 +17,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <a3/shim/cpp.h>
 #include <a3/log_internal.h>
 #include <a3/macro.h>
+#include <a3/shim/cpp.h>
 #include <a3/shim/likely.h>
 #include <a3/types.h>
 
@@ -45,22 +45,6 @@
 #define A3_UNWRAPNI(TY, T, X)                                                                      \
     TY T;                                                                                          \
     A3_UNWRAPN(T, X)
-
-// Unwrap a return value which is negative on error and ignore the result
-// otherwise (i.e., unwrap-sign-discard).
-#define A3_UNWRAPSD(X)                                                                             \
-    do {                                                                                           \
-        if A3_UNLIKELY ((X) < 0) {                                                                 \
-            A3_PANIC_FMT("UNWRAP(%s)", #X);                                                        \
-        }                                                                                          \
-    } while (0)
-
-#define A3_UNWRAPND(X)                                                                             \
-    do {                                                                                           \
-        if A3_UNLIKELY (!(X)) {                                                                    \
-            A3_PANIC_FMT("UNWRAP(%s)", #X);                                                        \
-        }                                                                                          \
-    } while (0)
 
 // Unwrap a signed return value and keep the result.
 #define A3_UNWRAPS(T, X)                                                                           \
