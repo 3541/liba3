@@ -29,3 +29,13 @@ cc_test(
     ],
 )
 
+cc_test(
+    name = "log",
+    size = "small",
+    srcs = ["log.cc"],
+    deps = [
+        "//a3:log",
+        "//a3:str",
+        "@googletest//:gtest_main",
+    ],
+)

@@ -25,7 +25,7 @@ cc_library(
 
 cc_library(
     name = "minmax",
-    hdrs = ["minmax.h"]
+    hdrs = ["minmax.h"],
 )
 
 cc_library(
@@ -39,4 +39,19 @@ cc_library(
         "//a3/shim:platform",
         "//a3/shim:format",
     ],
+)
+
+cc_library(
+    name = "log",
+    hdrs = ["log.h", "detail/log.h"],
+    srcs = ["log.c"],
+    deps = [
+        ":macro",
+        "//a3/shim:strerror",
+        "//a3/shim:platform",
+        "//a3/shim:attributes",
+        "//a3/shim:likely",
+        "//a3/shim:format",
+    ],
+    implementation_deps = ["//a3:str"]
 )

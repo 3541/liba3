@@ -26,18 +26,6 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
-// Abort with a message.
-#define A3_PANIC_FMT(FMT, ...)                                                                     \
-    do {                                                                                           \
-        a3_log(A3_LOG_ERROR, "PANIC %s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__);              \
-        a3_log_flush();                                                                            \
-        abort();                                                                                   \
-    } while (0)
-
-#define A3_PANIC(msg) A3_PANIC_FMT("%s", (msg))
-
-#define A3_UNREACHABLE() A3_PANIC("UNREACHABLE")
-
 #ifdef _MSC_VER
 // Disable warning for "assignment within conditional expression. Why is this
 // even a warning?
