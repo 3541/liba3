@@ -1,3 +1,5 @@
+#include "a3/shim/accept.h"
+
 #include <array>
 #include <atomic>
 #include <cerrno>
@@ -5,12 +7,10 @@
 
 #include <gmock/gmock.h>
 
-#include <a3/shim/accept.h>
-#include <a3/shim/socket_types.h>
+#include "a3/shim/platform.h"
+#include "a3/shim/socket_types.h"
 
-#include <a3/util.h>
-
-#ifdef _WIN32
+#ifdef A3_PLATFORM_OS_WINDOWS
 #include <winsock2.h>
 #else
 #include <netinet/in.h>
@@ -25,7 +25,7 @@ namespace {
 using namespace testing;
 using namespace std::chrono_literals;
 
-#ifdef _WIN32
+#ifdef A3_PLATFORM_OS_WINDOWS
 #define close_socket   ::closesocket
 #define socket_error   WSAGetLastError()
 #define SOCKET_BLOCKED WSAEWOULDBLOCK
@@ -49,7 +49,7 @@ protected:
 };
 
 AcceptTest::AcceptTest() noexcept {
-#ifdef _WIN32
+#ifdef A3_PLATFORM_OS_WINDOWS
     WSADATA data;
     A3_UNWRAPSD(WSAStartup(MAKEWORD(2, 2), &data));
 #endif

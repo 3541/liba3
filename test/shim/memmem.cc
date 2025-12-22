@@ -1,6 +1,6 @@
-#include <gmock/gmock.h>
+#include "a3/shim/memmem.h"
 
-#include <a3/shim/memmem.h>
+#include <gmock/gmock.h>
 
 namespace a3::test {
 

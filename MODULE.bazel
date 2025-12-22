@@ -13,7 +13,7 @@ git_override(
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
 llvm.toolchain(
     name = "llvm",
-    llvm_version = "21.1.8",
+    llvm_version = "20.1.8",
     cxx_standard = {"": "c++26"},
     extra_compile_flags = {"": ["-fvisibility=hidden"]}
 )
@@ -27,3 +27,5 @@ git_override(
     commit = "abb61a688167623088f8768cc9264798df6a9d10",
     remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
 )
+
+bazel_dep(name = "googletest", version = "1.17.0.bcr.2", dev_dependency = True)

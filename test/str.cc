@@ -6,11 +6,9 @@
 
 #include <gtest/gtest.h>
 
-#include <a3/str.h>
+#include "a3/str.h"
 
-namespace a3 {
-namespace test {
-namespace str {
+namespace a3::test::str {
 
 TEST(String, construct) {
     A3CString lit = A3_CS("test");
@@ -122,7 +120,7 @@ TEST(String, compare) {
 
 TEST(String, rchr) {
     A3CString t   = A3_CS("12345654321");
-    A3CString ans = { &t.ptr[7], 4 };
+    A3CString ans = {&t.ptr[7], 4};
 
     A3CString got = a3_string_rchr(t, '4');
     EXPECT_EQ(ans.ptr, got.ptr);
@@ -146,6 +144,4 @@ TEST(String, string_view_conversion) {
 }
 #endif
 
-} // namespace str
-} // namespace test
-} // namespace a3
+} // namespace a3::test::str
