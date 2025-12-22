@@ -1,0 +1,21 @@
+cc_test(
+    name = "accept",
+    size = "small",
+    srcs = ["accept.cc"],
+    deps = [
+        "//a3/shim:accept",
+        "//a3/shim:socket_types",
+        "//a3/shim:platform",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "memmem",
+    size = "small",
+    srcs = ["memmem.cc"],
+    deps = [
+        "//a3/shim:memmem",
+        "@googletest//:gtest_main",
+    ],
+)

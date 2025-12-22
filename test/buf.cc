@@ -3,19 +3,17 @@
 
 #include <gtest/gtest.h>
 
-#include <a3/buffer.h>
-#include <a3/str.h>
+#include "a3/buffer.h"
+#include "a3/str.h"
 
-namespace a3 {
-namespace test {
-namespace buf {
+namespace a3::test::buf {
 
 #define BUF_INITIAL_CAP (128ULL)
 #define BUF_MAX_CAP     (512ULL)
 
 class BufferTest : public ::testing::Test {
 protected:
-    A3Buffer buf { A3_S_NULL, 0, 0, 0 }; // NOLINT(misc-non-private-member-variables-in-classes)
+    A3Buffer buf{A3_S_NULL, 0, 0, 0}; // NOLINT(misc-non-private-member-variables-in-classes)
 
     void SetUp() override { a3_buf_init(&buf, BUF_INITIAL_CAP, BUF_MAX_CAP); }
 
@@ -80,7 +78,7 @@ TEST_F(BufferTest, write_struct) {
     };
     static_assert(sizeof(TestStruct) == 8ULL, "Unexpected size.");
 
-    TestStruct t = { 42, 43 };
+    TestStruct t = {42, 43};
     ASSERT_EQ(t.a, 42);
     ASSERT_EQ(t.b, 43);
     A3_BUF_WRITE_STRUCT(&buf, t);
@@ -170,6 +168,4 @@ TEST_F(BufferTest, grow) {
     EXPECT_EQ(buf.data.len, BUF_MAX_CAP);
 }
 
-} // namespace buf
-} // namespace test
-} // namespace a3
+} // namespace a3::test::buf

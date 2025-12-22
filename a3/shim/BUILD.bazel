@@ -1,4 +1,4 @@
-package(default_visibility = ["//a3:__subpackages__"])
+package(default_visibility = ["//:__subpackages__"])
 
 cc_library(
     name = "platform",

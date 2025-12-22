@@ -1,0 +1,31 @@
+cc_test(
+    name = "buf",
+    size = "small",
+    srcs = ["buf.cc"],
+    deps = [
+        "//a3:buffer",
+        "//a3:str",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "str",
+    size = "small",
+    srcs = ["str.cc"],
+    deps = [
+        "//a3:str",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "try",
+    size = "small",
+    srcs = ["try.cc"],
+    deps = [
+        "//a3:try",
+        "@googletest//:gtest_main",
+    ],
+)
+

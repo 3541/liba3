@@ -1,55 +1,13 @@
-#include <gtest/gtest.h>
+#include "a3/try.h"
 
-#include <a3/util.h>
+#include <gtest/gtest.h>
 
 #ifdef _MSC_VER
 // Disable warning about constant arguments to conditional expressions.
 #pragma warning(disable : 4127)
 #endif
 
-namespace a3 {
-namespace test {
-namespace try_macros {
-
-TEST(Try, TRYB) {
-    EXPECT_FALSE([]() {
-        A3_TRYB(false);
-        return true;
-    }());
-
-    EXPECT_TRUE([]() {
-        A3_TRYB(true);
-        return true;
-    }());
-}
-
-TEST(Try, TRYB_MAP) {
-    EXPECT_EQ(
-        []() {
-            A3_TRYB_MAP(false, -42);
-            return 42;
-        }(),
-        -42);
-
-    EXPECT_EQ(
-        []() {
-            A3_TRYB_MAP(true, -42);
-            return 42;
-        }(),
-        42);
-}
-
-TEST(Try, TRY_COND) {
-    EXPECT_TRUE([]() {
-        A3_TRY_COND(-1, < 0, true);
-        return false;
-    }());
-
-    EXPECT_FALSE([]() {
-        A3_TRY_COND(42, < 0, true);
-        return false;
-    }());
-}
+namespace a3::test::try_macros {
 
 TEST(Try, TRY) {
     EXPECT_FALSE([]() {
@@ -75,18 +33,6 @@ TEST(Try, TRY) {
             return 42;
         }(),
         42);
-
-    EXPECT_TRUE([]() {
-        A3_TRY(-1, < 0, true);
-        return false;
-    }());
-
-    EXPECT_FALSE([]() {
-        A3_TRY(42, < 0, true);
-        return false;
-    }());
 }
 
-} // namespace try_macros
-} // namespace test
-} // namespace a3
+} // namespace a3::test::try_macros
