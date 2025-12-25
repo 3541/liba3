@@ -82,5 +82,6 @@ cc_library(
         ":unwrap",
         "//a3/shim:platform",
         "//a3/shim:types",
+        "//third_party/highwayhash"
     ],
 )
