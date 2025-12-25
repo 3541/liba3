@@ -27,14 +27,7 @@
 #include "a3/shim/types.h"
 #include "a3/try.h"
 #include "a3/unwrap.h"
-
-// From highwayhash.h. Forward-declared since the library header causes unused
-// function warnings.
-#ifndef DOXYGEN
-A3_H_BEGIN
-uint64_t HighwayHash64(const uint8_t* data, size_t size, const uint64_t key[4]);
-A3_H_END
-#endif
+#include "third_party/highwayhash/highwayhash.h"
 
 #ifndef A3_HT_INITIAL_CAP
 /// The initial capacity of the hash table. Can be overridden.
@@ -179,8 +172,8 @@ A3_H_END
 /// be visible.
 #define A3_HT_DECLARE_METHODS(K, V)                                                                \
     A3_H_BEGIN                                                                                     \
-    void A3_HT_INIT(K, V)(A3_HT(K, V)*, uint8_t * key, bool can_grow);                             \
-    A3_HT(K, V) * A3_HT_NEW(K, V)(uint8_t * key, bool can_grow);                                   \
+    void A3_HT_INIT(K, V)(A3_HT(K, V)*, uint8_t* key, bool can_grow);                              \
+    A3_HT(K, V) * A3_HT_NEW(K, V)(uint8_t* key, bool can_grow);                                    \
     void A3_HT_SET_DUPLICATE_CB(K, V)(A3_HT(K, V)*, A3_HT_DUP_CB(K, V));                           \
     void A3_HT_DESTROY(K, V)(A3_HT(K, V)*);                                                        \
     void A3_HT_FREE(K, V)(A3_HT(K, V)*);                                                           \
@@ -316,7 +309,7 @@ A3_H_END
         return &table->entries[i];                                                                 \
     }                                                                                              \
                                                                                                    \
-    void A3_HT_INIT(K, V)(A3_HT(K, V) * table, uint8_t * key, bool can_grow) {                     \
+    void A3_HT_INIT(K, V)(A3_HT(K, V) * table, uint8_t* key, bool can_grow) {                      \
         assert(table);                                                                             \
         memset(table, 0, sizeof(*table));                                                          \
         table->can_grow = can_grow;                                                                \
@@ -334,7 +327,7 @@ A3_H_END
         A3_UNWRAPND(table->entries);                                                               \
     }                                                                                              \
                                                                                                    \
-    A3_HT(K, V) * A3_HT_NEW(K, V)(uint8_t * key, bool can_grow) {                                  \
+    A3_HT(K, V) * A3_HT_NEW(K, V)(uint8_t* key, bool can_grow) {                                   \
         A3_HT(K, V)* ret = (A3_HT(K, V)*)calloc(1, sizeof(A3_HT(K, V)));                           \
         A3_HT_INIT(K, V)(ret, key, can_grow);                                                      \
         return ret;                                                                                \
