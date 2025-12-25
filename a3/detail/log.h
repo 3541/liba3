@@ -16,9 +16,9 @@
 #include <stdio.h>
 
 #include "a3/shim/cpp.h"
+#include "a3/shim/export.h"
 #include "a3/shim/format.h"
 #include "a3/shim/likely.h"
-#include "a3/shim/export.h"
 
 #ifdef __has_builtin
 #if __has_builtin(__builtin_va_arg_pack)
@@ -44,8 +44,8 @@ typedef int A3LogLevel;
 #define A3_LOG_ERROR   4
 #define A3_LOG_INVALID (~0)
 
-extern FILE*      A3_PRIV_LOG_OUTPUT;
-extern A3LogLevel A3_PRIV_LOG_LEVEL;
+A3_EXPORT extern FILE*      A3_DETAIL_LOG_OUTPUT;
+A3_EXPORT extern A3LogLevel A3_DETAIL_LOG_LEVEL;
 
 A3_EXPORT void a3_log_init(FILE*, A3LogLevel);
 A3_EXPORT void a3_log_init_default(void);
@@ -56,7 +56,7 @@ A3_LOG_INLINE void a3_log(A3LogLevel level, char const* fmt, ...) {
     if A3_UNLIKELY (level == A3_LOG_INVALID)
         a3_log_init_default();
 
-    if A3_LIKELY (level < A3_PRIV_LOG_LEVEL)
+    if A3_LIKELY (level < A3_DETAIL_LOG_LEVEL)
         return;
 
 #ifdef A3_USE_VA_PACK
@@ -67,11 +67,11 @@ A3_LOG_INLINE void a3_log(A3LogLevel level, char const* fmt, ...) {
 #else
     va_list args;
     va_start(args, fmt);
-    vfprintf(A3_PRIV_LOG_OUTPUT, fmt, args);
+    vfprintf(A3_DETAIL_LOG_OUTPUT, fmt, args);
     va_end(args);
 #endif
 
-    fputc('\n', A3_PRIV_LOG_OUTPUT);
+    fputc('\n', A3_DETAIL_LOG_OUTPUT);
 }
 
 A3_H_END

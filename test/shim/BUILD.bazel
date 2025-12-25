@@ -1,11 +1,13 @@
+load("@rules_cc//cc:cc_test.bzl", "cc_test")
+
 cc_test(
     name = "accept",
     size = "small",
     srcs = ["accept.cc"],
     deps = [
         "//a3/shim:accept",
-        "//a3/shim:socket_types",
         "//a3/shim:platform",
+        "//a3/shim:socket_types",
         "@googletest//:gtest_main",
     ],
 )

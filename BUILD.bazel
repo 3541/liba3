@@ -1,4 +1,0 @@
-cc_library(
-    name = "test",
-    hdrs = ["src/include/a3/fwd.hh"],
-)

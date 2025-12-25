@@ -1,3 +1,5 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
 package(default_visibility = ["//:__subpackages__"])
 
 cc_library(
@@ -28,22 +30,25 @@ cc_library(
 
 cc_library(
     name = "accept",
-    hdrs = ["accept.h"],
     srcs = glob(["accept/*.c"]),
-    deps = [":socket_types", ":platform"],
+    hdrs = ["accept.h"],
+    deps = [
+        ":platform",
+        ":socket_types",
+    ],
 )
 
 cc_library(
     name = "aligned_alloc",
-    hdrs = ["aligned_alloc.h"],
     srcs = glob(["aligned_alloc/*.c"]),
+    hdrs = ["aligned_alloc.h"],
     deps = [":platform"],
 )
 
 cc_library(
     name = "atomic",
-    hdrs = ["atomic.h"],
     srcs = glob(["atomic/*.c"]),
+    hdrs = ["atomic.h"],
     deps = [":platform"],
 )
 
@@ -61,22 +66,22 @@ cc_library(
 
 cc_library(
     name = "memmem",
-    hdrs = ["memmem.h"],
     srcs = glob(["memmem/*.c"]),
+    hdrs = ["memmem.h"],
     deps = [":platform"],
 )
 
 cc_library(
     name = "strerror",
-    hdrs = ["strerror.h"],
     srcs = glob(["strerror/*.c"]),
+    hdrs = ["strerror.h"],
     deps = [":platform"],
 )
 
 cc_library(
     name = "strncasecmp",
-    hdrs = ["strncasecmp.h"],
     srcs = glob(["strncasecmp/*.c"]),
+    hdrs = ["strncasecmp.h"],
     deps = [":platform"],
 )
 
