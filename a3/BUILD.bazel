@@ -1,9 +1,11 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "str",
-    hdrs = ["str.h"],
     srcs = ["str.c"],
+    hdrs = ["str.h"],
     deps = [
         "//a3/shim:attributes",
         "//a3/shim:memmem",
@@ -20,7 +22,10 @@ cc_library(
 cc_library(
     name = "try",
     hdrs = ["try.h"],
-    deps = [":macro", "//a3/shim:likely"],
+    deps = [
+        ":macro",
+        "//a3/shim:likely",
+    ],
 )
 
 cc_library(
@@ -30,30 +35,33 @@ cc_library(
 
 cc_library(
     name = "buffer",
-    hdrs = ["buffer.h"],
     srcs = ["buffer.c"],
+    hdrs = ["buffer.h"],
     deps = [
         ":minmax",
         ":str",
         ":try",
-        "//a3/shim:platform",
         "//a3/shim:format",
+        "//a3/shim:platform",
     ],
 )
 
 cc_library(
     name = "log",
-    hdrs = ["log.h", "detail/log.h"],
     srcs = ["log.c"],
-    deps = [
-        ":macro",
-        "//a3/shim:strerror",
-        "//a3/shim:platform",
-        "//a3/shim:attributes",
-        "//a3/shim:likely",
-        "//a3/shim:format",
+    hdrs = [
+        "detail/log.h",
+        "log.h",
     ],
     implementation_deps = ["//a3:str"],
+    deps = [
+        ":macro",
+        "//a3/shim:attributes",
+        "//a3/shim:format",
+        "//a3/shim:likely",
+        "//a3/shim:platform",
+        "//a3/shim:strerror",
+    ],
 )
 
 cc_library(
@@ -69,9 +77,9 @@ cc_library(
     name = "ht",
     hdrs = ["ht.h"],
     deps = [
-        ":unwrap",
-        ":try",
         ":minmax",
+        ":try",
+        ":unwrap",
         "//a3/shim:platform",
         "//a3/shim:types",
     ],

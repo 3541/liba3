@@ -7,16 +7,16 @@
  * the project root for details.
  */
 
+#include "a3/log.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "a3/log.h"
-#include "a3/shim/format.h"
 #include "a3/shim/likely.h"
 #include "a3/str.h"
 
-FILE*      A3_PRIV_LOG_OUTPUT = NULL;
-A3LogLevel A3_PRIV_LOG_LEVEL  = A3_LOG_INVALID;
+FILE*      A3_DETAIL_LOG_OUTPUT = NULL;
+A3LogLevel A3_DETAIL_LOG_LEVEL  = A3_LOG_INVALID;
 
 void a3_log_init(FILE* out, A3LogLevel level) {
     A3CString env = a3_cstring_from(getenv("A3_LOG_LEVEL"));
@@ -37,16 +37,16 @@ void a3_log_init(FILE* out, A3LogLevel level) {
             level = A3_LOG_ERROR;
     }
 
-    A3_PRIV_LOG_OUTPUT = out;
-    A3_PRIV_LOG_LEVEL  = level;
+    A3_DETAIL_LOG_OUTPUT = out;
+    A3_DETAIL_LOG_LEVEL  = level;
 }
 
 void a3_log_init_default(void) { a3_log_init(stderr, A3_LOG_INVALID); }
 
 void a3_log_flush(void) {
-    if A3_UNLIKELY (A3_PRIV_LOG_LEVEL == A3_LOG_INVALID)
+    if A3_UNLIKELY (A3_DETAIL_LOG_LEVEL == A3_LOG_INVALID)
         a3_log_init_default();
 
-    assert(A3_PRIV_LOG_OUTPUT);
-    (void)fflush(A3_PRIV_LOG_OUTPUT);
+    assert(A3_DETAIL_LOG_OUTPUT);
+    (void)fflush(A3_DETAIL_LOG_OUTPUT);
 }
