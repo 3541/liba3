@@ -7,12 +7,13 @@
  * the project root for details.
  */
 
-#include <a3/shim/aligned_alloc.h>
+#include "a3/vec.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
-#include <a3/util.h>
-#include <a3/vec.h>
+#include "a3/shim/aligned_alloc.h"
+#include "a3/unwrap.h"
 
 static inline size_t align_down(size_t v, size_t align) { return v & ~(align - 1); }
 static inline size_t align_up(size_t v, size_t align) { return align_down(v + align - 1, align); }
@@ -31,13 +32,15 @@ void a3_vec_init_(A3Vec* vec, size_t elem_size, size_t elem_align, size_t cap) {
     assert(elem_size > 0);
     assert(elem_align > 0);
 
-    *vec = (A3Vec) { .cap        = cap,
-                     .len        = 0,
-                     .elem_size  = align_up(elem_size, elem_align),
-                     .elem_align = elem_align,
-                     .buf        = NULL };
-    if (cap)
-        A3_UNWRAPN(vec->buf, a3_shim_aligned_alloc(cap * elem_size, elem_align));
+    *vec = (A3Vec){.cap        = cap,
+                   .len        = 0,
+                   .elem_size  = align_up(elem_size, elem_align),
+                   .elem_align = elem_align,
+                   .buf        = NULL};
+    if (cap) {
+        vec->buf = a3_shim_aligned_alloc(cap * elem_size, elem_align);
+        A3_UNWRAPND(vec->buf);
+    }
 }
 
 void* a3_vec_write_ptr_(A3Vec* vec) {
@@ -64,14 +67,17 @@ void a3_vec_reserve(A3Vec* vec, size_t additional) {
 
     if (!vec->buf) {
         vec->cap = additional;
-        A3_UNWRAPN(vec->buf, a3_shim_aligned_alloc(vec->cap * vec->elem_size, vec->elem_align));
+        vec->buf = a3_shim_aligned_alloc(vec->cap * vec->elem_size, vec->elem_align);
+        A3_UNWRAPND(vec->buf);
         return;
     }
 
     while (vec->cap - vec->len < additional)
         vec->cap *= 2;
 
-    A3_UNWRAPNI(void*, new_buf, a3_shim_aligned_alloc(vec->cap * vec->elem_size, vec->elem_align));
+    void* new_buf;
+    new_buf = a3_shim_aligned_alloc(vec->cap * vec->elem_size, vec->elem_align);
+    A3_UNWRAPND(new_buf);
     memcpy(new_buf, vec->buf, vec->len * vec->elem_size);
     a3_shim_aligned_free(vec->buf);
     vec->buf = new_buf;

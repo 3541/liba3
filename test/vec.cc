@@ -1,10 +1,10 @@
+#include "a3/vec.h"
+
 #include <cstdlib>
 #include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
-#include <a3/vec.h>
 
 namespace a3 {
 namespace test {
@@ -71,7 +71,7 @@ TEST_F(VecTest, alignment) {
 
     for (size_t i = 0; i < 400; i++) {
         // NOLINTNEXTLINE(cert-msc50-cpp, cert-msc30-c, concurrency-mt-unsafe)
-        WeirdAlignment w { (size_t)rand(), (size_t)rand() };
+        WeirdAlignment w{(size_t)rand(), (size_t)rand()};
 
         v.push_back(w);
         A3_VEC_PUSH(&vec, &w);
