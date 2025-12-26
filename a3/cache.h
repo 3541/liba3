@@ -12,9 +12,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include <a3/shim/cpp.h>
-#include <a3/ht.h>
-#include <a3/util.h>
+#include "a3/ht.h"
+#include "a3/shim/cpp.h"
+#include "a3/shim/types.h"
+#include "a3/unwrap.h"
 
 #define A3_CACHE_ENTRY(K, V)    A3_HT_ENTRY(K, V)
 #define A3_CACHE(K, V)          struct K##V##A3Cache
@@ -76,8 +77,8 @@
                                                                                                    \
         cache->eviction_index    = 0;                                                              \
         cache->eviction_callback = eviction_callback;                                              \
-        A3_UNWRAPN(cache->accessed,                                                                \
-                   (size_t*)calloc(capacity / A3_CACHE_ENTRIES_PER_BLOCK, sizeof(size_t)));        \
+        cache->accessed = (size_t*)calloc(capacity / A3_CACHE_ENTRIES_PER_BLOCK, sizeof(size_t));  \
+        A3_UNWRAPND(cache->accessed);                                                              \
         A3_HT_INIT(K, V)(&cache->table, A3_HT_NO_HASH_KEY, A3_HT_FORBID_GROWTH);                   \
         A3_HT_RESIZE(K, V)(&cache->table, capacity);                                               \
     }                                                                                              \
@@ -123,7 +124,7 @@
     }                                                                                              \
                                                                                                    \
     V* A3_CACHE_FIND(K, V)(A3_CACHE(K, V) * cache, K key) {                                        \
-        A3_SSIZE_T index = A3_HT_FIND_INDEX(K, V)(&cache->table, key);                             \
+        A3SSize index = A3_HT_FIND_INDEX(K, V)(&cache->table, key);                                \
         if (index < 0)                                                                             \
             return NULL;                                                                           \
         size_t i = (size_t)index;                                                                  \
