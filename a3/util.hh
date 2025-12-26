@@ -13,23 +13,6 @@
 
 #include <cstdlib>
 
-/// Make a type non-copyable.
-#define A3_NO_COPY(T)                                                                              \
-public:                                                                                            \
-    T(T const&) = delete;                                                                          \
-    T& operator=(T const&) = delete
-
-/// Make a type non-moveable.
-#define A3_NO_MOVE(T)                                                                              \
-public:                                                                                            \
-    T(T&&)     = delete;                                                                           \
-    T& operator=(T&&) = delete
-
-/// Make a type both non-copyable and non-moveable.
-#define A3_PINNED(T)                                                                               \
-    A3_NO_COPY(T);                                                                                 \
-    A3_NO_MOVE(T)
-
 /// Explicitly request the default copy operations.
 #define A3_DEFAULT_COPY(T)                                                                         \
 public:                                                                                            \
