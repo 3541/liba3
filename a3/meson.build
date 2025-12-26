@@ -66,7 +66,6 @@ a3_src = files(
     'buffer.c',
     'log.c',
     'pool.c',
-    'spmc.c',
     'str.c',
     'vec.c',
   ]
