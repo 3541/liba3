@@ -5,6 +5,7 @@ package(default_visibility = ["//:__subpackages__"])
 cc_library(
     name = "platform",
     hdrs = [
+        "alignof.h",
         "attribute.h",
         "cpp.h",
         "export.h",
