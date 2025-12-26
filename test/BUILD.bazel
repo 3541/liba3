@@ -64,12 +64,25 @@ cc_test(
         "//a3:str",
         "//a3/shim:types",
         "@googletest//:gtest_main",
-    ]
+    ],
 )
 
 cc_test(
     name = "pool",
     size = "small",
     srcs = ["pool.cc"],
-    deps = ["//a3:pool", "@googletest//:gtest_main"]
+    deps = [
+        "//a3:pool",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "ll",
+    size = "small",
+    srcs = ["ll.cc"],
+    deps = [
+        "//a3:ll",
+        "@googletest//:gtest_main",
+    ],
 )

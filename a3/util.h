@@ -23,6 +23,7 @@
 #include <a3/types.h>
 #include "a3/panic.h"
 #include "a3/try.h"
+#include "a3/container_of.h"
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
@@ -90,4 +91,3 @@
         return (F) ? (T) : (E);                                                                    \
     } while (0)
 
-#define A3_CONTAINER_OF(PTR, TY, FIELD) ((TY*)((uintptr_t)(void*)(PTR)-offsetof(TY, FIELD)))
