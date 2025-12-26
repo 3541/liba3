@@ -3,15 +3,15 @@ load("@rules_cc//cc:cc_test.bzl", "cc_test")
 
 cc_library(
     name = "highwayhash",
-    hdrs = ["highwayhash.h"],
     srcs = ["highwayhash.c"],
+    hdrs = ["highwayhash.h"],
+    copts = ["-fvisibility=default"],
     visibility = ["//:__subpackages__"],
-    copts = ["-fvisibility=default"]
 )
 
 cc_test(
     name = "highwayhash_test",
+    size = "small",
     srcs = ["highwayhash_test.c"],
     deps = [":highwayhash"],
-    size = "small"
 )

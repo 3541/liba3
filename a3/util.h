@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <a3/log_internal.h>
+#include <a3/detail/log.h>
 #include <a3/macro.h>
 #include <a3/shim/cpp.h>
 #include <a3/shim/likely.h>
