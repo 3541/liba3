@@ -62,7 +62,7 @@ A3_LOG_INLINE void a3_log(A3LogLevel level, char const* fmt, ...) {
 #ifdef A3_USE_VA_PACK
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
-    fprintf(A3_PRIV_LOG_OUTPUT, fmt, __builtin_va_arg_pack());
+    fprintf(A3_DETAIL_LOG_OUTPUT, fmt, __builtin_va_arg_pack());
 #pragma GCC diagnostic pop
 #else
     va_list args;
