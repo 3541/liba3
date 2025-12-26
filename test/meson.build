@@ -21,7 +21,7 @@ if not meson.is_subproject()
     ]
   )
 
-  a3_test_args = ['-DGTEST_HAS_EXCEPTIONS=0']
+  a3_test_args = ['-DGTEST_HAS_EXCEPTIONS=0', '-DA3_MESON']
 
   if host_machine.system() == 'windows'
     a3_test_args += '-D_CRT_SECURE_NO_WARNINGS'

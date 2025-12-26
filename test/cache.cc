@@ -1,19 +1,24 @@
+#include "a3/cache.h"
+
 #include <cstddef>
 #include <cstdio>
 #include <vector>
 
 #include <gtest/gtest.h>
 
-#include <a3/cache.h>
-#include <a3/ht.h>
-#include <a3/log.h>
-#include <a3/str.h>
-#include <a3/types.h>
+#include "a3/ht.h"
+#include "a3/log.h"
+#include "a3/shim/types.h"
+#include "a3/str.h"
 
 A3_CACHE_DEFINE_STRUCTS(A3CString, A3CString)
 
 A3_CACHE_DECLARE_METHODS(A3CString, A3CString)
+#ifdef A3_MESON
 A3_CACHE_DEFINE_METHODS_NOHT(A3CString, A3CString)
+#else
+A3_CACHE_DEFINE_METHODS(A3CString, A3CString, a3_string_cptr, a3_string_len, a3_string_cmp)
+#endif
 
 namespace a3 {
 namespace test {
@@ -49,7 +54,7 @@ TEST_F(CacheTest, insert) {
     auto* found = A3_CACHE_FIND(A3CString, A3CString)(&cache, A3_CS("Key"));
     ASSERT_TRUE(found);
 
-    A3_SSIZE_T index = A3_HT_FIND_INDEX(A3CString, A3CString)(&cache.table, A3_CS("Key"));
+    A3SSize index = A3_HT_FIND_INDEX(A3CString, A3CString)(&cache.table, A3_CS("Key"));
     ASSERT_GE(index, 0LL);
     ASSERT_EQ(found, &cache.table.entries[(size_t)index].value);
     EXPECT_TRUE(A3_CACHE_ACCESSED(A3CString, A3CString)(&cache, (size_t)index));

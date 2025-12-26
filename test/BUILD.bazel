@@ -52,3 +52,17 @@ cc_test(
         "@googletest//:gtest_main",
     ],
 )
+
+cc_test(
+    name = "cache",
+    size = "small",
+    srcs = ["cache.cc"],
+    deps = [
+        "//a3:cache",
+        "//a3:ht",
+        "//a3:log",
+        "//a3:str",
+        "//a3/shim:types",
+        "@googletest//:gtest_main",
+    ]
+)

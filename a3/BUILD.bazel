@@ -86,3 +86,14 @@ cc_library(
         "//third_party/highwayhash",
     ],
 )
+
+cc_library(
+    name = "cache",
+    hdrs = ["cache.h"],
+    deps = [
+        ":ht",
+        ":unwrap",
+        "//a3/shim:platform",
+        "//a3/shim:types",
+    ],
+)

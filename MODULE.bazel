@@ -19,7 +19,6 @@ llvm.toolchain(
         "-fvisibility=hidden",
         "-fstack-protector",
         "-fstack-clash-protection",
-
         "-Werror",
         "-Wall",
         "-Wextra",
