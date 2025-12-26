@@ -7,21 +7,23 @@
  * the project root for details.
  */
 
-#include <a3/shim/aligned_alloc.h>
+#include "a3/pool.h"
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <a3/pool.h>
-#include <a3/util.h>
+#include "a3/shim/aligned_alloc.h"
+#include "a3/shim/alignof.h"
+#include "a3/unwrap.h"
 
 static inline size_t align_down(size_t v, size_t align) { return v & ~(align - 1); }
 static inline size_t align_up(size_t v, size_t align) { return align_down(v + align - 1, align); }
 
-#define SLOT_OFFSET(POOL)    (align_up((POOL)->obj_size, alignof(A3PoolSlot)))
-#define SLOT_OBJ(POOL, SLOT) ((void*)((uintptr_t)(SLOT)-SLOT_OFFSET(POOL)))
+#define SLOT_OFFSET(POOL)    (align_up((POOL)->obj_size, A3_ALIGNOF(A3PoolSlot)))
+#define SLOT_OBJ(POOL, SLOT) ((void*)((uintptr_t)(SLOT) - SLOT_OFFSET(POOL)))
 #define OBJ_SLOT(POOL, OBJ)  ((A3PoolSlot*)((uintptr_t)(OBJ) + SLOT_OFFSET(POOL)))
 
 struct A3PoolSlot {
@@ -40,16 +42,17 @@ struct A3Pool {
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 A3Pool* a3_pool_new(size_t obj_size, size_t blocks, size_t align, bool zero_blocks,
                     A3PoolCallback init_cb, A3PoolCallback free_cb) {
-    size_t slot_offset = align_up(obj_size, alignof(A3PoolSlot));
+    size_t slot_offset = align_up(obj_size, A3_ALIGNOF(A3PoolSlot));
     size_t block_size  = align_up(slot_offset + sizeof(A3PoolSlot), align);
 
-    A3Pool* ret;
-    A3_UNWRAPN(ret, calloc(1, sizeof(A3Pool)));
+    A3Pool* ret = calloc(1, sizeof(A3Pool));
+    A3_UNWRAPND(ret);
     ret->zero_blocks = zero_blocks;
     ret->free_cb     = free_cb;
     ret->obj_size    = obj_size;
     ret->cap         = blocks * block_size;
-    A3_UNWRAPN(ret->data, a3_shim_aligned_alloc(ret->cap, align));
+    ret->data        = a3_shim_aligned_alloc(ret->cap, align);
+    A3_UNWRAPND(ret->data);
     memset(ret->data, 0, ret->cap);
     ret->free = OBJ_SLOT(ret, ret->data);
 

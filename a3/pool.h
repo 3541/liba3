@@ -12,15 +12,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#ifndef _WIN32
-#include <stdalign.h>
-#else
-#define alignof __alignof
-#endif
-
-#include <a3/shim/cpp.h>
-#include <a3/shim/export.h>
-#include <a3/types.h>
+#include "a3/shim/alignof.h"
+#include "a3/shim/cpp.h"
+#include "a3/shim/export.h"
 
 A3_H_BEGIN
 
@@ -39,7 +33,7 @@ A3_EXPORT void    a3_pool_free_block(A3Pool*, void*);
 A3_EXPORT void    a3_pool_free(A3Pool*);
 
 #define A3_POOL_OF(TY, COUNT, ZERO_BLOCKS, INIT_CB, FREE_CB)                                       \
-    a3_pool_new(sizeof(TY), (COUNT), alignof(TY), (ZERO_BLOCKS), (INIT_CB), (FREE_CB))
+    a3_pool_new(sizeof(TY), (COUNT), A3_ALIGNOF(TY), (ZERO_BLOCKS), (INIT_CB), (FREE_CB))
 
 A3_H_END
 

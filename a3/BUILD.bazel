@@ -97,3 +97,14 @@ cc_library(
         "//a3/shim:types",
     ],
 )
+
+cc_library(
+    name = "pool",
+    srcs = ["pool.c"],
+    hdrs = ["pool.h"],
+    deps = [
+        ":unwrap",
+        "//a3/shim:aligned_alloc",
+        "//a3/shim:platform",
+    ],
+)

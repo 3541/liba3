@@ -1,3 +1,5 @@
+#include "a3/pool.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -6,26 +8,22 @@
 
 #include <gtest/gtest.h>
 
-#include <a3/pool.h>
-
-namespace a3 {
-namespace test {
-namespace pool {
+namespace a3::test::pool {
 
 using std::vector;
 
 // An object to store in the pool.
 struct TestObject {
-    size_t f1 {};
-    size_t f2 {};
-    char   f3[10] {};
+    size_t f1{};
+    size_t f2{};
+    char   f3[10]{};
 };
 
 class PoolTest : public ::testing::Test {
     static constexpr size_t POOL_SIZE = 1024;
 
 protected:
-    A3Pool* pool { nullptr }; // NOLINT(misc-non-private-member-variables-in-classes)
+    A3Pool* pool{nullptr}; // NOLINT(misc-non-private-member-variables-in-classes)
 
     void SetUp() override {
         pool = A3_POOL_OF(TestObject, POOL_SIZE, A3_POOL_ZERO_BLOCKS, nullptr, nullptr);
@@ -109,6 +107,4 @@ TEST_F(PoolTest, alloc_all) {
     EXPECT_EQ(allocations.size(), count);
 }
 
-} // namespace pool
-} // namespace test
-} // namespace a3
+} // namespace a3::test::pool
