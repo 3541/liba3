@@ -104,7 +104,7 @@ cc_test(
     deps = [
         "//a3:nonnull",
         "@googletest//:gtest_main",
-    ]
+    ],
 )
 
 cc_test(
@@ -114,6 +114,15 @@ cc_test(
     deps = [
         "//a3:rc",
         "@googletest//:gtest_main",
-    ]
+    ],
 )
 
+cc_test(
+    name = "vec",
+    size = "small",
+    srcs = ["vec.cc"],
+    deps = [
+        "//a3:vec",
+        "@googletest//:gtest_main",
+    ],
+)

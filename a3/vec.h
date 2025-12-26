@@ -20,9 +20,8 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <a3/shim/cpp.h>
-#include <a3/macro.h>
-#include <a3/types.h>
+#include "a3/shim/cpp.h"
+#include "a3/shim/export.h"
 
 A3_H_BEGIN
 

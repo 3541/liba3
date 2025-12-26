@@ -140,7 +140,7 @@ cc_library(
 
 cc_library(
     name = "base",
-    hdrs = ["fwd.hh"]
+    hdrs = ["fwd.hh"],
 )
 
 cc_library(
@@ -149,17 +149,32 @@ cc_library(
     deps = [
         ":base",
         ":concepts",
-        ":log"
-    ]
+        ":log",
+    ],
 )
 
 cc_library(
     name = "pin",
-    hdrs = ["pin.hh"]
+    hdrs = ["pin.hh"],
 )
 
 cc_library(
     name = "rc",
-    hdrs = ["rc.h", "rc.hh"],
-    deps = [":pin"]
+    hdrs = [
+        "rc.h",
+        "rc.hh",
+    ],
+    deps = [":pin"],
+)
+
+cc_library(
+    name = "vec",
+    srcs = ["vec.c"],
+    hdrs = ["vec.h"],
+    deps = [
+        ":macro",
+        ":unwrap",
+        "//a3/shim:aligned_alloc",
+        "//a3/shim:platform",
+    ],
 )
