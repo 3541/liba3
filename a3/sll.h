@@ -20,7 +20,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include <a3/util.h>
+#include "a3/container_of.h"
 
 /// A list. Keeps track of both the head and tail in order to enable the list to be used as a queue.
 #define A3_SLL(NAME, TY)                                                                           \

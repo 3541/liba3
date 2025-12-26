@@ -86,3 +86,13 @@ cc_test(
         "@googletest//:gtest_main",
     ],
 )
+
+cc_test(
+    name = "sll",
+    size = "small",
+    srcs = ["sll.cc"],
+    deps = [
+        "//a3:sll",
+        "@googletest//:gtest_main",
+    ],
+)
