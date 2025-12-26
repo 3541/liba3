@@ -19,9 +19,9 @@
 #include <assert.h>
 #include <stddef.h>
 
-#include <a3/shim/cpp.h>
-#include <a3/macro.h>
-#include <a3/util.h>
+#include "a3/container_of.h"
+#include "a3/macro.h"
+#include "a3/shim/cpp.h"
 
 A3_H_BEGIN
 

@@ -108,3 +108,18 @@ cc_library(
         "//a3/shim:platform",
     ],
 )
+
+cc_library(
+    name = "container_of",
+    hdrs = ["container_of.h"],
+)
+
+cc_library(
+    name = "ll",
+    hdrs = ["ll.h"],
+    deps = [
+        ":container_of",
+        ":macro",
+        "//a3/shim:platform",
+    ],
+)

@@ -1,14 +1,11 @@
+#include "a3/ll.h"
+
 #include <cstddef>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <a3/ll.h>
-#include <a3/util.h>
-
-namespace a3 {
-namespace test {
-namespace ll {
+namespace a3::test::ll {
 
 using namespace testing;
 
@@ -16,7 +13,7 @@ struct LLNode {
     size_t data;                // NOLINT(misc-non-private-member-variables-in-classes)
     A3_LL_LINK(LLNode) link {}; // NOLINT(misc-non-private-member-variables-in-classes)
 
-    explicit LLNode(size_t d) : data { d } {}
+    explicit LLNode(size_t d) : data{d} {}
 };
 
 class LLTest : public Test {
@@ -29,7 +26,7 @@ protected:
 TEST_F(LLTest, init) { EXPECT_THAT(A3_LL_IS_EMPTY(&list), IsTrue()); }
 
 TEST_F(LLTest, push_pop) {
-    auto* t = new LLNode { 1234 };
+    auto* t = new LLNode{1234};
     A3_LL_PUSH(&list, t, link);
 
     auto* p = A3_LL_HEAD(&list);
@@ -44,7 +41,7 @@ TEST_F(LLTest, push_pop) {
 }
 
 TEST_F(LLTest, enqueue_dequeue) {
-    auto* t = new LLNode { 1234 };
+    auto* t = new LLNode{1234};
     A3_LL_ENQUEUE(&list, t, link);
 
     auto* p = A3_LL_HEAD(&list);
@@ -59,18 +56,18 @@ TEST_F(LLTest, enqueue_dequeue) {
 
 TEST_F(LLTest, many_insertions) {
     for (size_t i = 0; i < 128; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
     auto* mid_node = A3_LL_END(&list, LLNode, link);
 
     for (size_t i = 129; i < 513; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
-    auto* n = new LLNode { 128 };
+    auto* n = new LLNode{128};
     A3_LL_INSERT_AFTER(mid_node, n, link);
 
     size_t i = 0;
@@ -84,19 +81,25 @@ TEST_F(LLTest, many_insertions) {
 
     EXPECT_EQ(i, 513ULL);
 
-    A3_LL_FOR_EACH (LLNode, node, &list, link) { delete node; }
+    A3_LL_FOR_EACH (LLNode, node, &list, link) {
+        delete node;
+    }
 }
 
 TEST_F(LLTest, iterate_backwards) {
     for (unsigned int i = 0; i <= 128; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
     unsigned int i = 128;
-    A3_LL_FOR_EACH_REV (LLNode, item, &list, link) { EXPECT_THAT(item->data, Eq(i--)); }
+    A3_LL_FOR_EACH_REV (LLNode, item, &list, link) {
+        EXPECT_THAT(item->data, Eq(i--));
+    }
 
-    A3_LL_FOR_EACH (LLNode, node, &list, link) { delete node; }
+    A3_LL_FOR_EACH (LLNode, node, &list, link) {
+        delete node;
+    }
 }
 
 TEST_F(LLTest, for_each_empty) {
@@ -113,7 +116,7 @@ TEST_F(LLTest, for_each_rev_empty) {
 
 TEST_F(LLTest, insert_after) {
     for (unsigned int i = 1; i <= 128; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
@@ -122,15 +125,17 @@ TEST_F(LLTest, insert_after) {
     EXPECT_THAT(end->data, Eq(128U));
 
     for (unsigned int i = 130; i <= 256; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
-    auto* next = new LLNode { 129 };
+    auto* next = new LLNode{129};
     A3_LL_INSERT_AFTER(end, next, link);
 
     unsigned int i = 1;
-    A3_LL_FOR_EACH (LLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
+    A3_LL_FOR_EACH (LLNode, node, &list, link) {
+        EXPECT_EQ(node->data, i++);
+    }
     EXPECT_THAT(i, Eq(257U));
 
     while (auto* p = A3_LL_HEAD(&list)) {
@@ -144,7 +149,7 @@ TEST_F(LLTest, insert_before) {
         if (i == 127)
             continue;
 
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
@@ -153,15 +158,17 @@ TEST_F(LLTest, insert_before) {
     EXPECT_THAT(end->data, Eq(128U));
 
     for (unsigned int i = 129; i <= 256; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
-    auto* prev = new LLNode { 127 };
+    auto* prev = new LLNode{127};
     A3_LL_INSERT_BEFORE(end, prev, link);
 
     unsigned int i = 1;
-    A3_LL_FOR_EACH (LLNode, node, &list, link) { EXPECT_EQ(node->data, i++); }
+    A3_LL_FOR_EACH (LLNode, node, &list, link) {
+        EXPECT_EQ(node->data, i++);
+    }
     EXPECT_THAT(i, Eq(257U));
 
     while (auto* p = A3_LL_HEAD(&list)) {
@@ -172,7 +179,7 @@ TEST_F(LLTest, insert_before) {
 
 TEST_F(LLTest, remove_first) {
     for (unsigned int i = 1; i <= 128; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
@@ -197,7 +204,7 @@ TEST_F(LLTest, remove_first) {
 
 TEST_F(LLTest, remove_last) {
     for (unsigned int i = 1; i <= 128; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
@@ -223,7 +230,7 @@ TEST_F(LLTest, remove_last) {
 
 TEST_F(LLTest, remove_mid) {
     for (unsigned int i = 1; i <= 128; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
@@ -282,12 +289,14 @@ TEST_F(LLTest, remove_only) {
 
     auto p = std::make_unique<LLNode>(43);
     A3_LL_ENQUEUE(&list, p.get(), link);
-    A3_LL_FOR_EACH (LLNode, n, &list, link) { EXPECT_THAT(n->data, Eq(43U)); }
+    A3_LL_FOR_EACH (LLNode, n, &list, link) {
+        EXPECT_THAT(n->data, Eq(43U));
+    }
 }
 
 TEST_F(LLTest, nested_for_each) {
     for (unsigned i = 1; i <= 128; i++) {
-        auto* n = new LLNode { i };
+        auto* n = new LLNode{i};
         A3_LL_ENQUEUE(&list, n, link);
     }
 
@@ -304,6 +313,4 @@ TEST_F(LLTest, nested_for_each) {
         delete node;
 }
 
-} // namespace ll
-} // namespace test
-} // namespace a3
+} // namespace a3::test::ll
