@@ -119,7 +119,7 @@ static void Permute(const uint64_t v[4], uint64_t* permuted) {
   permuted[3] = (v[1] >> 32) | (v[1] << 32);
 }
 
-void PermuteAndUpdate(HighwayHashState* state) {
+static void PermuteAndUpdate(HighwayHashState* state) {
   uint64_t permuted[4];
   Permute(state->v0, permuted);
   Update(permuted, state);
@@ -132,6 +132,7 @@ static void ModularReduction(uint64_t a3_unmasked, uint64_t a2, uint64_t a1,
   *m0 = a0 ^ (a2 << 1) ^ (a2 << 2);
 }
 
+/* Compute final hash value. Makes state invalid. */
 static uint64_t HighwayHashFinalize64(HighwayHashState* state) {
   int i;
   for (i = 0; i < 4; i++) {

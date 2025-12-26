@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "a3/log.h"
+#include "a3/panic.h"
 #include "a3/shim/likely.h"
 
 // Unwrap a return value which is negative on error and ignore the result
