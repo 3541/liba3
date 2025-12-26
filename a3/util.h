@@ -17,11 +17,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <a3/detail/log.h>
 #include <a3/macro.h>
 #include <a3/shim/cpp.h>
 #include <a3/shim/likely.h>
 #include <a3/types.h>
+#include "a3/panic.h"
+#include "a3/try.h"
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
@@ -88,12 +89,5 @@
     do {                                                                                           \
         return (F) ? (T) : (E);                                                                    \
     } while (0)
-
-/// A nicer interface to ::A3_TRY_COND, ::A3_TRYB_MAP, and ::A3_TRYB. When invoked with a single
-/// argument, it is equivalent to ::A3_TRYB. Two arguments invokes ::A3_TRYB_MAP, and three
-/// arguments invokes ::A3_TRY_COND. Note that the argument order of ::A3_TRY_COND is not consistent
-/// with ::A3_TRYB_MAP — the condition comes before the return value.
-#define A3_TRY(...)                                                                                \
-    A3_M_MSVC_VA_HACK(A3_M_ARG4(__VA_ARGS__, A3_TRY_COND, A3_TRYB_MAP, A3_TRYB, )(__VA_ARGS__))
 
 #define A3_CONTAINER_OF(PTR, TY, FIELD) ((TY*)((uintptr_t)(void*)(PTR)-offsetof(TY, FIELD)))

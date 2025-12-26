@@ -39,7 +39,7 @@ const uint64_t kExpected64[kMaxSize + 1] = {
     0x6E0DA4F64188155Aull, 0xB755BA4B50D7D4A1ull, 0x887A3484647479BDull,
     0xAB8EEBE9BF2139A0ull, 0x75542C5D4CD2A6FFull};
 
-void TestHash64(uint64_t expected, const uint8_t* data, size_t size,
+static void TestHash64(uint64_t expected, const uint8_t* data, size_t size,
                 const uint64_t* key) {
   uint64_t hash = HighwayHash64(data, size, key);
   if (expected != hash) {
@@ -49,7 +49,7 @@ void TestHash64(uint64_t expected, const uint8_t* data, size_t size,
   }
 }
 
-int main() {
+int main(void) {
   uint8_t data[kMaxSize + 1] = {0};
   int i;
   for (i = 0; i <= kMaxSize; i++) {

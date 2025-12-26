@@ -10,6 +10,7 @@
 #define A3_LOG_LEVEL A3_LOG_DEBUG
 #include "a3/log.h"
 #include "a3/str.h"
+#include "a3/panic.h"
 
 namespace a3::test::log {
 

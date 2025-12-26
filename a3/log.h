@@ -111,18 +111,6 @@ A3_H_BEGIN
 #endif
 #endif
 
-// Abort with a message.
-#define A3_PANIC_FMT(FMT, ...)                                                                     \
-    do {                                                                                           \
-        a3_log(A3_LOG_ERROR, "PANIC %s (%d): " FMT, __FILE__, __LINE__, __VA_ARGS__);              \
-        a3_log_flush();                                                                            \
-        abort();                                                                                   \
-    } while (0)
-
-#define A3_PANIC(msg) A3_PANIC_FMT("%s", (msg))
-
-#define A3_UNREACHABLE() A3_PANIC("UNREACHABLE")
-
 A3_H_END
 
 #else

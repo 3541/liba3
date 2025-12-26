@@ -29,10 +29,12 @@ using namespace std::chrono_literals;
 #define close_socket   ::closesocket
 #define socket_error   WSAGetLastError()
 #define SOCKET_BLOCKED WSAEWOULDBLOCK
+using SendLength = int;
 #else
 #define close_socket   ::close
 #define socket_error   errno
 #define SOCKET_BLOCKED EWOULDBLOCK
+using SendLength = std::size_t;
 #endif
 
 } // namespace
@@ -124,11 +126,11 @@ TEST_F(AcceptTest, no_flags) {
         }
 
         while (!message.empty()) {
-            auto const res = ::send(s, message.data(), static_cast<int>(message.size()), 0);
+            auto const res = ::send(s, message.data(), static_cast<SendLength>(message.size()), 0);
             if (res <= 0)
                 break;
 
-            message.remove_prefix(res);
+            message.remove_prefix(static_cast<std::size_t>(res));
         }
 
         close_socket(s);
@@ -138,17 +140,17 @@ TEST_F(AcceptTest, no_flags) {
     ASSERT_THAT(a, Gt(0U));
 
     std::array<char, 128> buf{'\0'};
-    int                   written = 0;
+    SendLength            written = 0;
 
     decltype(::recv(0, nullptr, 0, 0)) res = 0;
     do {
-        res = ::recv(a, buf.data() + written, static_cast<int>(buf.size()) - written, 0);
+        res = ::recv(a, buf.data() + written, static_cast<SendLength>(buf.size()) - written, 0);
         EXPECT_THAT(res, Ge(0));
 
         if (res < 0)
             break;
 
-        written += static_cast<int>(res);
+        written += static_cast<SendLength>(res);
     } while (res > 0 && static_cast<std::size_t>(written) < buf.size());
 
     EXPECT_THAT(std::string_view{buf.data()}, Eq("Hello, world."));
@@ -183,11 +185,11 @@ TEST_F(AcceptTest, nonblock) {
             std::this_thread::sleep_for(0.5s);
 
         while (!message.empty()) {
-            auto const res = ::send(s, message.data(), static_cast<int>(message.size()), 0);
+            auto const res = ::send(s, message.data(), static_cast<SendLength>(message.size()), 0);
             if (res <= 0)
                 break;
 
-            message.remove_prefix(res);
+            message.remove_prefix(static_cast<std::size_t>(res));
         }
 
         close_socket(s);
@@ -197,7 +199,7 @@ TEST_F(AcceptTest, nonblock) {
     ASSERT_THAT(a, Gt(0U));
 
     std::array<char, 128> buf{'\0'};
-    int                   written = 0;
+    SendLength            written = 0;
 
     EXPECT_THAT(::recv(a, buf.data(), 1, 0), Lt(0));
     EXPECT_THAT(socket_error, Eq(SOCKET_BLOCKED));
@@ -205,10 +207,11 @@ TEST_F(AcceptTest, nonblock) {
     ready.store(true);
 
     while (static_cast<std::size_t>(written) < buf.size()) {
-        auto const res = ::recv(a, buf.data() + written, static_cast<int>(buf.size()) - written, 0);
+        auto const res =
+            ::recv(a, buf.data() + written, static_cast<SendLength>(buf.size()) - written, 0);
 
         if (res > 0) {
-            written += static_cast<int>(res);
+            written += static_cast<SendLength>(res);
             continue;
         }
 

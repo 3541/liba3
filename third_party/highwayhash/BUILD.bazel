@@ -1,11 +1,13 @@
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@rules_cc//cc:cc_test.bzl", "cc_test")
 
+copts = ["-Wno-sign-conversion", "-Wno-implicit-int-conversion"]
+
 cc_library(
     name = "highwayhash",
     srcs = ["highwayhash.c"],
     hdrs = ["highwayhash.h"],
-    copts = ["-fvisibility=default"],
+    copts = ["-fvisibility=default"] + copts,
     visibility = ["//:__subpackages__"],
 )
 
@@ -14,4 +16,5 @@ cc_test(
     size = "small",
     srcs = ["highwayhash_test.c"],
     deps = [":highwayhash"],
+    copts = copts
 )
