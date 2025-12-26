@@ -123,3 +123,12 @@ cc_library(
         "//a3/shim:platform",
     ],
 )
+
+cc_library(
+    name = "sll",
+    hdrs = ["sll.h"],
+    deps = [
+        ":container_of",
+        "//a3/shim:platform",
+    ],
+)
