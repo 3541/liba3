@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <stdlib.h>
+
 #include "a3/detail/log.h"
 
 // Abort with a message.

@@ -16,9 +16,9 @@
 #include <memory>
 #include <type_traits>
 
-#include <a3/concepts/is_template.hh>
-#include <a3/fwd.hh>
-#include <a3/util.h>
+#include "a3/concepts/is_template.hh"
+#include "a3/fwd.hh"
+#include "a3/panic.h"
 
 namespace a3 {
 

@@ -96,3 +96,13 @@ cc_test(
         "@googletest//:gtest_main",
     ],
 )
+
+cc_test(
+    name = "nonnull",
+    size = "small",
+    srcs = ["nonnull.cc"],
+    deps = [
+        "//a3:nonnull",
+        "@googletest//:gtest_main",
+    ]
+)

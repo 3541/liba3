@@ -132,3 +132,23 @@ cc_library(
         "//a3/shim:platform",
     ],
 )
+
+cc_library(
+    name = "concepts",
+    hdrs = glob(["concepts/*.hh"]),
+)
+
+cc_library(
+    name = "base",
+    hdrs = ["fwd.hh"]
+)
+
+cc_library(
+    name = "nonnull",
+    hdrs = ["nonnull.hh"],
+    deps = [
+        ":base",
+        ":concepts",
+        ":log"
+    ]
+)

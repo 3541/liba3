@@ -1,10 +1,12 @@
 #ifdef __cpp_lib_concepts
 
+#include "a3/nonnull.hh"
+
 #include <memory>
 
 #include <gmock/gmock.h>
 
-#include <a3/nonnull.hh>
+#include "a3/detail/log.h"
 
 namespace a3::test {
 
@@ -20,7 +22,10 @@ struct S {
 
 } // namespace
 
-TEST(nonnull, null) { EXPECT_DEATH(NonNull{static_cast<int*>(nullptr)}, "from a null pointer"); }
+TEST(nonnull, null) {
+    a3_log_init_default();
+    EXPECT_DEATH(NonNull{static_cast<int*>(nullptr)}, "from a null pointer");
+}
 
 TEST(nonnull, raw) {
     NonNull victim{new S{43}};
