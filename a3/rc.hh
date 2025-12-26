@@ -17,8 +17,8 @@
 #include <cstddef>
 #include <utility>
 
-#include <a3/rc.h>
-#include <a3/util.hh>
+#include "a3/pin.hh"
+#include "a3/rc.h"
 
 namespace a3 {
 
@@ -64,23 +64,23 @@ class Rc {
 private:
     RefCounted<T, C>* ptr;
 
-    Rc() : ptr { nullptr } {}
+    Rc() : ptr{nullptr} {}
 
 public:
     /// Create an Rc pointing to the given target. Increments the reference count.
-    explicit Rc(T* target) : ptr { target } {
+    explicit Rc(T* target) : ptr{target} {
         if (ptr)
             ptr->ref();
     }
 
     /// Create an Rc pointing to the same target as another one. Increments the reference count.
-    Rc(const Rc& other) : ptr { other.ptr } {
+    Rc(const Rc& other) : ptr{other.ptr} {
         if (ptr)
             ptr->ref();
     }
 
     /// Move an Rc. Nulls out the other's pointer and does not change the reference count.
-    Rc(Rc&& other) noexcept : ptr { other.ptr } { other.ptr = nullptr; }
+    Rc(Rc&& other) noexcept : ptr{other.ptr} { other.ptr = nullptr; }
 
     /// Copy another Rc into this one. Decrements the reference count of the existing target, if
     /// any, and increments the reference count of the new target.
@@ -122,7 +122,7 @@ public:
     /// Instantiate a new target object and get an Rc pointing to it.
     template <typename... Args>
     static Rc<T, C> create(Args&&... args) {
-        return Rc<T, C>::adopt(new T { std::forward<Args>(args)... });
+        return Rc<T, C>::adopt(new T{std::forward<Args>(args)...});
     }
 
     /// Dereference the pointer.

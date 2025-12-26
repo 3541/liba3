@@ -18,12 +18,8 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include <a3/shim/cpp.h>
-#include <a3/types.h>
-
 #ifdef __cplusplus
-#define A3_REFCOUNTED_T(T)                                                                         \
-    T _ref_count { 0 }
+#define A3_REFCOUNTED_T(T) T _ref_count{0}
 #else
 /// Make an object reference counted, using a specific type for the reference count. The given type
 /// must support at least the following:

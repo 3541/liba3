@@ -4,12 +4,9 @@
 #include <gtest/gtest.h>
 
 #define A3_REF_PUBLIC
-#include <a3/rc.hh>
-#include <a3/util.hh>
+#include "a3/rc.hh"
 
-namespace a3 {
-namespace test {
-namespace rc {
+namespace a3::test::rc {
 
 using std::move;
 
@@ -20,13 +17,13 @@ class TestObject : public RefCounted<TestObject> {
     A3_PINNED(TestObject);
 
 private:
-    size_t  value { 0 };
+    size_t  value{0};
     size_t& construct_count;
     size_t& destruct_count;
 
 public:
     explicit TestObject(size_t v, size_t& cc, size_t& dc) :
-        value { v }, construct_count { cc }, destruct_count { dc } {
+        value{v}, construct_count{cc}, destruct_count{dc} {
         construct_count++;
     }
 
@@ -66,7 +63,7 @@ TEST(Rc, basic) {
     size_t c_count = 0;
     size_t d_count = 0;
 
-    auto* o = new TestObject { 42, c_count, d_count };
+    auto* o = new TestObject{42, c_count, d_count};
     EXPECT_EQ(o->get_value(), 42ULL);
     EXPECT_EQ(o->ref_count(), 1U);
     EXPECT_EQ(c_count, 1U);
@@ -88,7 +85,7 @@ TEST(Rc, wrapper_adopt) {
     size_t d_count = 0;
 
     {
-        auto* o = new TestObject { 42, c_count, d_count };
+        auto* o = new TestObject{42, c_count, d_count};
         EXPECT_EQ(o->get_value(), 42U);
         EXPECT_EQ(o->ref_count(), 1U);
         EXPECT_EQ(c_count, 1U);
@@ -135,7 +132,7 @@ TEST(Rc, wrapper_clone_and_move) {
             EXPECT_EQ(r->ref_count(), r1->ref_count());
             EXPECT_EQ(r->ref_count(), 2U);
 
-            auto r2 = Rc<TestObject> { r1 };
+            auto r2 = Rc<TestObject>{r1};
             EXPECT_EQ(r2->get_value(), 42U);
             EXPECT_EQ(r->ref_count(), r1->ref_count());
             EXPECT_EQ(r->ref_count(), 3U);
@@ -154,6 +151,4 @@ TEST(Rc, wrapper_clone_and_move) {
     EXPECT_EQ(d_count, 1U);
 }
 
-} // namespace rc
-} // namespace test
-} // namespace a3
+} // namespace a3::test::rc

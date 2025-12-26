@@ -106,3 +106,14 @@ cc_test(
         "@googletest//:gtest_main",
     ]
 )
+
+cc_test(
+    name = "rc",
+    size = "small",
+    srcs = ["rc.cc"],
+    deps = [
+        "//a3:rc",
+        "@googletest//:gtest_main",
+    ]
+)
+

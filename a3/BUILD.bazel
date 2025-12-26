@@ -152,3 +152,14 @@ cc_library(
         ":log"
     ]
 )
+
+cc_library(
+    name = "pin",
+    hdrs = ["pin.hh"]
+)
+
+cc_library(
+    name = "rc",
+    hdrs = ["rc.h", "rc.hh"],
+    deps = [":pin"]
+)
