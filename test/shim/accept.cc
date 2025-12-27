@@ -3,6 +3,7 @@
 #include <array>
 #include <atomic>
 #include <cerrno>
+#include <chrono>
 #include <thread>
 
 #include <gmock/gmock.h>
