@@ -14,3 +14,10 @@ updates:
     labels:
       - "automatic"
       - "dependencies"
+  - package-ecosystem: "bazel"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    labels:
+      - "automatic"
+      - "dependencies"
