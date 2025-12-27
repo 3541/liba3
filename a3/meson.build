@@ -21,27 +21,10 @@ elif host_machine.system() == 'sunos'
   a3_common_flags += '-D__EXTENSIONS__'
 elif host_machine.system() == 'windows'
   a3_common_flags += ['-DWIN32_LEAN_AND_MEAN', '-D_CRT_SECURE_NO_WARNINGS']
-  add_project_arguments('-D_HAS_EXCEPTIONS=0', language: 'cpp')
 endif
 
 if get_option('profile')
   a3_common_flags += '-DPROFILE'
-endif
-
-a3_flags_wanted = {
-  'gcc': ['-fstack-protector', '-fstack-clash-protection'],
-  'msvc': ['/GS', '/Zc:__cplusplus']
-}
-add_project_arguments(c.get_supported_arguments(a3_flags_wanted[c_arg_syntax]), language: 'c')
-add_project_link_arguments(c.get_supported_link_arguments(a3_flags_wanted[c_arg_syntax]),
-                           language: 'c')
-add_project_arguments(cxx.get_supported_arguments(a3_flags_wanted[cxx_arg_syntax]), language: 'cpp')
-add_project_link_arguments(cxx.get_supported_link_arguments(a3_flags_wanted[cxx_arg_syntax]),
-                           language: 'cpp')
-
-if get_option('buildtype') != 'debug'
-  add_project_arguments(c.get_supported_arguments(['-U_FORTIFY_SOURCE', '-D_FORTIFY_SOURCE=3']), language: 'c')
-  add_project_arguments(cxx.get_supported_arguments(['-U_FORTIFY_SOURCE', '-D_FORTIFY_SOURCE=3']), language: 'cpp')
 endif
 
 a3_warnings_wanted = {
@@ -72,20 +55,18 @@ a3_src = files(
 )
 a3_src += a3_shim_src
 
-highwayhash_c = dependency('highwayhash_c', fallback: ['highwayhash', 'highwayhash_c_dep'])
-
 a3_lib = library(
   'a3',
   a3_src,
   include_directories: a3_include,
-  dependencies: [libm, libatomic, highwayhash_c] + a3_shim_deps,
+  dependencies: [libm, libatomic] + a3_shim_deps,
+  link_with: [highwayhash],
   c_args: a3_c_flags + a3_common_flags,
   cpp_args: a3_cxx_flags + a3_common_flags,
   gnu_symbol_visibility: 'hidden',
   build_by_default: true,
   install: true
 )
-install_subdir('include', install_dir: 'include', strip_directory: true)
 pkg = import('pkgconfig')
 pkg.generate(a3_lib)
 
