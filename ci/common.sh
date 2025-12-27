@@ -45,7 +45,7 @@ case "$($CC -dumpmachine 2>&1)" in
     s390x-*) meson_san="-Db_sanitize=none" ;; # Fails at link time.
     arm-*) meson_san="-Db_sanitize=none" ;; # "LeakSanitizer encountered a fatal error"
     *-haiku*) meson_san="-Db_sanitize=none" ;; # Not supported.
-    powerpc-*) meson_san="-Db_sanitize=address" ;; # Fails to link due to missing intrinsic.
+    powerpc-*) meson_san="-Db_sanitize=none" ;; # Not supported.
 esac
 
 case "$(uname -s)" in
