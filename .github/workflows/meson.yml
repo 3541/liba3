@@ -1,4 +1,4 @@
-name: Build and test
+name: Build and test with Meson
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
       - '**/*.h'
       - '**/*.cc'
       - '**/*.hh'
-      - '.github/workflows/build.yml'
+      - '.github/workflows/meson.yml'
       - '**/meson.build'
       - 'boilerplate'
       - 'ci/*.sh'
@@ -18,34 +18,34 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-13, macos-14, windows-2022]
+        os: [ubuntu-22.04, macos-15, macos-15-intel, windows-2022]
         architecture: [amd64, s390x, arm, ppc]
         include:
           - os: windows-2022
             c_compiler: cl
             cxx_compiler: cl
-          - os: macos-14
+          - os: macos-15
             architecture: aarch64
         exclude:
           - os: windows-2022
             architecture: s390x
-          - os: macos-13
+          - os: macos-15
             architecture: s390x
-          - os: macos-14
+          - os: macos-15-intel
             architecture: s390x
           - os: windows-2022
             architecture: arm
-          - os: macos-13
+          - os: macos-15
             architecture: arm
-          - os: macos-14
+          - os: macos-15-intel
             architecture: arm
           - os: windows-2022
             architecture: ppc
-          - os: macos-13
+          - os: macos-15
             architecture: ppc
-          - os: macos-14
+          - os: macos-15-intel
             architecture: ppc
-          - os: macos-14
+          - os: macos-15
             architecture: amd64
     env:
       CC: ${{ matrix.c_compiler }}
