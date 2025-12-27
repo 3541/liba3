@@ -8,6 +8,7 @@ cc_test(
         "//a3/shim:accept",
         "//a3/shim:platform",
         "//a3/shim:socket_types",
+        "//a3:unwrap",
         "@googletest//:gtest_main",
     ],
 )
