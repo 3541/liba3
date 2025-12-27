@@ -10,6 +10,7 @@
 
 #include "a3/shim/platform.h"
 #include "a3/shim/socket_types.h"
+#include "a3/unwrap.h"
 
 #ifdef A3_PLATFORM_OS_WINDOWS
 #include <winsock2.h>
