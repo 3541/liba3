@@ -17,6 +17,10 @@
 #define A3_PLATFORM_OS_LINUX
 #endif
 
+#ifdef __APPLE__
+#define A3_PLATFORM_OS_DARWIN
+#endif
+
 #ifdef _WIN32
 #define A3_PLATFORM_OS_WINDOWS
 #endif

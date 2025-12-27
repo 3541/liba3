@@ -33,6 +33,14 @@
 #define A3_SOCK_CLOEXEC 0x8000
 #endif
 
+#if defined(A3_PLATFORM_OS_UNIXLIKE) && !defined(A3_PLATFORM_OS_DARWIN)
+#define A3_SHIM_ACCEPT_ACCEPT4
+#elif defined(A3_PLATFORM_OS_WINDOWS)
+#define A3_SHIM_ACCEPT_IOCTLSOCKET
+#else
+#define A3_SHIM_ACCEPT_FCNTL
+#endif
+
 A3_H_BEGIN
 
 A3_EXPORT A3Socket a3_shim_accept(A3Socket, struct sockaddr*, A3Socklen*, int flags);

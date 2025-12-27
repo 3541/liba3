@@ -7,9 +7,9 @@
  * for details.
  */
 
-#include "a3/shim/platform.h"
+#include "a3/shim/accept.h"
 
-#if defined(A3_PLATFORM_OS_UNIXLIKE) && !defined(A3_PLATFORM_OS_LINUX)
+#ifdef A3_SHIM_ACCEPT_FCNTL
 
 #include <assert.h>
 #include <errno.h>
@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
-#include "a3/shim/accept.h"
 #include "a3/shim/socket_types.h"
 
 A3Socket a3_shim_accept(A3Socket fd, struct sockaddr* addr, A3Socklen* len, int flags) {
