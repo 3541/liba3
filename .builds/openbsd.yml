@@ -1,0 +1,15 @@
+image: openbsd/7.8
+packages:
+- meson
+sources:
+- https://github.com/3541/liba3.git
+tasks:
+- configure: |
+    cd liba3
+    ci/configure.sh build
+- build: |
+    cd liba3
+    ci/build.sh build
+- test: |
+    cd liba3
+    ci/test.sh build
