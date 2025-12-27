@@ -44,7 +44,7 @@ void HighwayHash256(const uint8_t* data, size_t size,
 typedef struct {
   HighwayHashState state;
   uint8_t packet[32];
-  int num;
+  size_t num;
 } HighwayHashCat;
 
 /* Allocates new state for a new streaming hash computation */
