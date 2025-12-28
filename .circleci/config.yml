@@ -29,16 +29,30 @@ jobs:
       - image: cimg/base:2025.12
     resource_class: arm.medium
     steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - bazelisk-{{ checksum ".bazelversion" }}
+            - bazel-disk-cache-{{ checksum "MODULE.bazel.lock" }}
       - run:
           name: Install dependencies
           command: |
-            sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-linux-arm64 -o /usr/bin/bazel
-            sudo chmod +x /usr/bin/bazel
-      - checkout
+            if [[ ! -f /usr/bin/bazel ]]; then
+              sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-linux-arm64 -o /usr/bin/bazel
+              sudo chmod +x /usr/bin/bazel
+            fi
       - run:
           name: Bazel test
           command: |
-            bazel test ...
+            bazel test --disk_cache=./disk_cache ...
+      - save_cache:
+          key: bazelisk-{{ checksum ".bazelversion" }}
+          paths:
+            - /usr/bin/bazel
+      - save_cache:
+          key: bazel-disk-cache-{{ checksum "MODULE.bazel.lock" }}
+          paths:
+            - disk_cache
       - store_test_results:
           path: bazel-testlogs
 workflows:
