@@ -1,12 +1,12 @@
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
-load("@rules_cc//cc:cc_test.bzl", "cc_test")
+load("//bazel:cc.bzl", "a3_cc_library", "a3_cc_test")
 
 copts = [
     "-Wno-sign-conversion",
     "-Wno-implicit-int-conversion",
+    "-Wno-conversion",
 ]
 
-cc_library(
+a3_cc_library(
     name = "highwayhash",
     srcs = ["highwayhash.c"],
     hdrs = ["highwayhash.h"],
@@ -14,7 +14,7 @@ cc_library(
     visibility = ["//:__subpackages__"],
 )
 
-cc_test(
+a3_cc_test(
     name = "highwayhash_test",
     size = "small",
     srcs = ["highwayhash_test.c"],

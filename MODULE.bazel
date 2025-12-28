@@ -4,55 +4,9 @@ module(
 )
 
 bazel_dep(name = "rules_cc", version = "0.2.16")
-bazel_dep(name = "toolchains_llvm", version = "1.6.0")
-git_override(
-    module_name = "toolchains_llvm",
-    commit = "5c53223db6c710d436f542b73d570f0b2680a902",
-    remote = "https://github.com/bazel-contrib/toolchains_llvm.git",
-)
+bazel_dep(name = "platforms", version = "1.0.0")
 
-llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
-llvm.toolchain(
-    name = "llvm",
-    cxx_standard = {"": "c++26"},
-    extra_compile_flags = {"": [
-        "-fvisibility=hidden",
-        "-fstack-protector",
-        "-fstack-clash-protection",
-        "-Werror",
-        "-Wall",
-        "-Wextra",
-        "-Wdisabled-optimization",
-        #"-Wduplicated-branches",
-        #"-Wduplicated-cond",
-        "-Wfloat-equal",
-        "-Wformat-nonliteral",
-        "-Wformat-security",
-        #"-Wlogical-op",
-        "-Wmissing-declarations",
-        "-Wmissing-include-dirs",
-        "-Wnull-dereference",
-        "-Wpacked",
-        "-Wshadow",
-        "-Wstack-protector",
-        "-Wundef",
-        "-Wcast-align",
-        "-Wbad-function-cast",
-        "-Wimplicit",
-        "-Wmissing-prototypes",
-        "-Wnested-externs",
-        "-Wstrict-prototypes",
-        "-Wctor-dtor-privacy",
-        "-Wdelete-non-virtual-dtor",
-        "-Wconversion",
-        "-Weffc++",
-        "-Wpointer-arith",
-    ]},
-    llvm_version = "20.1.8",
-)
-use_repo(llvm, "llvm")
-
-register_toolchains("@llvm//:all")
+include("//bazel:toolchains.MODULE.bazel")
 
 bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
 git_override(
