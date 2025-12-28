@@ -1,8 +1,8 @@
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("//bazel:cc.bzl", "a3_cc_library")
 
 package(default_visibility = ["//visibility:public"])
 
-cc_library(
+a3_cc_library(
     name = "str",
     srcs = ["str.c"],
     hdrs = ["str.h"],
@@ -14,12 +14,12 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "macro",
     hdrs = ["macro.h"],
 )
 
-cc_library(
+a3_cc_library(
     name = "try",
     hdrs = ["try.h"],
     deps = [
@@ -28,12 +28,12 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "minmax",
     hdrs = ["minmax.h"],
 )
 
-cc_library(
+a3_cc_library(
     name = "buffer",
     srcs = ["buffer.c"],
     hdrs = ["buffer.h"],
@@ -46,7 +46,7 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "log",
     srcs = ["log.c"],
     hdrs = [
@@ -65,7 +65,7 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "unwrap",
     hdrs = ["unwrap.h"],
     deps = [
@@ -74,7 +74,7 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "ht",
     hdrs = ["ht.h"],
     deps = [
@@ -87,7 +87,7 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "cache",
     hdrs = ["cache.h"],
     deps = [
@@ -98,7 +98,7 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "pool",
     srcs = ["pool.c"],
     hdrs = ["pool.h"],
@@ -109,12 +109,12 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "container_of",
     hdrs = ["container_of.h"],
 )
 
-cc_library(
+a3_cc_library(
     name = "ll",
     hdrs = ["ll.h"],
     deps = [
@@ -124,7 +124,7 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "sll",
     hdrs = ["sll.h"],
     deps = [
@@ -133,17 +133,17 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "concepts",
     hdrs = glob(["concepts/*.hh"]),
 )
 
-cc_library(
+a3_cc_library(
     name = "base",
     hdrs = ["fwd.hh"],
 )
 
-cc_library(
+a3_cc_library(
     name = "nonnull",
     hdrs = ["nonnull.hh"],
     deps = [
@@ -153,12 +153,12 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "pin",
     hdrs = ["pin.hh"],
 )
 
-cc_library(
+a3_cc_library(
     name = "rc",
     hdrs = [
         "rc.h",
@@ -167,7 +167,7 @@ cc_library(
     deps = [":pin"],
 )
 
-cc_library(
+a3_cc_library(
     name = "vec",
     srcs = ["vec.c"],
     hdrs = ["vec.h"],

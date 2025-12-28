@@ -1,8 +1,8 @@
-load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("//bazel:cc.bzl", "a3_cc_library")
 
 package(default_visibility = ["//:__subpackages__"])
 
-cc_library(
+a3_cc_library(
     name = "platform",
     hdrs = [
         "alignof.h",
@@ -13,23 +13,23 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "cpp",
     hdrs = ["cpp.h"],
 )
 
-cc_library(
+a3_cc_library(
     name = "types",
     hdrs = ["types.h"],
 )
 
-cc_library(
+a3_cc_library(
     name = "socket_types",
     hdrs = ["socket_types.h"],
     deps = [":platform"],
 )
 
-cc_library(
+a3_cc_library(
     name = "accept",
     srcs = glob(["accept/*.c"]),
     hdrs = ["accept.h"],
@@ -39,54 +39,54 @@ cc_library(
     ],
 )
 
-cc_library(
+a3_cc_library(
     name = "aligned_alloc",
     srcs = glob(["aligned_alloc/*.c"]),
     hdrs = ["aligned_alloc.h"],
     deps = [":platform"],
 )
 
-cc_library(
+a3_cc_library(
     name = "atomic",
     srcs = glob(["atomic/*.c"]),
     hdrs = ["atomic.h"],
     deps = [":platform"],
 )
 
-cc_library(
+a3_cc_library(
     name = "format",
     hdrs = ["format.h"],
     deps = [":platform"],
 )
 
-cc_library(
+a3_cc_library(
     name = "likely",
     hdrs = ["likely.h"],
     deps = [":platform"],
 )
 
-cc_library(
+a3_cc_library(
     name = "memmem",
     srcs = glob(["memmem/*.c"]),
     hdrs = ["memmem.h"],
     deps = [":platform"],
 )
 
-cc_library(
+a3_cc_library(
     name = "strerror",
     srcs = glob(["strerror/*.c"]),
     hdrs = ["strerror.h"],
     deps = [":platform"],
 )
 
-cc_library(
+a3_cc_library(
     name = "strncasecmp",
     srcs = glob(["strncasecmp/*.c"]),
     hdrs = ["strncasecmp.h"],
     deps = [":platform"],
 )
 
-cc_library(
+a3_cc_library(
     name = "attributes",
     hdrs = ["attributes.h"],
     deps = [":platform"],

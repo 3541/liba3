@@ -48,7 +48,7 @@ jobs:
       - run:
           name: Bazel test
           command: |
-            bazel test --repository_cache=./repo_cache ...
+            bazel test --config=gcc --repository_cache=./repo_cache ...
       - save_cache:
           key: bazel-bazelisk-{{ checksum ".bazelversion" }}
           paths:

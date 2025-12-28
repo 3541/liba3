@@ -1,6 +1,6 @@
-load("@rules_cc//cc:cc_test.bzl", "cc_test")
+load("//bazel:cc.bzl", "a3_cc_test")
 
-cc_test(
+a3_cc_test(
     name = "buf",
     size = "small",
     srcs = ["buf.cc"],
@@ -11,7 +11,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "str",
     size = "small",
     srcs = ["str.cc"],
@@ -21,7 +21,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "ht",
     size = "small",
     srcs = ["ht.cc"],
@@ -32,7 +32,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "try",
     size = "small",
     srcs = ["try.cc"],
@@ -42,7 +42,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "log",
     size = "small",
     srcs = ["log.cc"],
@@ -53,7 +53,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "cache",
     size = "small",
     srcs = ["cache.cc"],
@@ -67,7 +67,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "pool",
     size = "small",
     srcs = ["pool.cc"],
@@ -77,7 +77,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "ll",
     size = "small",
     srcs = ["ll.cc"],
@@ -87,7 +87,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "sll",
     size = "small",
     srcs = ["sll.cc"],
@@ -97,7 +97,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "nonnull",
     size = "small",
     srcs = ["nonnull.cc"],
@@ -107,7 +107,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "rc",
     size = "small",
     srcs = ["rc.cc"],
@@ -117,7 +117,7 @@ cc_test(
     ],
 )
 
-cc_test(
+a3_cc_test(
     name = "vec",
     size = "small",
     srcs = ["vec.cc"],
