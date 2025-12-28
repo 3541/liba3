@@ -39,6 +39,8 @@ jobs:
           name: Bazel test
           command: |
             bazel test ...
+      - store_test_results:
+          path: bazel-testlogs
 workflows:
   build-and-test:
     jobs:
