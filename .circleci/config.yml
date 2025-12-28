@@ -32,27 +32,31 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - bazelisk-{{ checksum ".bazelversion" }}
-            - bazel-disk-cache-{{ checksum "MODULE.bazel.lock" }}
+            - bazel-bazelisk-{{ checksum ".bazelversion" }}
+      - restore_cache:
+          keys:
+            - bazel-repo-cache-{{ checksum "MODULE.bazel.lock" }}
       - run:
           name: Install dependencies
           command: |
-            if [[ ! -f /usr/bin/bazel ]]; then
-              sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-linux-arm64 -o /usr/bin/bazel
-              sudo chmod +x /usr/bin/bazel
+            if [[ ! -f /tmp/bazelisk ]]; then
+              sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-linux-arm64 -o /tmp/bazelisk
             fi
+
+            sudo cp /tmp/bazelisk /usr/bin/bazel
+            sudo chmod +x /usr/bin/bazel
       - run:
           name: Bazel test
           command: |
-            bazel test --disk_cache=./disk_cache ...
+            bazel test --repository_cache=./repo_cache ...
       - save_cache:
-          key: bazelisk-{{ checksum ".bazelversion" }}
+          key: bazel-bazelisk-{{ checksum ".bazelversion" }}
           paths:
-            - /usr/bin/bazel
+            - /tmp/bazelisk
       - save_cache:
-          key: bazel-disk-cache-{{ checksum "MODULE.bazel.lock" }}
+          key: bazel-repo-cache-{{ checksum "MODULE.bazel.lock" }}
           paths:
-            - disk_cache
+            - repo_cache
       - store_test_results:
           path: bazel-testlogs
 workflows:
