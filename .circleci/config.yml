@@ -6,10 +6,12 @@ jobs:
       - image: cimg/base:2023.06
     resource_class: arm.medium
     steps:
-      - run: |
-          sudo apt-get update
-          sudo apt-get install ninja-build gcc-10 g++-10 python3-pip
-          sudo pip install meson
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install ninja-build gcc-10 g++-10 python3-pip
+            sudo pip install meson
       - checkout
       - run:
           name: "Configure"
@@ -22,7 +24,23 @@ jobs:
           command: "ci/test.sh build"
       - store_test_results:
           path: build/a3_gtest.xml
+  build-bazel-aarch64:
+    docker:
+      - image: cimg/base:2025.12
+    resource_class: arm.medium
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-linux-arm64 -o /usr/bin/bazel
+            sudo chmod +x /usr/bin/bazel
+      - checkout
+      - run:
+          name: Bazel test
+          command: |
+            bazel test ...
 workflows:
   build-and-test:
     jobs:
       - build-aarch64
+      - build-bazel-aarch64
