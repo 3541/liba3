@@ -19,7 +19,20 @@ platform(
 )
 
 platform(
+    name = "host_system_gcc",
+    constraint_values = [":gcc"],
+    parents = ["@local_config_platform//:host"]
+)
+
+platform(
     name = "host_clang",
     constraint_values = [":clang"],
     parents = ["@rules_nixpkgs_core//platforms:host"],
 )
+
+platform(
+    name = "host_system_clang",
+    constraint_values = [":clang"],
+    parents = ["@local_config_platform//:host"]
+)
+

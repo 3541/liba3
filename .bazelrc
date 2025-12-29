@@ -1,2 +1,4 @@
 build:gcc --host_platform=//bazel/compiler:host_gcc
 build:clang --host_platform=//bazel/compiler:host_clang
+build:system-gcc --host_platform=//bazel/compiler:host_system_gcc
+build:system-clang --host_platform=//bazel/compiler:host_system_clang
