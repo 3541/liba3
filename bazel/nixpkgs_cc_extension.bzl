@@ -1,17 +1,13 @@
 load("@rules_nixpkgs_cc//:cc.bzl", "nixpkgs_cc_configure")
-load("@rules_nixpkgs_core//:util.bzl", "default_constraints")
 
 def _nix_cc_configure_impl(module_ctx):
-    constraints = default_constraints(module_ctx)
-
     nixpkgs_cc_configure(
         name = "nix_cc_gcc",
         repository = "@nixpkgs",
         attribute_path = "gcc15",
         register = False,
         cc_std = "c++26",
-        exec_constraints = ["@@//bazel/compiler:gcc"] + constraints,
-        target_constraints = constraints,
+        extra_exec_constraints = ["@@//bazel/compiler:gcc"],
     )
 
     nixpkgs_cc_configure(
@@ -20,8 +16,7 @@ def _nix_cc_configure_impl(module_ctx):
         register = False,
         cc_std = "c++26",
         attribute_path = "llvmPackages_21.clang",
-        exec_constraints = ["@@//bazel/compiler:clang"] + constraints,
-        target_constraints = constraints,
+        extra_exec_constraints = ["@@//bazel/compiler:clang"],
     )
 
 nix_cc_configure = module_extension(

@@ -15,6 +15,8 @@ archive_override(
     integrity = "sha256-MCcfe9OA5OIOTXEywySUbE/bwx6+C7tmOKD2GjfnQ5c=",
     strip_prefix = "rules_nixpkgs-{}/toolchains/cc".format(_RULES_NIXPKGS_VERSION),
     urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{version}/rules_nixpkgs-{version}.tar.gz".format(version = _RULES_NIXPKGS_VERSION)],
+    patches = ["//bazel:nix_cc_extra_constraints.patch"],
+    patch_args = ["-p3"]
 )
 
 nix_cc_configure = use_extension("//bazel:nixpkgs_cc_extension.bzl", "nix_cc_configure")

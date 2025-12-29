@@ -176,7 +176,7 @@
   "moduleExtensions": {
     "//bazel:nixpkgs_cc_extension.bzl%nix_cc_configure": {
       "general": {
-        "bzlTransitiveDigest": "PaHjRl8rNi0MMBWIUQGxZCnjPkWsm1wwr6DP0q0V11I=",
+        "bzlTransitiveDigest": "60d/A0EZ/o5BDNYL4kOJZt5GuXPNvBC2Hht/BD4GizM=",
         "usagesDigest": "M8SrWPuMbMdRMSqiR0Hd0Zh7f9yfRMbCAKasUrBKJ4c=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -223,15 +223,12 @@
             "repoRuleId": "@@rules_nixpkgs_cc+//:cc.bzl%_nixpkgs_cc_toolchain",
             "attributes": {
               "cc_toolchain_config": "nix_cc_gcc",
-              "exec_constraints": [
-                "'@@//bazel/compiler:gcc'",
-                "@platforms//cpu:x86_64",
-                "@platforms//os:linux"
+              "exec_constraints": [],
+              "target_constraints": [],
+              "extra_exec_constraints": [
+                "'@@//bazel/compiler:gcc'"
               ],
-              "target_constraints": [
-                "@platforms//cpu:x86_64",
-                "@platforms//os:linux"
-              ],
+              "extra_target_constraints": [],
               "cross_cpu": ""
             }
           },
@@ -276,15 +273,12 @@
             "repoRuleId": "@@rules_nixpkgs_cc+//:cc.bzl%_nixpkgs_cc_toolchain",
             "attributes": {
               "cc_toolchain_config": "nix_cc_clang",
-              "exec_constraints": [
-                "'@@//bazel/compiler:clang'",
-                "@platforms//cpu:x86_64",
-                "@platforms//os:linux"
+              "exec_constraints": [],
+              "target_constraints": [],
+              "extra_exec_constraints": [
+                "'@@//bazel/compiler:clang'"
               ],
-              "target_constraints": [
-                "@platforms//cpu:x86_64",
-                "@platforms//os:linux"
-              ],
+              "extra_target_constraints": [],
               "cross_cpu": ""
             }
           }
@@ -294,11 +288,6 @@
             "",
             "rules_nixpkgs_cc",
             "rules_nixpkgs_cc+"
-          ],
-          [
-            "",
-            "rules_nixpkgs_core",
-            "rules_nixpkgs_core+"
           ],
           [
             "rules_nixpkgs_cc+",

@@ -1,0 +1,77 @@
+diff --git a/toolchains/cc/cc.bzl b/toolchains/cc/cc.bzl
+index 5c28f41..2746683 100644
+--- a/toolchains/cc/cc.bzl
++++ b/toolchains/cc/cc.bzl
+@@ -263,6 +263,8 @@ _nixpkgs_cc_toolchain_config = repository_rule(
+ def _nixpkgs_cc_toolchain_impl(repository_ctx):
+     cpu = repository_ctx.attr.cross_cpu or get_cpu_value(repository_ctx)
+     exec_constraints, target_constraints = ensure_constraints(repository_ctx)
++    extra_exec_constraints = repository_ctx.attr.extra_exec_constraints
++    extra_target_constraints = repository_ctx.attr.extra_target_constraints
+ 
+     repository_ctx.file(
+         "BUILD.bazel",
+@@ -274,15 +276,15 @@ toolchain(
+     name = "cc-toolchain-{cpu}",
+     toolchain = "@{cc_toolchain_config}//:cc-compiler-{cpu}",
+     toolchain_type = "@rules_cc//cc:toolchain_type",
+-    exec_compatible_with = {exec_constraints},
+-    target_compatible_with = {target_constraints},
++    exec_compatible_with = {exec_constraints} + {extra_exec_constraints},
++    target_compatible_with = {target_constraints} + {extra_target_constraints},
+ )
+ 
+ toolchain(
+     name = "cc-toolchain-armeabi-v7a",
+     toolchain = "@{cc_toolchain_config}//:cc-compiler-armeabi-v7a",
+     toolchain_type = "@rules_cc//cc:toolchain_type",
+-    exec_compatible_with = {exec_constraints},
++    exec_compatible_with = {exec_constraints} + {extra_exec_constraints},
+     target_compatible_with = [
+         "@platforms//cpu:arm",
+         "@platforms//os:android",
+@@ -293,6 +295,8 @@ toolchain(
+             cpu = cpu,
+             exec_constraints = exec_constraints,
+             target_constraints = target_constraints,
++            extra_exec_constraints = extra_exec_constraints,
++            extra_target_constraints = extra_target_constraints,
+         ),
+     )
+ 
+@@ -302,6 +306,8 @@ _nixpkgs_cc_toolchain = repository_rule(
+         "cc_toolchain_config": attr.string(),
+         "exec_constraints": attr.string_list(),
+         "target_constraints": attr.string_list(),
++        "extra_exec_constraints": attr.string_list(),
++        "extra_target_constraints": attr.string_list(),
+         "cross_cpu": attr.string(),
+     },
+ )
+@@ -319,6 +325,8 @@ def nixpkgs_cc_configure(
+         fail_not_supported = True,
+         exec_constraints = None,
+         target_constraints = None,
++        extra_exec_constraints = [],
++        extra_target_constraints = [],
+         register = True,
+         cc_lang = "c++",
+         cc_std = "c++0x",
+@@ -392,6 +400,8 @@ def nixpkgs_cc_configure(
+       fail_not_supported: bool, Whether to fail if `nix-build` is not available.
+       exec_constraints: Constraints for the execution platform.
+       target_constraints: Constraints for the target platform.
++      extra_exec_constraints: Additional constraints for the execution platform. Appended to the defaults.
++      extra_target_constraints: Additional constraints for the target platform. Appended to the defaults.
+       register: bool, enabled by default, Whether to register (with `register_toolchains`) the generated toolchain and install it as the default cc_toolchain.
+       cc_lang: string, `"c++"` by default. Used to populate `CXX_FLAG` so the compiler is called in C++ mode. Can be set to `"none"` together with appropriate `copts` in the `cc_library` call: see above.
+       cc_std: string, `"c++0x"` by default. Used to populate `CXX_FLAG` so the compiler uses the given language standard. Can be set to `"none"` together with appropriate `copts` in the `cc_library` call: see above.
+@@ -491,6 +501,8 @@ def nixpkgs_cc_configure(
+         cc_toolchain_config = name,
+         exec_constraints = exec_constraints,
+         target_constraints = target_constraints,
++        extra_exec_constraints = extra_exec_constraints,
++        extra_target_constraints = extra_target_constraints,
+         cross_cpu = cross_cpu,
+     )
+ 
