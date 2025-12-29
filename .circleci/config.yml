@@ -43,8 +43,8 @@ jobs:
               sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-linux-arm64 -o /tmp/bazelisk
             fi
 
-            sudo cp /tmp/bazelisk /usr/bin/bazel
-            sudo chmod +x /usr/bin/bazel
+            sudo cp /tmp/bazelisk /usr/local/bin/bazel
+            sudo chmod +x /usr/local/bin/bazel
       - run:
           name: Bazel test
           command: |
@@ -59,8 +59,44 @@ jobs:
             - repo_cache
       - store_test_results:
           path: bazel-testlogs
+  build-bazel-aarch64-darwin:
+    macos:
+      xcode: 16.4.0
+    resource_class: m4pro.medium
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - bazel-darwin-bazelisk-{{ checksum ".bazelversion" }}
+      - restore_cache:
+          keys:
+            - bazel-darwin-repo-cache-{{ checksum "MODULE.bazel.lock" }}
+      - run:
+          name: Install dependencies
+          command: |
+            if [[ ! -f /tmp/bazelisk ]]; then
+              sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-darwin-arm64 -o /tmp/bazelisk
+            fi
+
+            sudo cp /tmp/bazelisk /usr/local/bin/bazel
+            sudo chmod +x /usr/local/bin/bazel
+      - run:
+          name: Bazel test
+          command: |
+            bazel test --config=system-clang --repository_cache=./repo_cache ...
+      - save_cache:
+          key: bazel-darwin-bazelisk-{{ checksum ".bazelversion" }}
+          paths:
+            - /tmp/bazelisk
+      - save_cache:
+          key: bazel-darwin-repo-cache-{{ checksum "MODULE.bazel.lock" }}
+          paths:
+            - repo_cache
+      - store_test_results:
+          path: bazel-darwin-testlogs
 workflows:
   build-and-test:
     jobs:
       - build-aarch64
       - build-bazel-aarch64
+      - build-bazel-aarch64-darwin
