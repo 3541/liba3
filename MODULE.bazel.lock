@@ -176,7 +176,7 @@
   "moduleExtensions": {
     "//bazel:nixpkgs_cc_extension.bzl%nix_cc_configure": {
       "general": {
-        "bzlTransitiveDigest": "60d/A0EZ/o5BDNYL4kOJZt5GuXPNvBC2Hht/BD4GizM=",
+        "bzlTransitiveDigest": "rKzaj4YQdXwpi3wlnErATMW1J4DJ6zyJOy+C+9cTghM=",
         "usagesDigest": "M8SrWPuMbMdRMSqiR0Hd0Zh7f9yfRMbCAKasUrBKJ4c=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -238,7 +238,9 @@
               "unmangled_name": "nix_cc_clang_info",
               "attribute_path": "",
               "nix_file": "@@rules_nixpkgs_cc+//:cc.nix",
-              "nix_file_deps": {},
+              "nix_file_deps": {
+                "@@//bazel:clang.nix": "//bazel:clang.nix"
+              },
               "nix_file_content": "",
               "repository": "@@rules_nixpkgs_core++nix_repo+nixpkgs//:nixpkgs",
               "repositories": {},
@@ -249,7 +251,7 @@
                 "ccTypeExpression",
                 "--arg",
                 "ccExpr",
-                "(import <nixpkgs> {}).llvmPackages_21.clang",
+                "import $(location //bazel:clang.nix)",
                 "--argstr",
                 "ccLang",
                 "c++",

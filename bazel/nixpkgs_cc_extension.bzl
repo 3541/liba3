@@ -15,8 +15,8 @@ def _nix_cc_configure_impl(module_ctx):
         repository = "@nixpkgs",
         register = False,
         cc_std = "c++26",
-        attribute_path = "llvmPackages_21.clang",
         extra_exec_constraints = ["@@//bazel/compiler:clang"],
+        nix_file = "//bazel:clang.nix"
     )
 
 nix_cc_configure = module_extension(

@@ -5,7 +5,6 @@ load("@rules_cc//cc:cc_test.bzl", "cc_test")
 _COMMON_FLAGS = [
     "-fvisibility=hidden",
     "-fstack-protector",
-    "-fstack-clash-protection",
     "-Werror",
     "-Wall",
     "-Wextra",
@@ -29,6 +28,9 @@ _COMMON_FLAGS = [
         "-Wduplicated-cond",
         "-Wlogical-op",
     ],
+}) + select({
+    "@platforms//os:macos": [],
+    "//conditions:default": ["-fstack-clash-protection"],
 })
 
 _C_FLAGS = [
@@ -44,8 +46,19 @@ _CC_FLAGS = [
     "-Wdelete-non-virtual-dtor",
 ]
 
-def _wrap(macro, *, copts = [], conlyopts = [], cxxopts = [], **kwargs):
-    macro(copts = _COMMON_FLAGS + copts, conlyopts = _C_FLAGS + conlyopts, cxxopts = _CC_FLAGS + cxxopts, **kwargs)
+_FEATURES = select({
+    "@platforms//os:macos": ["-macos_minimum_os"],
+    "//conditions:default": [],
+})
+
+def _wrap(macro, *, copts = [], conlyopts = [], cxxopts = [], features = [], **kwargs):
+    macro(
+        copts = _COMMON_FLAGS + copts,
+        conlyopts = _C_FLAGS + conlyopts,
+        cxxopts = _CC_FLAGS + cxxopts,
+        features = _FEATURES + features,
+        **kwargs
+    )
 
 def a3_cc_library(**kwargs):
     _wrap(cc_library, **kwargs)
