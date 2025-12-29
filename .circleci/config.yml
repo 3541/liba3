@@ -37,18 +37,14 @@ jobs:
           keys:
             - bazel-repo-cache-{{ checksum "MODULE.bazel.lock" }}
       - run:
-          name: Install dependencies
+          name: Install Nix
           command: |
-            if [[ ! -f /tmp/bazelisk ]]; then
-              sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-linux-arm64 -o /tmp/bazelisk
-            fi
-
-            sudo cp /tmp/bazelisk /usr/local/bin/bazel
-            sudo chmod +x /usr/local/bin/bazel
+            curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --no-confirm --init none
       - run:
           name: Bazel test
           command: |
-            bazel test --config=system-gcc --repository_cache=./repo_cache ...
+            . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+            sudo -E nix-shell --command "bazel test --config=gcc --repository_cache=./repo_cache //..."
       - save_cache:
           key: bazel-bazelisk-{{ checksum ".bazelversion" }}
           paths:
@@ -83,7 +79,7 @@ jobs:
       - run:
           name: Bazel test
           command: |
-            bazel test --config=system-clang --repository_cache=./repo_cache ...
+            bazel test --config=system-clang --repository_cache=./repo_cache //...
       - save_cache:
           key: bazel-darwin-bazelisk-{{ checksum ".bazelversion" }}
           paths:
