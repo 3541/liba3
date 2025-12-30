@@ -12,6 +12,11 @@ constraint_value(
     constraint_setting = ":compiler",
 )
 
+constraint_value(
+    name = "msvc",
+    constraint_setting = ":compiler",
+)
+
 platform(
     name = "host_gcc",
     constraint_values = [":gcc"],
@@ -33,6 +38,12 @@ platform(
 platform(
     name = "host_system_clang",
     constraint_values = [":clang"],
+    parents = ["@local_config_platform//:host"]
+)
+
+platform(
+    name = "host_system_msvc",
+    constraint_values = [":msvc"],
     parents = ["@local_config_platform//:host"]
 )
 

@@ -1,16 +1,20 @@
 load("//bazel:cc.bzl", "a3_cc_library", "a3_cc_test")
 
-copts = [
-    "-Wno-sign-conversion",
-    "-Wno-implicit-int-conversion",
-    "-Wno-conversion",
-]
+copts = select({
+    "//conditions:default": [
+        "-Wno-sign-conversion",
+        "-Wno-implicit-int-conversion",
+        "-Wno-conversion",
+        "-fvisibility=default",
+    ],
+    "//bazel/compiler:msvc": []
+})
 
 a3_cc_library(
     name = "highwayhash",
     srcs = ["highwayhash.c"],
     hdrs = ["highwayhash.h"],
-    copts = ["-fvisibility=default"] + copts,
+    copts = copts,
     visibility = ["//:__subpackages__"],
 )
 

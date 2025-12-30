@@ -11,6 +11,10 @@ a3_cc_test(
         "//a3/shim:socket_types",
         "@googletest//:gtest_main",
     ],
+    linkopts = select({
+        "@platforms//os:windows": ["-DEFAULTLIB:ws2_32.lib"],
+        "//conditions:default": [],
+    })
 )
 
 a3_cc_test(

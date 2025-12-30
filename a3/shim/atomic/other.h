@@ -15,7 +15,6 @@
 #include <stddef.h>
 
 #include "a3/shim/export.h"
-#include <a3/macro.h>
 
 typedef enum A3MemoryOrder {
     A3_RELAXED = 0,
@@ -28,9 +27,9 @@ typedef enum A3MemoryOrder {
 #define A3_ATOMIC(TY) TY
 
 #define A3_ATOMIC_INIT(ATOM, VALUE)                                                                \
-    A3_M_BEGIN                                                                                     \
+    do {                                                                                           \
         *(ATOM) = (VALUE);                                                                         \
-    A3_M_END
+    } while (0)
 
 #define _A3_ATOMIC_DISPATCH(ATOM, METHOD, ...)                                                     \
     _Generic((*ATOM), size_t: a3_atomic_usize_##METHOD, void*: a3_atomic_ptr_##METHOD)(__VA_ARGS__)

@@ -49,7 +49,7 @@ a3_cc_library(
 a3_cc_library(
     name = "atomic",
     srcs = glob(["atomic/*.c"]),
-    hdrs = ["atomic.h"],
+    hdrs = ["atomic.h"] + glob(["atomic/*.h"]),
     deps = [":platform"],
 )
 
