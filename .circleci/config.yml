@@ -18,13 +18,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update
-            sudo apt-get install ninja-build gcc-10 g++-10 python3-pip
-            sudo pip install meson
+            sudo apt update
+            sudo apt install ninja-build meson
       - checkout
       - run:
           name: "Configure"
-          command: "CC=gcc-10 CXX=g++-10 ci/configure.sh build"
+          command: "ci/configure.sh build"
       - run:
           name: "Build"
           command: "ci/build.sh build"
