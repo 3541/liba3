@@ -50,11 +50,11 @@ jobs:
           command: |
             if [[ $(uname) = Linux ]]; then
                 # Linux-in-Docker means the Lix daemon can only be used by root.
-                sudo bash -c '. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix-shell --command "bazel test --config=<< parameters.config >> --repository_cache=./repo_cache //..."'
+                sudo bash -c '. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix-shell --command "bazel test --config=<< parameters.config >> --config=san --repository_cache=./repo_cache //..."'
             else
               export __ETC_PROFILE_NIX_SOURCED= # TODO: ???
               . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh            
-              nix-shell --command "bazel test --config=<< parameters.config >> --repository_cache=./repo_cache //..."
+              nix-shell --command "bazel test --config=<< parameters.config >> --config=san --repository_cache=./repo_cache //..."
             fi
       - store_test_results:
           path: bazel-testlogs

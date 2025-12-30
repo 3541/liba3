@@ -2,7 +2,7 @@ image: nixos/unstable
 sources:
 - https://github.com/3541/liba3.git#bazel
 tasks:
-- test: |
+- test-gcc: |
     cd liba3
-    nix-shell --command "bazel test --config=gcc //..."
+    nix-shell --command "bazel test --config=gcc --config=san //..."
 
