@@ -1,10 +1,19 @@
 version: 2.1
 
+executors:
+  linux:
+    docker:
+      - image: cimg/base:2025.12
+    resource_class: arm.medium
+  darwin:
+    macos:
+      xcode: 16.4.0
+    resource_class: m4pro.medium
+      
+
 jobs:
   build-aarch64:
-    docker:
-      - image: cimg/base:2023.06
-    resource_class: arm.medium
+    executor: linux
     steps:
       - run:
           name: Install dependencies
@@ -24,74 +33,34 @@ jobs:
           command: "ci/test.sh build"
       - store_test_results:
           path: build/a3_gtest.xml
-  build-bazel-aarch64:
-    docker:
-      - image: cimg/base:2025.12
-    resource_class: arm.medium
+  build-bazel:
+    parameters:
+      os:
+        type: executor
+      config:
+        type: string
+    executor: << parameters.os >>
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - bazel-bazelisk-{{ checksum ".bazelversion" }}
-      - restore_cache:
-          keys:
-            - bazel-repo-cache-{{ checksum "MODULE.bazel.lock" }}
       - run:
           name: Install Nix
           command: |
-            curl --proto '=https' --tlsv1.2 -sSf -L https://install.lix.systems/lix | sh -s -- install linux --no-confirm --init none
+            curl --proto '=https' --tlsv1.2 -sSf -L https://install.lix.systems/lix | sh -s -- install --no-confirm
       - run:
           name: Bazel test
           command: |
-            sudo bash -c '. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix-shell --command "bazel test --config=gcc --repository_cache=./repo_cache //..."'
-      - save_cache:
-          key: bazel-bazelisk-{{ checksum ".bazelversion" }}
-          paths:
-            - /tmp/bazelisk
-      - save_cache:
-          key: bazel-repo-cache-{{ checksum "MODULE.bazel.lock" }}
-          paths:
-            - repo_cache
+            sudo bash -c '. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix-shell --command "bazel test --config=<< parameters.config >> --repository_cache=./repo_cache //..."'
       - store_test_results:
           path: bazel-testlogs
-  build-bazel-aarch64-darwin:
-    macos:
-      xcode: 16.4.0
-    resource_class: m4pro.medium
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - bazel-darwin-bazelisk-{{ checksum ".bazelversion" }}
-      - restore_cache:
-          keys:
-            - bazel-darwin-repo-cache-{{ checksum "MODULE.bazel.lock" }}
-      - run:
-          name: Install dependencies
-          command: |
-            if [[ ! -f /tmp/bazelisk ]]; then
-              sudo curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-darwin-arm64 -o /tmp/bazelisk
-            fi
-
-            sudo cp /tmp/bazelisk /usr/local/bin/bazel
-            sudo chmod +x /usr/local/bin/bazel
-      - run:
-          name: Bazel test
-          command: |
-            bazel test --config=system-clang --repository_cache=./repo_cache //...
-      - save_cache:
-          key: bazel-darwin-bazelisk-{{ checksum ".bazelversion" }}
-          paths:
-            - /tmp/bazelisk
-      - save_cache:
-          key: bazel-darwin-repo-cache-{{ checksum "MODULE.bazel.lock" }}
-          paths:
-            - repo_cache
-      - store_test_results:
-          path: bazel-darwin-testlogs
 workflows:
   build-and-test:
     jobs:
       - build-aarch64
-      - build-bazel-aarch64
-      - build-bazel-aarch64-darwin
+      - build-bazel:
+          matrix:
+            parameters:
+              os: [linux, darwin]
+              config: [gcc, clang]
+            exclude:
+              - os: darwin
+                config: gcc
