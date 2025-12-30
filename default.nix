@@ -8,5 +8,6 @@ pkgs.mkShellNoCC {
     buildifier
     meson
     ninja
+    lix
   ];
 }
