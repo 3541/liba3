@@ -36,6 +36,7 @@ if [ -z "${CC-}" ]; then
 fi
 
 meson_san="-Db_sanitize=address,undefined"
+meson_timeout_multiplier="--timeout-multiplier=1"
 
 case "$($CC -dumpmachine 2>&1)" in
     *-musl) meson_san="-Db_sanitize=none" ;;
@@ -61,7 +62,12 @@ if "$CC" --version 2>&1 | grep -q "^cc (GCC) 4\."; then
     meson_san="-Db_sanitize=address"
 fi
 
+if [ "$meson_san" != "-Db_sanitize=none" ]; then
+    meson_timeout_multiplier="--timeout-multiplier=2"
+fi
+
 export meson_san
+export meson_timeout_multiplier
 export meson_std
 
 if [ "$(uname -s)" = "Darwin" ]; then
