@@ -52,6 +52,7 @@ jobs:
                 # Linux-in-Docker means the Lix daemon can only be used by root.
                 sudo bash -c '. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix-shell --command "bazel test --config=<< parameters.config >> --repository_cache=./repo_cache //..."'
             else
+              export __ETC_PROFILE_NIX_SOURCED= # TODO: ???
               . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh            
               nix-shell --command "bazel test --config=<< parameters.config >> --repository_cache=./repo_cache //..."
             fi
