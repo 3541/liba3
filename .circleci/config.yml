@@ -39,12 +39,11 @@ jobs:
       - run:
           name: Install Nix
           command: |
-            curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --no-confirm --init none
+            curl --proto '=https' --tlsv1.2 -sSf -L https://install.lix.systems/lix | sh -s -- install linux --no-confirm --init none
       - run:
           name: Bazel test
           command: |
-            . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-            sudo -E nix-shell --command "bazel test --config=gcc --repository_cache=./repo_cache //..."
+            sudo bash -c '. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix-shell --command "bazel test --config=gcc --repository_cache=./repo_cache //..."'
       - save_cache:
           key: bazel-bazelisk-{{ checksum ".bazelversion" }}
           paths:
