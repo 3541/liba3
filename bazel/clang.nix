@@ -3,5 +3,5 @@ let
 in
 import ./cc.nix {
   inherit pkgs;
-  cc = pkgs.llvmPackages_21.libcxxClang;
+  cc = pkgs.llvmPackages_21.clang;
 }

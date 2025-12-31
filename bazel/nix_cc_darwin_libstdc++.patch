@@ -1,0 +1,13 @@
+diff --git a/toolchains/cc/cc.nix b/toolchains/cc/cc.nix
+index 5504fbe..8576491 100644
+--- a/toolchains/cc/cc.nix
++++ b/toolchains/cc/cc.nix
+@@ -261,7 +261,7 @@ pkgs.runCommand "bazel-${cc.orignalName or cc.name}-toolchain"
+         # we might have usecases with stdenv with clang and libstdc++.
+         # On Darwin libstdc++ is not available, so it's safe to assume that
+         # everybody use libc++ from LLVM.
+-        if stdenv.isDarwin then "-lc++" else "-lstdc++"
++        if stdenv.isDarwin then if cc.isClang then "-lc++" else "-lstdc++" else "-lstdc++"
+       }
+       -lm
+     )

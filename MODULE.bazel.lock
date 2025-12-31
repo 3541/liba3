@@ -177,7 +177,7 @@
   "moduleExtensions": {
     "//bazel:nixpkgs_cc_extension.bzl%nix_cc_configure": {
       "general": {
-        "bzlTransitiveDigest": "Wioxg+GTQ9Gmxi0f7MS0/IwSIJSHgEqiGc6S+GwM+nQ=",
+        "bzlTransitiveDigest": "LwFFBZ8o0OeX1f6uhWoVauhnLlPfOv1IrQnKhY9X5PU=",
         "usagesDigest": "M8SrWPuMbMdRMSqiR0Hd0Zh7f9yfRMbCAKasUrBKJ4c=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -262,10 +262,7 @@
                 "c++",
                 "--argstr",
                 "ccStd",
-                "c++26",
-                "--argstr",
-                "stdlib",
-                "c++"
+                "c++26"
               ],
               "quiet": false,
               "fail_not_supported": true
