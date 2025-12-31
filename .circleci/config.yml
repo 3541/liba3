@@ -53,7 +53,15 @@ jobs:
             else
               export __ETC_PROFILE_NIX_SOURCED= # TODO: ???
               . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh            
-              nix-shell --command "bazel test --config=<< parameters.config >> --config=san --repository_cache=./repo_cache //..."
+
+              # Sanitizers are not supported by GCC on Darwin.
+              if [[ << parameters.config >> = gcc ]]; then
+                  sanitizers=""
+              else
+                  sanitizers="--config=san"
+              fi
+
+              nix-shell --command "bazel test --config=<< parameters.config >> $sanitizers --repository_cache=./repo_cache //..."
             fi
       - store_test_results:
           path: bazel-testlogs
