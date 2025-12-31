@@ -386,7 +386,7 @@
     "@@rules_nixpkgs_core+//extensions:repository.bzl%nix_repo": {
       "general": {
         "bzlTransitiveDigest": "dTTtWNdwe7E4j77oKh1mHI1qtdxfaVSGSZa1oPf2QjU=",
-        "usagesDigest": "9/eHZJKXkGpdUoScbH575kATrlBxi+mNxpjIwD1a9vg=",
+        "usagesDigest": "lsPhbw1XlYjh7WwXfySJWZ+9PbpKiqxfCHejq379DfE=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -396,7 +396,9 @@
             "attributes": {
               "unmangled_name": "nixpkgs",
               "nix_file": "@@//:nixpkgs.nix",
-              "nix_file_deps": [],
+              "nix_file_deps": [
+                "@@//:nixpkgs.json"
+              ],
               "nix_file_content": ""
             }
           }

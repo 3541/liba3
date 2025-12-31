@@ -6,6 +6,7 @@ nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_
 nix_repo.file(
     name = "nixpkgs",
     file = "//:nixpkgs.nix",
+    file_deps = ["//:nixpkgs.json"],
 )
 use_repo(nix_repo, "nixpkgs")
 
