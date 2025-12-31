@@ -18,7 +18,8 @@ def _nix_cc_configure_impl(module_ctx):
         cc_std = "c++26",
         extra_exec_constraints = ["@@//bazel/compiler:clang"],
         nix_file = "//bazel:clang.nix",
-        nix_file_deps = ["//bazel:cc.nix"]
+        nix_file_deps = ["//bazel:cc.nix"],
+        cc_stdlib = "c++"
     )
 
 nix_cc_configure = module_extension(
