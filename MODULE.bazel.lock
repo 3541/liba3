@@ -177,7 +177,7 @@
   "moduleExtensions": {
     "//bazel:nixpkgs_cc_extension.bzl%nix_cc_configure": {
       "general": {
-        "bzlTransitiveDigest": "bPwnKEg2z6ZOOEEqTeIwBH6BKIzVVEI0KidT+TW8LCI=",
+        "bzlTransitiveDigest": "LwFFBZ8o0OeX1f6uhWoVauhnLlPfOv1IrQnKhY9X5PU=",
         "usagesDigest": "M8SrWPuMbMdRMSqiR0Hd0Zh7f9yfRMbCAKasUrBKJ4c=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -189,7 +189,10 @@
               "unmangled_name": "nix_cc_gcc_info",
               "attribute_path": "",
               "nix_file": "@@rules_nixpkgs_cc+//:cc.nix",
-              "nix_file_deps": {},
+              "nix_file_deps": {
+                "@@//bazel:cc.nix": "//bazel:cc.nix",
+                "@@//bazel:gcc.nix": "//bazel:gcc.nix"
+              },
               "nix_file_content": "",
               "repository": "@@rules_nixpkgs_core++nix_repo+nixpkgs//:nixpkgs",
               "repositories": {},
@@ -200,7 +203,7 @@
                 "ccTypeExpression",
                 "--arg",
                 "ccExpr",
-                "(import <nixpkgs> {}).gcc15",
+                "import $(location //bazel:gcc.nix)",
                 "--argstr",
                 "ccLang",
                 "c++",
@@ -240,6 +243,7 @@
               "attribute_path": "",
               "nix_file": "@@rules_nixpkgs_cc+//:cc.nix",
               "nix_file_deps": {
+                "@@//bazel:cc.nix": "//bazel:cc.nix",
                 "@@//bazel:clang.nix": "//bazel:clang.nix"
               },
               "nix_file_content": "",

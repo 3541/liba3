@@ -42,7 +42,6 @@ using SendLength = std::size_t;
 } // namespace
 
 struct AcceptTest : public Test {
-protected:
     A3Socket m_fd{0};
     A3Port   m_port;
 

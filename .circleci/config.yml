@@ -9,7 +9,6 @@ executors:
     macos:
       xcode: 16.4.0
     resource_class: m4pro.medium
-      
 
 jobs:
   build-aarch64:
@@ -67,6 +66,3 @@ workflows:
             parameters:
               os: [linux, darwin]
               config: [gcc, clang]
-            exclude:
-              - os: darwin
-                config: gcc

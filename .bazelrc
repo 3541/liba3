@@ -7,3 +7,5 @@ build:system-msvc --host_platform=//bazel/compiler:host_system_msvc
 build:asan --copt=-fsanitize=address --linkopt=-fsanitize=address
 build:ubsan --copt=-fsanitize=undefined --linkopt=-fsanitize=undefined
 build:san --config=asan --config=ubsan
+
+build --verbose_failures

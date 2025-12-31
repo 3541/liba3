@@ -66,7 +66,7 @@ _CC_FLAGS = select({
 })
 
 _FEATURES = select({
-    "@platforms//os:macos": ["-macos_minimum_os"],
+    "@platforms//os:macos": ["-macos_minimum_os", "-macos_default_link_flags"],
     "//conditions:default": [],
 })
 
