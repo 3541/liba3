@@ -1,4 +1,7 @@
+let
+  spec = builtins.fromJSON (builtins.readFile ./nixpkgs.json);
+in
 import (fetchTarball {
-  url = "https://github.com/NixOS/nixpkgs/tarball/7a0f7bfacda008fcd0ae46ef106d7c7dfe53596e";
-  sha256 = "sha256-ai7QH3Kv2hZP90LADKpglwvlfGO7dTMOxh+9ZAwEFkM=";
+  url = "https://github.com/NixOS/nixpkgs/tarball/${spec.commit}";
+  sha256 = spec.sha256;
 })
