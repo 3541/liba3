@@ -20,9 +20,6 @@ jobs:
           repository: NixOS/nixpkgs
           ref: nixos-25.11
       - uses: samueldr/lix-gha-installer-action@8dc19fbd6451fa106a68ecb2dafeeeb90dff3a29
-      - uses: bazel-contrib/setup-bazel@0.16.0
-        with:
-          bazelisk-version: 1.x
       - name: Select new Nixpkgs commit
         id: nixpkgs
         run: |
@@ -51,7 +48,7 @@ jobs:
             '{commit: $commit, sha256: $sha256}' > nixpkgs.json
       - name: Update Bazel lockfile
         if: steps.nixpkgs.outputs.needs_update == 'true'
-        run: bazel mod deps --lockfile_mode=update
+        run: nix-shell --command "bazel mod deps --lockfile_mode=update"
       - name: Create Pull Request
         if: steps.nixpkgs.outputs.needs_update == 'true'
         env:
