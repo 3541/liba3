@@ -13,16 +13,16 @@ jobs:
   update-nixpkgs:
     runs-on: ubuntu-latest
     steps:
-      - uses: samueldr/lix-gha-installer-action@8dc19fbd6451fa106a68ecb2dafeeeb90dff3a29
       - uses: actions/checkout@v6
-      - uses: bazel-contrib/setup-bazel@0.16.0
-        with:
-          bazelisk-version: 1.x
       - uses: actions/checkout@v6
         with:
           path: nixpkgs
           repository: NixOS/nixpkgs
           ref: nixos-25.11
+      - uses: samueldr/lix-gha-installer-action@8dc19fbd6451fa106a68ecb2dafeeeb90dff3a29
+      - uses: bazel-contrib/setup-bazel@0.16.0
+        with:
+          bazelisk-version: 1.x
       - name: Select new Nixpkgs commit
         id: nixpkgs
         run: |
