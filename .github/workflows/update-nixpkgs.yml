@@ -15,6 +15,9 @@ jobs:
     steps:
       - uses: samueldr/lix-gha-installer-action@8dc19fbd6451fa106a68ecb2dafeeeb90dff3a29
       - uses: actions/checkout@v6
+      - uses: bazel-contrib/setup-bazel@0.16.0
+        with:
+          bazelisk-version: 1.x
       - uses: actions/checkout@v6
         with:
           path: nixpkgs
@@ -39,7 +42,6 @@ jobs:
             echo "new_sha256=$hash" >> $GITHUB_OUTPUT
             echo "Update available: $old_commit -> $commit"
           fi
-
       - name: Update nixpkgs.json
         if: steps.nixpkgs.outputs.needs_update == 'true'
         run: |
@@ -47,6 +49,9 @@ jobs:
             --arg commit "${{ steps.nixpkgs.outputs.new_commit }}" \
             --arg sha256 "${{ steps.nixpkgs.outputs.new_sha256 }}" \
             '{commit: $commit, sha256: $sha256}' > nixpkgs.json
+      - name: Update Bazel lockfile
+        if: steps.nixpkgs.outputs.needs_update == 'true'
+        run: bazel mod deps --lockfile_mode=update
       - name: Create Pull Request
         if: steps.nixpkgs.outputs.needs_update == 'true'
         env:
@@ -60,7 +65,7 @@ jobs:
           branch="update-nixpkgs-$short_commit"
 
           git checkout -b "$branch"
-          git add nixpkgs.json
+          git add nixpkgs.json MODULE.bazel.lock
           git commit -m "Update Nixpkgs to $short_commit"
           git push -u origin "$branch"
 
