@@ -1,0 +1,76 @@
+name: Update Nixpkgs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-nixpkgs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: samueldr/lix-gha-installer-action@8dc19fbd6451fa106a68ecb2dafeeeb90dff3a29
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          path: nixpkgs
+          repository: NixOS/nixpkgs
+          ref: nixos-25.11
+      - name: Select new Nixpkgs commit
+        id: nixpkgs
+        run: |
+          cd nixpkgs
+          commit="$(git rev-parse nixos-25.11)"
+          cd ..
+          hash="$(nix-prefetch-url https://github.com/NixOS/nixpkgs/tarball/$commit)"
+
+          old_commit="$(jq -r '.commit' nixpkgs.json)"
+
+          if [ "$commit" = "$old_commit" ]; then
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "No update needed. Already at $commit"
+          else
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "new_commit=$commit" >> $GITHUB_OUTPUT
+            echo "new_sha256=$hash" >> $GITHUB_OUTPUT
+            echo "Update available: $old_commit -> $commit"
+          fi
+
+      - name: Update nixpkgs.json
+        if: steps.nixpkgs.outputs.needs_update == 'true'
+        run: |
+          jq -n \
+            --arg commit "${{ steps.nixpkgs.outputs.new_commit }}" \
+            --arg sha256 "${{ steps.nixpkgs.outputs.new_sha256 }}" \
+            '{commit: $commit, sha256: $sha256}' > nixpkgs.json
+      - name: Create Pull Request
+        if: steps.nixpkgs.outputs.needs_update == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          commit="${{ steps.nixpkgs.outputs.new_commit }}"
+          short_commit="${commit:0:7}"
+          branch="update-nixpkgs-$short_commit"
+
+          git checkout -b "$branch"
+          git add nixpkgs.json
+          git commit -m "Update Nixpkgs to $short_commit"
+          git push -u origin "$branch"
+
+          gh pr create \
+            --base trunk \
+            --title "Update Nixpkgs to $short_commit" \
+            --body "Updates Nixpkgs pin to commit [$commit](https://github.com/NixOS/nixpkgs/commit/$commit) from the nixos-25.11 branch."
+      - name: No update needed
+        if: steps.nixpkgs.outputs.needs_update == 'false'
+        run: |
+          echo "### No Nixpkgs update needed" >> $GITHUB_STEP_SUMMARY
+          echo "Already at the latest commit from nixos-25.11." >> $GITHUB_STEP_SUMMARY
+
