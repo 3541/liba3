@@ -1,0 +1,15 @@
+image: freebsd/13.x
+packages:
+  - git
+  - bash
+  - zip
+  - openjdk21
+sources:
+  - https://github.com/3541/liba3.git
+environment:
+    JAVA_HOME: /usr/local/openjdk21
+tasks:
+  - install-bazel: sudo liba3/ci/tools/freebsd_bazel.sh
+  - test: |
+      cd liba3
+      bazel test --config=system-clang //...
