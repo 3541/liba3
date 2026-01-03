@@ -4,4 +4,5 @@ sources:
 tasks:
 - test-gcc: |
     cd liba3
-    nix-shell --command "bazel test --config=gcc --config=san //..."
+    nix-shell --extra-substituters https://ci-deps.cachix.org --extra-trusted-public-keys ci-deps.cachix.org-1:u0Q9WaZhvcwNaejkghAR7VaiIlChA+Q4vgGdcKId/Aw= \
+              --command "bazel test --config=gcc --config=san //..."

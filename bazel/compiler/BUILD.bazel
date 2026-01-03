@@ -26,7 +26,7 @@ platform(
 platform(
     name = "host_system_gcc",
     constraint_values = [":gcc"],
-    parents = ["@local_config_platform//:host"]
+    parents = ["@platforms//host"]
 )
 
 platform(
@@ -38,12 +38,12 @@ platform(
 platform(
     name = "host_system_clang",
     constraint_values = [":clang"],
-    parents = ["@local_config_platform//:host"]
+    parents = ["@platforms//host"]
 )
 
 platform(
     name = "host_system_msvc",
     constraint_values = [":msvc"],
-    parents = ["@local_config_platform//:host"]
+    parents = ["@platforms//host"]
 )
 

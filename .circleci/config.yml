@@ -24,12 +24,14 @@ jobs:
           name: Install Nix
           command: |
             curl --proto '=https' --tlsv1.2 -sSf -L https://install.lix.systems/lix | sh -s -- install --no-confirm
+            echo 'extra-substituters = https://ci-deps.cachix.org' | sudo tee -a /etc/nix/nix.conf
+            echo 'extra-trusted-public-keys = ci-deps.cachix.org-1:u0Q9WaZhvcwNaejkghAR7VaiIlChA+Q4vgGdcKId/Aw' | sudo tee -a /etc/nix/nix.conf
       - run:
           name: Bazel test
           command: |
             if [[ $(uname) = Linux ]]; then
                 # Linux-in-Docker means the Lix daemon can only be used by root.
-                sudo bash -c '. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix-shell --command "bazel test --config=<< parameters.config >> --config=san --repository_cache=./repo_cache //..."'
+                sudo bash -c '. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix-shell --command "bazel test --config=<< parameters.config >> --config=san //..."'
             else
               export __ETC_PROFILE_NIX_SOURCED= # TODO: ???
               . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
@@ -41,7 +43,7 @@ jobs:
                   sanitizers="--config=san"
               fi
 
-              nix-shell --command "bazel test --config=<< parameters.config >> $sanitizers --repository_cache=./repo_cache //..."
+              nix-shell --command "bazel test --config=<< parameters.config >> $sanitizers //..."
             fi
       - store_test_results:
           path: bazel-testlogs

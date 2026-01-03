@@ -9,7 +9,7 @@ sources:
 environment:
     JAVA_HOME: /usr/local/openjdk21
 tasks:
-  - install-bazel: sudo pkg install -y liba3/ci/pkgs/$(uname)-$(uname -m)-bazel8.pkg
+  - install-bazel: sudo pkg install -y liba3/ci/pkgs/$(uname)-$(uname -m)-bazel9.pkg
   - test: |
       cd liba3
       bazel test --config=system-clang //...

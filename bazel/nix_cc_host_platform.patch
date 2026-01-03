@@ -1,0 +1,12 @@
+diff --git a/core/platforms/BUILD.bazel b/core/platforms/BUILD.bazel
+index c4d0fab..e08ae5f 100644
+--- a/core/platforms/BUILD.bazel
++++ b/core/platforms/BUILD.bazel
+@@ -1,6 +1,6 @@
+ platform(
+     name = "host",
+     constraint_values = ["@rules_nixpkgs_core//constraints:support_nix"],
+-    parents = ["@local_config_platform//:host"],
++    parents = ["@platforms//host"],
+     visibility = ["//visibility:public"],
+ )

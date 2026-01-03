@@ -34,7 +34,7 @@ _COMMON_FLAGS = select({
         "-wd4206",
     ]
 }) + select({
-    "//bazel/compiler:clang": ["-Wmissing-include-dirs"],
+    "//bazel/compiler:clang": [],
     "//bazel/compiler:gcc": [
         "-Wduplicated-branches",
         "-Wduplicated-cond",

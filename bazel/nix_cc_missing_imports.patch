@@ -1,0 +1,51 @@
+diff --git a/core/private/cc_toolchain/BUILD.tpl b/core/private/cc_toolchain/BUILD.tpl
+index b9e82e3..32dcff7 100644
+--- a/core/private/cc_toolchain/BUILD.tpl
++++ b/core/private/cc_toolchain/BUILD.tpl
+@@ -16,6 +16,7 @@
+ 
+ load(":cc_toolchain_config.bzl", "cc_toolchain_config")
+ load(":armeabi_cc_toolchain_config.bzl", "armeabi_cc_toolchain_config")
++load("@rules_cc//cc:cc_library.bzl", "cc_library")
+ load("@rules_cc//cc:defs.bzl", "cc_toolchain", "cc_toolchain_suite")
+ 
+ package(default_visibility = ["//visibility:public"])
+diff --git a/core/private/cc_toolchain/armeabi_cc_toolchain_config.bzl b/core/private/cc_toolchain/armeabi_cc_toolchain_config.bzl
+index 7d4baad..ea7ce6b 100644
+--- a/core/private/cc_toolchain/armeabi_cc_toolchain_config.bzl
++++ b/core/private/cc_toolchain/armeabi_cc_toolchain_config.bzl
+@@ -19,6 +19,8 @@ load(
+     "feature",
+     "tool_path",
+ )
++load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
++load("@rules_cc//cc/toolchains:cc_toolchain_config_info.bzl", "CcToolchainConfigInfo")
+ 
+ def _impl(ctx):
+     toolchain_identifier = "stub_armeabi-v7a"
+diff --git a/core/private/cc_toolchain/cc_toolchain_config.bzl b/core/private/cc_toolchain/cc_toolchain_config.bzl
+index 265fce6..156e2ed 100644
+--- a/core/private/cc_toolchain/cc_toolchain_config.bzl
++++ b/core/private/cc_toolchain/cc_toolchain_config.bzl
+@@ -40,6 +40,8 @@ load(
+     "tool_path",
+     "with_feature_set",
+ )
++load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
++load("@rules_cc//cc/toolchains:cc_toolchain_config_info.bzl", "CcToolchainConfigInfo")
+ 
+ all_compile_actions = [
+     _C_COMPILE_ACTION_NAME,
+diff --git a/core/private/cc_toolchain/unix_cc_toolchain_config.bzl b/core/private/cc_toolchain/unix_cc_toolchain_config.bzl
+index e500999..cb9a9b9 100644
+--- a/core/private/cc_toolchain/unix_cc_toolchain_config.bzl
++++ b/core/private/cc_toolchain/unix_cc_toolchain_config.bzl
+@@ -30,6 +30,8 @@ load(
+     "variable_with_value",
+     "with_feature_set",
+ )
++load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
++load("@rules_cc//cc/toolchains:cc_toolchain_config_info.bzl", "CcToolchainConfigInfo")
+ 
+ def _target_os_version(ctx):
+     platform_type = ctx.fragments.apple.single_arch_platform.platform_type
