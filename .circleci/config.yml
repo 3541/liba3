@@ -11,26 +11,6 @@ executors:
     resource_class: m4pro.medium
 
 jobs:
-  build-aarch64:
-    executor: linux
-    steps:
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt update
-            sudo apt install ninja-build meson
-      - checkout
-      - run:
-          name: "Configure"
-          command: "ci/configure.sh build"
-      - run:
-          name: "Build"
-          command: "ci/build.sh build"
-      - run:
-          name: "Test"
-          command: "ci/test.sh build"
-      - store_test_results:
-          path: build/a3_gtest.xml
   build-bazel:
     parameters:
       os:
@@ -52,7 +32,7 @@ jobs:
                 sudo bash -c '. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix-shell --command "bazel test --config=<< parameters.config >> --config=san --repository_cache=./repo_cache //..."'
             else
               export __ETC_PROFILE_NIX_SOURCED= # TODO: ???
-              . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh            
+              . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
               # Sanitizers are not supported by GCC on Darwin.
               if [[ << parameters.config >> = gcc ]]; then
@@ -68,7 +48,6 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - build-aarch64
       - build-bazel:
           matrix:
             parameters:
