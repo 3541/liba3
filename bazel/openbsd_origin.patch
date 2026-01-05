@@ -1,0 +1,66 @@
+diff --git a/cc/private/toolchain/unix_cc_toolchain_config.bzl b/cc/private/toolchain/unix_cc_toolchain_config.bzl
+index f91fa3f..816865d 100644
+--- a/cc/private/toolchain/unix_cc_toolchain_config.bzl
++++ b/cc/private/toolchain/unix_cc_toolchain_config.bzl
+@@ -908,6 +908,7 @@ def _impl(ctx):
+                             ],
+                             expand_if_available = "runtime_library_search_directories",
+                         ),
++                        flag_group(flags=["-Wl,-z,origin"]),
+                     ],
+                 ),
+             ],
+diff --git a/cc/private/toolchain_config/legacy_features.bzl b/cc/private/toolchain_config/legacy_features.bzl
+index ba338eb..833e42b 100644
+--- a/cc/private/toolchain_config/legacy_features.bzl
++++ b/cc/private/toolchain_config/legacy_features.bzl
+@@ -563,6 +563,7 @@ def get_legacy_features(platform, existing_feature_names, linker_tool_path):
+                                         ),
+                                     ],
+                                 ),
++                                flag_group(flags = ["-Wl,-z,origin"]),
+                             ],
+                         ),
+                     ],
+@@ -579,22 +580,25 @@ def get_legacy_features(platform, existing_feature_names, linker_tool_path):
+                         ACTION_NAMES.lto_index_for_executable,
+                         ACTION_NAMES.lto_index_for_nodeps_dynamic_library,
+                     ],
+-                    flag_groups = [flag_group(
+-                        expand_if_available = "runtime_library_search_directories",
+-                        iterate_over = "runtime_library_search_directories",
+-                        flag_groups = [flag_group(
+-                            flags = [
+-                                "-Xlinker",
+-                                "-rpath",
+-                                "-Xlinker",
+-                                _platform_specific_value(
+-                                    platform,
+-                                    linux = "$ORIGIN/%{runtime_library_search_directories}",
+-                                    mac = "@loader_path/%{runtime_library_search_directories}",
+-                                ),
+-                            ],
+-                        )],
+-                    )],
++                    flag_groups = [
++                        flag_group(
++                            expand_if_available = "runtime_library_search_directories",
++                            iterate_over = "runtime_library_search_directories",
++                            flag_groups = [flag_group(
++                                flags = [
++                                    "-Xlinker",
++                                    "-rpath",
++                                    "-Xlinker",
++                                    _platform_specific_value(
++                                        platform,
++                                        linux = "$ORIGIN/%{runtime_library_search_directories}",
++                                        mac = "@loader_path/%{runtime_library_search_directories}",
++                                    ),
++                                ],
++                            )],
++                        ),
++                        flag_group(flags = ["-Wl,-z,origin"]),
++                    ],
+                 ),
+             ],
+         ))
