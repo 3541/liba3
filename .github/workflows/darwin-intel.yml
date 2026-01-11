@@ -1,0 +1,26 @@
+name: Darwin (amd64)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '**/*.cc'
+      - '**/*.hh'
+      - '.github/workflows/darwin-intel.yml'
+      - '**/*.bazel'
+      - '**/*.bzl'
+
+jobs:
+  build:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v6
+      - uses: samueldr/lix-gha-installer-action@8dc19fbd6451fa106a68ecb2dafeeeb90dff3a29
+      - name: Configure Nix
+        run: |
+          echo 'extra-substituters = https://ci-deps.cachix.org' | sudo tee -a /etc/nix/nix.conf
+          echo 'extra-trusted-public-keys = ci-deps.cachix.org-1:u0Q9WaZhvcwNaejkghAR7VaiIlChA+Q4vgGdcKId/Aw' | sudo tee -a /etc/nix/nix.conf
+      - name: Bazel test
+        run: nix-shell --command "bazel test --config=clang --config=san ..."
