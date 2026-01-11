@@ -14,19 +14,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Read nixpkgs.json
+        id: config
+        run: |
+          echo "repo=$(jq -r '.repo // "NixOS/nixpkgs"' nixpkgs.json)" >> $GITHUB_OUTPUT
+          echo "branch=$(jq -r '.branch // "nixos-25.11"' nixpkgs.json)" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v6
         with:
           path: nixpkgs
-          repository: NixOS/nixpkgs
-          ref: nixos-25.11
+          repository: ${{ steps.config.outputs.repo }}
+          ref: ${{ steps.config.outputs.branch }}
       - uses: samueldr/lix-gha-installer-action@8dc19fbd6451fa106a68ecb2dafeeeb90dff3a29
       - name: Select new Nixpkgs commit
         id: nixpkgs
+        env:
+          REPO: ${{ steps.config.outputs.repo }}
+          BRANCH: ${{ steps.config.outputs.branch }}
         run: |
           cd nixpkgs
-          commit="$(git rev-parse nixos-25.11)"
+          commit="$(git rev-parse "$BRANCH")"
           cd ..
-          hash="$(nix-prefetch-url --unpack https://github.com/NixOS/nixpkgs/tarball/$commit)"
+          hash="$(nix-prefetch-url --unpack "https://github.com/$REPO/tarball/$commit")"
 
           old_commit="$(jq -r '.commit' nixpkgs.json)"
 
@@ -43,9 +51,11 @@ jobs:
         if: steps.nixpkgs.outputs.needs_update == 'true'
         run: |
           jq -n \
+            --arg repo "${{ steps.config.outputs.repo }}" \
+            --arg branch "${{ steps.config.outputs.branch }}" \
             --arg commit "${{ steps.nixpkgs.outputs.new_commit }}" \
             --arg sha256 "${{ steps.nixpkgs.outputs.new_sha256 }}" \
-            '{commit: $commit, sha256: $sha256}' > nixpkgs.json
+            '{repo: $repo, branch: $branch, commit: $commit, sha256: $sha256}' > nixpkgs.json
       - name: Update Bazel lockfile
         if: steps.nixpkgs.outputs.needs_update == 'true'
         run: nix-shell --command "bazel mod deps --lockfile_mode=update"
@@ -53,6 +63,8 @@ jobs:
         if: steps.nixpkgs.outputs.needs_update == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: ${{ steps.config.outputs.repo }}
+          NIXPKGS_BRANCH: ${{ steps.config.outputs.branch }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -69,10 +81,10 @@ jobs:
           gh pr create \
             --base trunk \
             --title "Update Nixpkgs to $short_commit" \
-            --body "Updates Nixpkgs pin to commit [$commit](https://github.com/NixOS/nixpkgs/commit/$commit) from the nixos-25.11 branch."
+            --body "Updates Nixpkgs pin to commit [$commit](https://github.com/$REPO/commit/$commit) from the $NIXPKGS_BRANCH branch."
       - name: No update needed
         if: steps.nixpkgs.outputs.needs_update == 'false'
         run: |
           echo "### No Nixpkgs update needed" >> $GITHUB_STEP_SUMMARY
-          echo "Already at the latest commit from nixos-25.11." >> $GITHUB_STEP_SUMMARY
+          echo "Already at the latest commit from ${{ steps.config.outputs.branch }}." >> $GITHUB_STEP_SUMMARY
 
