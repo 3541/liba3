@@ -29,20 +29,21 @@ notice._
   appropriate (C++ is not required, however).
 
 ## Building and Usage
-Build dependencies:
-- A C compiler supporting C11.
-- Meson 1.3.0 or later.
+Build dependencies (any of the following options):
+- Bazel 9.0.0 or later.
+- Nix (to provide Bazel; building with Nix is not supported).
+- Meson 1.3.0 or later and a C compiler supporting C11 or later.
 
 _Note: C11 support means genuine standard-compliant C11 support. For MSVC, this means VS2019 or
 newer is required._
 
-Test suite dependencies:
-- A C++ compiler supporting C++17.
+To build, simply run `bazel build --config=<conf> ...`, where `<conf>` is any of:
+* `clang` or `gcc`: use the given compiler from Nixpkgs.
+* `system-clang`, `system-gcc`, or `system-msvc`: use the given compiler from the host.
 
+### Building with Meson
 To build, ensure all submodules are in place (`git submodule update --init --recursive`), and run
-`meson setup <BUILDDIR>` to set up the build system in `BUILDDIR`. A script which generates a set
-of build directories for various configurations is also provided (`./configure`) for convenience's
-sake. Then, run `meson compile -C <BUILDDIR>` to build.
+`meson setup <BUILDDIR>` to set up the build system in `BUILDDIR`. Then, run `meson compile -C <BUILDDIR>` to build.
 
 To run the test suite, simply run `meson test -C <BUILDDIR>`.
 
@@ -51,13 +52,6 @@ build system provides dependencies `a3_dep`.
 
 Projects using other build systems can invoke Meson directly and depend on the library produced (or
 they can simply build it themselves — take look at `meson.build` for inspiration).
-
-### Building with Nix
-
-Alternatively, the project may be built with Nix. Simply running `nix build` will produce a release
-build installed under `./result` (a symlink to the Nix store). Additional build configurations are
-also available. For example, a debug build on Clang can be invoked using `nix build
-.#a3/clang/debug`.
 
 ## Notes
 Most objects (buffer, hash table, linked list, etc...) provide the following functions to do with their lifecycle:
