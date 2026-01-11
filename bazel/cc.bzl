@@ -62,7 +62,7 @@ _CC_FLAGS = select({
         "-Wctor-dtor-privacy",
         "-Wdelete-non-virtual-dtor",
     ],
-    "//bazel/compiler:msvc": ["-std:c++23preview"]
+    "//bazel/compiler:msvc": ["-std:c++latest"]
 })
 
 _FEATURES = select({

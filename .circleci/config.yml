@@ -47,6 +47,21 @@ jobs:
             fi
       - store_test_results:
           path: bazel-testlogs
+  build-bazel-windows-msvc:
+    resource_class: windows.medium
+    machine:
+      image: windows-server-2022-gui:2022.10.1
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Bazel test
+          command: |
+            bazel="$(mktemp)"
+            curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.27.0/bazelisk-windows-amd64.exe -o "$bazel"
+            chmod +x "$bazel"
+
+            "$bazel" test --config=system-msvc //...
 workflows:
   build-and-test:
     jobs:
@@ -55,3 +70,4 @@ workflows:
             parameters:
               os: [linux, darwin]
               config: [gcc, clang]
+      - build-bazel-windows-msvc
