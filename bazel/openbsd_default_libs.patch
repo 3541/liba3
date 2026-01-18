@@ -1,0 +1,14 @@
+diff --git a/cc/private/toolchain/unix_cc_configure.bzl b/cc/private/toolchain/unix_cc_configure.bzl
+index fe485d8..ddc99f1 100644
+--- a/cc/private/toolchain/unix_cc_configure.bzl
++++ b/cc/private/toolchain/unix_cc_configure.bzl
+@@ -525,6 +525,9 @@ def configure_unix_toolchain(repository_ctx, cpu_value, overridden_tools):
+         bazel_default_libs = ["-lc++", "-lm"]
+     else:
+         bazel_default_libs = ["-lstdc++", "-lm"]
++    if cpu_value == "openbsd":
++        bazel_default_libs += ["-lc++abi", "-lpthread"]
++
+     if is_as_needed_supported and is_push_state_supported:
+         # Do not link against C++ standard libraries unless they are actually
+         # used.

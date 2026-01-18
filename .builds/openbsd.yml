@@ -1,15 +1,15 @@
 image: openbsd/7.8
 packages:
-- meson
+  - git
+  - bash
+  - zip
+  - jdk%21
 sources:
 - https://github.com/3541/liba3.git
 tasks:
-- configure: |
-    cd liba3
-    ci/configure.sh build
-- build: |
-    cd liba3
-    ci/build.sh build
-- test: |
-    cd liba3
-    ci/test.sh build
+  - install-bazel: |
+      cd liba3/ci/pkgs/$(uname)-$(uname -m)
+      TRUSTED_PKG_PATH=. doas pkg_add ./bazel-9.0.0rc6.tgz
+  - test: |
+      cd liba3
+      bazel test --config=system-clang //... --linkopt=-lc++abi --linkopt=-lpthread --spawn_strategy=local

@@ -42,7 +42,7 @@ _COMMON_FLAGS = select({
     ],
     "//bazel/compiler:msvc": [],
 }) + selects.with_or({
-    ("@platforms//os:macos", "//bazel/compiler:msvc"): [],
+    ("@platforms//os:macos", "@platforms//os:openbsd", "//bazel/compiler:msvc"): [],
     "//conditions:default": ["-fstack-clash-protection"],
 })
 
