@@ -4,4 +4,4 @@ build
 result
 .direnv
 .vagrant
-bazel-*
+/bazel-*

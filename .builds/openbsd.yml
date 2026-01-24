@@ -9,7 +9,7 @@ sources:
 tasks:
   - install-bazel: |
       cd liba3/ci/pkgs/$(uname)-$(uname -m)
-      TRUSTED_PKG_PATH=. doas pkg_add ./bazel-9.0.0rc6.tgz
+      TRUSTED_PKG_PATH=. doas pkg_add ./bazel-9.0.0.tgz
   - test: |
       cd liba3
       bazel test --config=system-clang //... --linkopt=-lc++abi --linkopt=-lpthread --spawn_strategy=local

@@ -1,4 +1,4 @@
-image: freebsd/13.x
+image: freebsd/15.x
 packages:
   - git
   - bash
