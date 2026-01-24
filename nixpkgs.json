@@ -1,6 +1,6 @@
 {
     "repo": "3541/nixpkgs",
     "branch": "bazel-9-wip",
-    "commit": "5911ec7f7edad4a38a3b06b217000d58e902f9d2",
-    "sha256": "sha256-LPZcKo6VTYmKmfNii6rbE3h8BwHkFPNiqgLbYj+SmPU="
+    "commit": "2db4bab6089e5aab741ec767a7842cf6d1edec9c",
+    "sha256": "sha256-r3X21OwQFgAm6h8G5x0hDndKtc+CnGENBoXrHIqPAis="
 }
