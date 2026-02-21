@@ -3,11 +3,11 @@ _RULES_NIXPKGS_VERSION = "0.13.0"
 bazel_dep(name = "rules_nixpkgs_core", version = _RULES_NIXPKGS_VERSION, dev_dependency = True)
 single_version_override(
     module_name = "rules_nixpkgs_core",
+    patch_strip = 2,
     patches = [
         "//bazel:nix_cc_host_platform.patch",
         "//bazel:nix_cc_missing_imports.patch",
     ],
-    patch_strip = 2,
 )
 
 nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo")
@@ -22,10 +22,14 @@ bazel_dep(name = "rules_nixpkgs_cc", dev_dependency = True)
 archive_override(
     module_name = "rules_nixpkgs_cc",
     integrity = "sha256-MCcfe9OA5OIOTXEywySUbE/bwx6+C7tmOKD2GjfnQ5c=",
+    patch_args = ["-p3"],
+    patches = [
+        "//bazel:nix_cc_extra_constraints.patch",
+        "//bazel:nix_cc_darwin_libstdc++.patch",
+        "//bazel:nix_cc_no_gold.patch",
+    ],
     strip_prefix = "rules_nixpkgs-{}/toolchains/cc".format(_RULES_NIXPKGS_VERSION),
     urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{version}/rules_nixpkgs-{version}.tar.gz".format(version = _RULES_NIXPKGS_VERSION)],
-    patches = ["//bazel:nix_cc_extra_constraints.patch", "//bazel:nix_cc_darwin_libstdc++.patch"],
-    patch_args = ["-p3"],
 )
 
 nix_cc_configure = use_extension("//bazel:nixpkgs_cc_extension.bzl", "nix_cc_configure")
