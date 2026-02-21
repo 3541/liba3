@@ -98,16 +98,6 @@ a3_cc_test(
 )
 
 a3_cc_test(
-    name = "nonnull",
-    size = "small",
-    srcs = ["nonnull.cc"],
-    deps = [
-        "//a3:nonnull",
-        "@googletest//:gtest_main",
-    ],
-)
-
-a3_cc_test(
     name = "rc",
     size = "small",
     srcs = ["rc.cc"],

@@ -11,7 +11,6 @@
 /// # Reference Counting
 /// Provides facilities to make an object reference-counted. See ::A3_REFCOUNTED.
 ////
-/// See also rc.hh for a convenient C++ interface.
 
 #pragma once
 
