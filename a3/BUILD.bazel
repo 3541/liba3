@@ -134,37 +134,10 @@ a3_cc_library(
 )
 
 a3_cc_library(
-    name = "concepts",
-    hdrs = glob(["concepts/*.hh"]),
-)
-
-a3_cc_library(
-    name = "base",
-    hdrs = ["fwd.hh"],
-)
-
-a3_cc_library(
-    name = "nonnull",
-    hdrs = ["nonnull.hh"],
-    deps = [
-        ":base",
-        ":concepts",
-        ":log",
-    ],
-)
-
-a3_cc_library(
-    name = "pin",
-    hdrs = ["pin.hh"],
-)
-
-a3_cc_library(
     name = "rc",
     hdrs = [
         "rc.h",
-        "rc.hh",
     ],
-    deps = [":pin"],
 )
 
 a3_cc_library(
