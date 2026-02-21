@@ -27,6 +27,9 @@ _COMMON_FLAGS = select({
     "//bazel/compiler:msvc": [
         "-GS",
         "-Zc:__cplusplus",
+        "-GR-",
+        # TODO: Test and enable.
+        # "-EHs-c",
         "-W3",
         "-WX",
         "-wd5105",
@@ -59,6 +62,8 @@ _C_FLAGS = select({
 
 _CC_FLAGS = select({
     "//conditions:default": [
+        "-fno-exceptions",
+        "-fno-rtti",
         "-Wctor-dtor-privacy",
         "-Wdelete-non-virtual-dtor",
     ],
