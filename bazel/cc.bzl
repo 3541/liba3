@@ -107,6 +107,12 @@ def a3_cc_module(*, features = [], target_compatible_with = [], **kwargs):
                 "//bazel/compiler:clang": [],
                 "//conditions:default": ["@platforms//:incompatible"],
             },
+        ) + selects.with_or(
+            {
+                # TODO: Remove once rules_cc adds this missing feature, or I patch it.
+                ("@platforms//os:freebsd", "@platforms//os:openbsd"): ["@platforms//:incompatible"],
+                "//conditions:default": [],
+            },
         ),
         **kwargs
     )
