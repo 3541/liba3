@@ -7,6 +7,7 @@ single_version_override(
     patches = [
         "//bazel:nix_cc_host_platform.patch",
         "//bazel:nix_cc_missing_imports.patch",
+        "//bazel:nix_cc_scan_deps_config.patch",
     ],
 )
 
@@ -27,6 +28,9 @@ archive_override(
         "//bazel:nix_cc_extra_constraints.patch",
         "//bazel:nix_cc_darwin_libstdc++.patch",
         "//bazel:nix_cc_no_gold.patch",
+        "//bazel:nix_cc_scan_deps.patch",
+        "//bazel:nix_cc_clang_name.patch",
+        "//bazel:nix_cc_no_force_lang.patch",
     ],
     strip_prefix = "rules_nixpkgs-{}/toolchains/cc".format(_RULES_NIXPKGS_VERSION),
     urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{version}/rules_nixpkgs-{version}.tar.gz".format(version = _RULES_NIXPKGS_VERSION)],

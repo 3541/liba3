@@ -12,3 +12,5 @@ build --verbose_failures
 
 # Include external headers with -isystem to suppress warnings.
 build --features=external_include_paths --host_features=external_include_paths
+
+build --experimental_cpp_modules
