@@ -99,5 +99,14 @@ def a3_cc_test(**kwargs):
 def a3_cc_binary(**kwargs):
     _wrap(cc_binary, **kwargs)
 
-def a3_cc_module(*, features = [], **kwargs):
-    a3_cc_library(features = features + ["cpp_modules"], **kwargs)
+def a3_cc_module(*, features = [], target_compatible_with = [], **kwargs):
+    a3_cc_library(
+        features = features + ["cpp_modules"],
+        target_compatible_with = target_compatible_with + select(
+            {
+                "//bazel/compiler:clang": [],
+                "//conditions:default": ["@platforms//:incompatible"],
+            },
+        ),
+        **kwargs
+    )
