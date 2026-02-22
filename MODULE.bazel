@@ -21,8 +21,12 @@ include("//bazel:toolchains.MODULE.bazel")
 bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
 git_override(
     module_name = "hedron_compile_commands",
-    commit = "abb61a688167623088f8768cc9264798df6a9d10",
-    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+    commit = "6c416550b3a4a2aac95b34ca484a936a779445c4",
+    # Patches:
+    # * https://github.com/hedronvision/bazel-compile-commands-extractor/pull/278
+    # * C++ module file extensions.
+    # * https://github.com/hedronvision/bazel-compile-commands-extractor/pull/276
+    remote = "https://github.com/3541/bazel-compile-commands-extractor.git",
 )
 
 bazel_dep(name = "googletest", version = "1.17.0.bcr.2", dev_dependency = True)
