@@ -1,7 +1,7 @@
+load("@bazel_skylib//lib:selects.bzl", "selects")
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@rules_cc//cc:cc_test.bzl", "cc_test")
-load("@bazel_skylib//lib:selects.bzl", "selects")
 
 _COMMON_FLAGS = select({
     "//conditions:default": [
@@ -35,7 +35,7 @@ _COMMON_FLAGS = select({
         "-wd5105",
         "-wd4189",
         "-wd4206",
-    ]
+    ],
 }) + select({
     "//bazel/compiler:clang": [],
     "//bazel/compiler:gcc": [
@@ -57,7 +57,7 @@ _C_FLAGS = select({
         "-Wnested-externs",
         "-Wstrict-prototypes",
     ],
-    "//bazel/compiler:msvc": ["-std:c17"]
+    "//bazel/compiler:msvc": ["-std:c17"],
 })
 
 _CC_FLAGS = select({
@@ -67,7 +67,7 @@ _CC_FLAGS = select({
         "-Wctor-dtor-privacy",
         "-Wdelete-non-virtual-dtor",
     ],
-    "//bazel/compiler:msvc": ["-std:c++latest"]
+    "//bazel/compiler:msvc": ["-std:c++latest"],
 })
 
 _FEATURES = select({
@@ -98,3 +98,6 @@ def a3_cc_test(**kwargs):
 
 def a3_cc_binary(**kwargs):
     _wrap(cc_binary, **kwargs)
+
+def a3_cc_module(*, features = [], **kwargs):
+    a3_cc_library(features = features + ["cpp_modules"], **kwargs)

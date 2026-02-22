@@ -1,0 +1,13 @@
+diff --git a/toolchains/cc/cc.bzl b/toolchains/cc/cc.bzl
+index 2746683..d10af12 100644
+--- a/toolchains/cc/cc.bzl
++++ b/toolchains/cc/cc.bzl
+@@ -206,7 +206,7 @@ def _nixpkgs_cc_toolchain_config_impl(repository_ctx):
+                     [":cc_wrapper"] if darwin else []
+                 ),
+             ),
+-            "%{compiler}": "compiler",
++            "%{compiler}": "clang" if info.is_clang else "compiler",
+             "%{abi_version}": "local",
+             "%{abi_libc_version}": "local",
+             "%{host_system_name}": "local",

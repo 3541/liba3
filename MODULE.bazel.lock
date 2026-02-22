@@ -204,7 +204,7 @@
   "moduleExtensions": {
     "//bazel:nixpkgs_cc_extension.bzl%nix_cc_configure": {
       "general": {
-        "bzlTransitiveDigest": "4gnuyq+FCx0J459a+MRPYei6zd4B6zExl48Ux1Uv+Ro=",
+        "bzlTransitiveDigest": "STPOUknvl+8sWLJrhpVrOoehOCLD+rchAG6n5nZp9DA=",
         "usagesDigest": "M8SrWPuMbMdRMSqiR0Hd0Zh7f9yfRMbCAKasUrBKJ4c=",
         "recordedInputs": [
           "REPO_MAPPING:,rules_nixpkgs_cc rules_nixpkgs_cc+",

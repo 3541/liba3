@@ -3,6 +3,7 @@
 {
   pkgs,
   cc,
+  extra ? [ ],
 }:
 let
   darwinTools = pkgs.darwin.cctools;
@@ -10,7 +11,7 @@ in
 pkgs.buildEnv (
   {
     name = "bazel-${cc.name}-wrapper";
-    paths = [ cc ] ++ pkgs.lib.optional pkgs.stdenv.isDarwin darwinTools;
+    paths = [ cc ] ++ pkgs.lib.optional pkgs.stdenv.isDarwin darwinTools ++ extra;
     pathsToLink = [ "/bin" ];
     passthru = {
       isClang = cc.isClang;

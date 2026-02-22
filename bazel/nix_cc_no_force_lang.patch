@@ -1,0 +1,12 @@
+diff --git a/toolchains/cc/cc.nix b/toolchains/cc/cc.nix
+index c636b3b..85fd758 100644
+--- a/toolchains/cc/cc.nix
++++ b/toolchains/cc/cc.nix
+@@ -238,7 +238,6 @@ pkgs.runCommand "bazel-${cc.orignalName or cc.name}-toolchain"
+       -fno-omit-frame-pointer
+     )
+     CXX_FLAGS=(
+-      -x ${ccLang}
+       -std=${ccStd}
+     )
+     LINK_FLAGS=(

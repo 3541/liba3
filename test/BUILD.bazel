@@ -116,3 +116,14 @@ a3_cc_test(
         "@googletest//:gtest_main",
     ],
 )
+
+a3_cc_test(
+    name = "niche",
+    size = "small",
+    srcs = ["niche.cc"],
+    deps = [
+        "//a3/lang:niche",
+        "@googletest//:gtest_main",
+    ],
+    features = ["cpp_modules"]
+)
