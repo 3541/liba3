@@ -11,6 +11,7 @@ on:
       - '.github/workflows/darwin-intel.yml'
       - '**/*.bazel'
       - '**/*.bzl'
+      - '**/*.nix'
 
 jobs:
   build:
