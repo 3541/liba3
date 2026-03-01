@@ -1,0 +1,62 @@
+/*
+ * TRAITS — Common type traits
+ *
+ * Copyright (c) 2026, Alex O'Brien <3541@3541.website>
+ *
+ * This file is licensed under the BSD 3-clause license. See the LICENSE file in the project root
+ * for details.
+ */
+
+export module a3.lang.traits;
+
+namespace a3 {
+
+template <typename T>
+constexpr bool IS_LVALUE_REF{false};
+
+template <typename T>
+constexpr bool IS_LVALUE_REF<T&>{true};
+
+export template <typename T>
+concept IsLValueReference = IS_LVALUE_REF<T>;
+
+template <typename T>
+constexpr bool IS_RVALUE_REF{false};
+
+template <typename T>
+constexpr bool IS_RVALUE_REF<T&&>{true};
+
+export template <typename T>
+concept IsRValueReference = IS_RVALUE_REF<T>;
+
+export template <typename T>
+concept IsReference = IsLValueReference<T> || IsRValueReference<T>;
+
+export template <typename T>
+T&& phantom_value() {
+    static_assert(false);
+}
+
+export template <typename T>
+using Decay = decltype(auto{phantom_value<T>()});
+
+export template <typename T, typename... Us>
+concept ConstructibleFrom = requires(Us... args) {
+    { T{args...} };
+};
+
+template <typename T, typename U>
+constexpr bool ARE_SAME{false};
+
+template <typename T>
+constexpr bool ARE_SAME<T, T>{true};
+
+export template <typename T, typename U>
+concept Same = ARE_SAME<T, U>;
+
+export template <typename T, typename U>
+concept Equatable = requires(const T& t, const U& u) {
+    { t == u } -> Same<bool>;
+};
+
+} // namespace a3

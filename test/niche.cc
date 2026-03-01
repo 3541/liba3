@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-import a3.niche;
+import a3.lang.niche;
 
 namespace a3::test {
 

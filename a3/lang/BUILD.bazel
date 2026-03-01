@@ -8,6 +8,29 @@ a3_cc_library(
 )
 
 a3_cc_module(
+    name = "inttypes",
+    module_interfaces = ["inttypes.ccm"],
+    deps = ["//a3/shim:types"]
+)
+
+a3_cc_module(
+    name = "traits",
+    module_interfaces = ["traits.ccm"],
+)
+
+a3_cc_module(
     name = "niche",
     module_interfaces = ["niche.ccm"],
+    deps = [":traits"],
+)
+
+a3_cc_module(
+    name = "ref",
+    module_interfaces = ["ref.ccm"],
+    deps = [":niche", ":traits"],
+)
+
+a3_cc_module(
+    name = "unsafe",
+    module_interfaces = ["unsafe.ccm"],
 )

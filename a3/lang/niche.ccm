@@ -10,10 +10,17 @@
  * contents to compress storage. For instance, representing an a3::Option<T&> as T*.
  */
 
-export module a3.niche;
+export module a3.lang.niche;
+
+import a3.lang.traits;
 
 export namespace a3 {
 
 struct Niche final {};
+
+constexpr Niche NICHE;
+
+template <typename T>
+concept HasNiche = ConstructibleFrom<Decay<T>, Niche> && Equatable<Decay<T>, Niche>;
 
 } // namespace a3

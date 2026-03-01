@@ -1,0 +1,32 @@
+/*
+ * INT — Integer types
+ *
+ * Copyright (c) 2026, Alex O'Brien <3541@3541.website>
+ *
+ * This file is licensed under the BSD 3-clause license. See the LICENSE file in the project root
+ * for details.
+ */
+
+module;
+
+#include <stdint.h>
+
+#include "a3/shim/types.h"
+
+export module a3.lang.inttypes;
+
+export namespace a3 {
+
+using u8    = ::uint8_t;
+using u16   = ::uint16_t;
+using u32   = ::uint32_t;
+using u64   = ::uint64_t;
+using usize = ::size_t;
+
+using i8    = ::int8_t;
+using i16   = ::int16_t;
+using i32   = ::int32_t;
+using i64   = ::int64_t;
+using isize = ::A3SSize;
+
+} // namespace a3

@@ -1,0 +1,17 @@
+load("//bazel:cc.bzl", "a3_cc_module")
+
+package(default_visibility = ["//visibility:public"])
+
+a3_cc_module(
+    name = "option",
+    module_interfaces = ["option.ccm"],
+    deps = [
+        "//a3/lang:ref",
+        "//a3/lang:niche",
+        "//a3/lang:inttypes",
+        "//a3/lang:traits",
+        "//a3/lang:fwd",
+        "//a3:log",
+        "//a3/lang:unsafe",
+    ],
+)

@@ -8,6 +8,7 @@ single_version_override(
         "//bazel:nix_cc_host_platform.patch",
         "//bazel:nix_cc_missing_imports.patch",
         "//bazel:nix_cc_scan_deps_config.patch",
+        "//bazel:nix_cc_darwin_include.patch",
     ],
 )
 

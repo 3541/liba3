@@ -1,0 +1,85 @@
+/*
+ * NICHE — Tag type for invalid representations
+ *
+ * Copyright (c) 2026, Alex O'Brien <3541@3541.website>
+ *
+ * This file is licensed under the BSD 3-clause license. See the LICENSE file in the project root
+ * for details.
+ *
+ * a3::Niche is an lvalue reference, but with less special nonsense: it is actually a normal value,
+ * it is reseatable, it can nest, and it implements Niche.
+ */
+
+export module a3.lang.ref;
+
+import a3.lang.niche;
+import a3.lang.traits;
+
+namespace a3 {
+
+export template <typename T>
+    requires(!IsReference<T>)
+struct Ref {
+private:
+    T* m_value;
+
+public:
+    constexpr Ref(T&);
+    constexpr Ref(Niche);
+
+    constexpr Ref(const Ref&)            = default;
+    constexpr Ref& operator=(const Ref&) = default;
+
+    constexpr Ref& operator=(T&);
+
+    constexpr auto& operator*(this auto&);
+    constexpr auto* operator->(this auto&);
+
+    template <typename U>
+    constexpr bool operator==(const Ref<U>&) const;
+
+    constexpr bool operator==(Niche) const;
+};
+
+template <typename T>
+    requires(!IsReference<T>)
+constexpr Ref<T>::Ref(T& value) : m_value{&value} {}
+
+template <typename T>
+    requires(!IsReference<T>)
+constexpr Ref<T>::Ref(Niche) : m_value{nullptr} {}
+
+template <typename T>
+    requires(!IsReference<T>)
+constexpr Ref<T>& Ref<T>::operator=(T& ref) {
+    m_value = &ref;
+}
+
+template <typename T>
+    requires(!IsReference<T>)
+constexpr auto& Ref<T>::operator*(this auto& self) {
+    return *self.m_value;
+}
+
+template <typename T>
+    requires(!IsReference<T>)
+constexpr auto* Ref<T>::operator->(this auto& self) {
+    return self.m_value;
+}
+
+template <typename T>
+    requires(!IsReference<T>)
+template <typename U>
+constexpr bool Ref<T>::operator==(const Ref<U>& value) const {
+    return **this == *value;
+}
+
+template <typename T>
+    requires(!IsReference<T>)
+constexpr bool Ref<T>::operator==(Niche) const {
+    return !m_value;
+}
+
+static_assert(HasNiche<Ref<int>>);
+
+} // namespace a3

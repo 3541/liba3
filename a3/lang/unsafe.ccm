@@ -1,0 +1,21 @@
+/*
+ * NICHE — Tag type for operations with unchecked preconditions
+ *
+ * Copyright (c) 2026, Alex O'Brien <3541@3541.website>
+ *
+ * This file is licensed under the BSD 3-clause license. See the LICENSE file in the project root
+ * for details.
+ *
+ * a3::Unsafe tags operations with nontrivial preconditions not verified by the code. The caller is
+ * responsible for ensuring such conditions are met, otherwise UB is invoked.
+ */
+
+export module a3.lang.unsafe;
+
+export namespace a3 {
+
+struct Unsafe {};
+
+constexpr Unsafe UNSAFE;
+
+} // namespace a3

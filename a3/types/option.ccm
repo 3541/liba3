@@ -1,0 +1,123 @@
+/*
+ * OPTION — Optional value
+ *
+ * Copyright (c) 2026, Alex O'Brien <3541@3541.website>
+ *
+ * This file is licensed under the BSD 3-clause license. See the LICENSE file in the project root
+ * for details.
+ *
+ * Modeled more off of Rust's Option than std::optional. Implements niche optimization, tolerates
+ * references, and can be used as an NTTP.
+ */
+
+module;
+
+#include "a3/lang/fwd.hh"
+#include "a3/panic.h"
+
+export module a3.types.option;
+
+import a3.lang.ref;
+import a3.lang.niche;
+import a3.lang.inttypes;
+import a3.lang.traits;
+import a3.lang.unsafe;
+
+namespace a3 {
+
+template <typename T>
+struct OptionStorage {
+    bool m_flag{false};
+    union {
+        u8 dummy{0};
+        T  value;
+    } m_storage;
+
+    constexpr OptionStorage() = default;
+
+    template <typename U>
+        requires ConstructibleFrom<T, U>
+    constexpr explicit OptionStorage(U&&);
+
+    constexpr explicit operator bool() const;
+};
+
+template <typename T>
+    requires HasNiche<T>
+struct OptionStorage<T> {
+    struct {
+        T value{NICHE};
+    } m_storage;
+
+    constexpr OptionStorage() = default;
+
+    template <typename U>
+        requires ConstructibleFrom<T, U>
+    constexpr explicit OptionStorage(U&&);
+
+    constexpr explicit operator bool() const;
+};
+
+export template <typename T>
+struct Option {
+    OptionStorage<T> _m_private_storage;
+
+    Option() = default;
+
+    template <typename U>
+        requires ConstructibleFrom<T, U>
+    explicit Option(U&&);
+
+    Option(const Option&)            = default;
+    Option(Option&&)                 = default;
+    Option& operator=(const Option&) = default;
+    Option& operator=(Option&&)      = default;
+
+    constexpr explicit operator bool() const;
+
+    constexpr decltype(auto) operator*(this auto&&);
+
+    constexpr decltype(auto) unwrap(this auto&&, Unsafe);
+};
+
+template <typename T>
+template <typename U>
+    requires ConstructibleFrom<T, U>
+constexpr OptionStorage<T>::OptionStorage(U&& value) : m_flag{true}, m_storage{.value = A3_FWD(value)} {}
+
+template <typename T>
+    requires HasNiche<T>
+template <typename U>
+    requires ConstructibleFrom<T, U>
+constexpr OptionStorage<T>::OptionStorage(U&& value) : m_storage{A3_FWD(value)} {}
+
+template <typename T>
+constexpr OptionStorage<T>::operator bool() const {
+    return m_flag;
+}
+
+template <typename T>
+    requires HasNiche<T>
+constexpr OptionStorage<T>::operator bool() const {
+    return m_storage == NICHE;
+}
+
+template <typename T>
+template <typename U>
+    requires ConstructibleFrom<T, U>
+Option<T>::Option(U&& value) : _m_private_storage{A3_FWD(value)} {}
+
+template <typename T>
+constexpr decltype(auto) Option<T>::operator*(this auto&& self) {
+    if (!self) [[unlikely]]
+        A3_PANIC("Empty optional unwrap.");
+
+    return A3_FWD(self).unwrap(UNSAFE);
+}
+
+template <typename T>
+constexpr decltype(auto) Option<T>::unwrap(this auto&& self, Unsafe) {
+    return A3_FWD(self)._m_private_storage.m_storage.value;
+}
+
+} // namespace a3

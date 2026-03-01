@@ -21,6 +21,7 @@ a3_cc_library(
 a3_cc_library(
     name = "types",
     hdrs = ["types.h"],
+    deps = [":platform"],
 )
 
 a3_cc_library(

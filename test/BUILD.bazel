@@ -125,5 +125,16 @@ a3_cc_test(
         "//a3/lang:niche",
         "@googletest//:gtest_main",
     ],
-    features = ["cpp_modules"]
+    features = ["cpp_modules"],
+)
+
+a3_cc_test(
+    name = "option",
+    size = "small",
+    srcs = ["option.cc"],
+    deps = [
+        "//a3/types:option",
+        "@googletest//:gtest_main",
+    ],
+    features = ["cpp_modules"],
 )
