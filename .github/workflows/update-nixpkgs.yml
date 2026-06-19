@@ -13,13 +13,13 @@ jobs:
   update-nixpkgs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Read nixpkgs.json
         id: config
         run: |
           echo "repo=$(jq -r '.repo // "NixOS/nixpkgs"' nixpkgs.json)" >> $GITHUB_OUTPUT
           echo "branch=$(jq -r '.branch // "nixos-25.11"' nixpkgs.json)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           path: nixpkgs
           repository: ${{ steps.config.outputs.repo }}
