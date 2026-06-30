@@ -3,7 +3,7 @@ module(
     version = "0.6.0",
 )
 
-bazel_dep(name = "rules_cc", version = "0.2.16")
+bazel_dep(name = "rules_cc", version = "0.2.20")
 single_version_override(
     module_name = "rules_cc",
     patch_strip = 1,
