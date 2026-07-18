@@ -4,12 +4,12 @@ packages:
   - bash
   - zip
   - openjdk21
+  - bazel9
 sources:
   - https://github.com/3541/liba3.git
 environment:
     JAVA_HOME: /usr/local/openjdk21
 tasks:
-  - install-bazel: sudo pkg install -y liba3/ci/pkgs/$(uname)-$(uname -m)-bazel9.pkg
   - test: |
       cd liba3
       bazel test --config=system-clang //...

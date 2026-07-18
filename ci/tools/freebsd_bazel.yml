@@ -1,0 +1,14 @@
+image: freebsd/15.x
+packages:
+  - git
+  - bash
+  - zip
+  - openjdk21
+environment:
+    JAVA_HOME: /usr/local/openjdk21
+artifacts:
+  - /usr/ports/devel/bazel9/work/pkg/bazel9-9.0.1.pkg
+tasks:
+  - update-ports: sudo git -C /usr/ports pull
+  - build-bazel: cd /usr/ports/devel/bazel9 && sudo make package -DBATCH
+
