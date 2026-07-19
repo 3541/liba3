@@ -1,6 +1,6 @@
 {
-  "repo": "NixOS/nixpkgs",
-  "branch": "nixos-26.05",
-  "commit": "293d6abedf0478e681a4dfcfcb35b30fc796a32f",
-  "sha256": "1kc5dll2yik3fv4vsndh8kcv8s629jx7090h6xx48mivlci2mnhf"
+    "repo": "NixOS/nixpkgs",
+    "branch": "nixos-26.05",
+    "commit": "7f8dbe38ecc5895b19048ae40e52b82e94df0463",
+    "sha256": "sha256-O4zYeU+renWWWfTrUUJU5E73l/srwGE/JAdSopfooHc="
 }
