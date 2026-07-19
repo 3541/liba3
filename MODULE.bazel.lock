@@ -329,7 +329,7 @@
     },
     "@@hedron_compile_commands+//:workspace_setup.bzl%hedron_compile_commands_extension": {
       "general": {
-        "bzlTransitiveDigest": "WbZScWIhVNlL76txORLZY1oLUJwdvIZ+MuWKiVir6yo=",
+        "bzlTransitiveDigest": "xfHREXIOWIcGVzoG9cUsecfHYTs1FeQNomBubjpqjW0=",
         "usagesDigest": "CbJ2MjubH36j9xaONhhASfhodhpi5fzvuyg/IW2f7Ds=",
         "recordedInputs": [
           "REPO_MAPPING:hedron_compile_commands+,bazel_tools bazel_tools"
@@ -363,7 +363,7 @@
     },
     "@@pybind11_bazel+//:internal_configure.bzl%internal_configure_extension": {
       "general": {
-        "bzlTransitiveDigest": "RWNeAcCsBPGOS5WS5YNdDD2UDjpW7uqJe5YK8Ziul+Q=",
+        "bzlTransitiveDigest": "Ilz4hu4VWEbx3OM4ZIpgYmYXuPq6ewOVgzv5F0ziWS8=",
         "usagesDigest": "tVQNvLoXMWAbiK39am3yovKGpwINdftfn7RpDyN+JZc=",
         "recordedInputs": [
           "REPO_MAPPING:pybind11_bazel+,bazel_tools bazel_tools"
