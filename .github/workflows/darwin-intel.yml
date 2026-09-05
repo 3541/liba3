@@ -24,4 +24,5 @@ jobs:
           echo 'extra-substituters = https://ci-deps.cachix.org' | sudo tee -a /etc/nix/nix.conf
           echo 'extra-trusted-public-keys = ci-deps.cachix.org-1:u0Q9WaZhvcwNaejkghAR7VaiIlChA+Q4vgGdcKId/Aw' | sudo tee -a /etc/nix/nix.conf
       - name: Bazel test
-        run: nix-shell --command "bazel test --config=clang --config=san ..."
+        # 26.11 and later have removed amd64 Darwin support.
+        run: nix-shell -I nixpkgs=channel:nixpkgs-26.05-darwin --command "bazel test --config=clang --config=san ..."
