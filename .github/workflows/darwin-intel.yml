@@ -11,18 +11,12 @@ on:
       - '.github/workflows/darwin-intel.yml'
       - '**/*.bazel'
       - '**/*.bzl'
-      - '**/*.nix'
 
 jobs:
   build:
     runs-on: macos-15-intel
     steps:
       - uses: actions/checkout@v7
-      - uses: samueldr/lix-gha-installer-action@8dc19fbd6451fa106a68ecb2dafeeeb90dff3a29
-      - name: Configure Nix
-        run: |
-          echo 'extra-substituters = https://ci-deps.cachix.org' | sudo tee -a /etc/nix/nix.conf
-          echo 'extra-trusted-public-keys = ci-deps.cachix.org-1:u0Q9WaZhvcwNaejkghAR7VaiIlChA+Q4vgGdcKId/Aw' | sudo tee -a /etc/nix/nix.conf
+      - uses: bazel-contrib/setup-bazel@0.19.0
       - name: Bazel test
-        # 26.11 and later have removed amd64 Darwin support.
-        run: nix-shell -I nixpkgs=channel:nixpkgs-26.05-darwin --command "bazel test --config=clang --config=san ..."
+        run: bazel test --config=system-clang --config=san --noexperimental_cpp_modules ...
