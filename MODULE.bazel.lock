@@ -441,7 +441,7 @@
     "@@rules_nixpkgs_core+//extensions:repository.bzl%nix_repo": {
       "general": {
         "bzlTransitiveDigest": "dTTtWNdwe7E4j77oKh1mHI1qtdxfaVSGSZa1oPf2QjU=",
-        "usagesDigest": "lsPhbw1XlYjh7WwXfySJWZ+9PbpKiqxfCHejq379DfE=",
+        "usagesDigest": "8XhV4B2QoKt/iVp5yK6g6OC88gB/RSeVozU0ZkY5iXg=",
         "recordedInputs": [
           "REPO_MAPPING:rules_nixpkgs_core+,bazel_skylib bazel_skylib+"
         ],
@@ -458,10 +458,10 @@
           }
         },
         "moduleExtensionMetadata": {
-          "explicitRootModuleDirectDeps": [
+          "explicitRootModuleDirectDeps": [],
+          "explicitRootModuleDirectDevDeps": [
             "nixpkgs"
           ],
-          "explicitRootModuleDirectDevDeps": [],
           "useAllRepos": "NO",
           "reproducible": false
         }

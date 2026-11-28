@@ -11,7 +11,7 @@ single_version_override(
     ],
 )
 
-nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo")
+nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo", dev_dependency = True)
 nix_repo.file(
     name = "nixpkgs",
     file = "//:nixpkgs.nix",
@@ -36,7 +36,7 @@ archive_override(
     urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{version}/rules_nixpkgs-{version}.tar.gz".format(version = _RULES_NIXPKGS_VERSION)],
 )
 
-nix_cc_configure = use_extension("//bazel:nixpkgs_cc_extension.bzl", "nix_cc_configure")
+nix_cc_configure = use_extension("//bazel:nixpkgs_cc_extension.bzl", "nix_cc_configure", dev_dependency = True)
 use_repo(nix_cc_configure, "nix_cc_gcc")
 use_repo(nix_cc_configure, "nix_cc_gcc_toolchains")
 use_repo(nix_cc_configure, "nix_cc_gcc_info")
@@ -44,6 +44,6 @@ use_repo(nix_cc_configure, "nix_cc_clang")
 use_repo(nix_cc_configure, "nix_cc_clang_toolchains")
 use_repo(nix_cc_configure, "nix_cc_clang_info")
 
-register_toolchains("@nix_cc_gcc_toolchains//:all")
+register_toolchains("@nix_cc_gcc_toolchains//:all", dev_dependency = True)
 
-register_toolchains("@nix_cc_clang_toolchains//:all")
+register_toolchains("@nix_cc_clang_toolchains//:all", dev_dependency = True)
